@@ -104,7 +104,8 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
+    ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e")))
+ '(git-gutter:hide-gutter t)
  '(package-selected-packages
    (quote
     (corral ample-theme auto-compile autopair badger-theme browse-kill-ring cider clojure-mode-extra-font-locking clojure-snippets color-theme-solarized company company-quickhelp darcula-theme dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-nerd-commenter evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flatui-theme flycheck flycheck-clojure flycheck-pos-tip fold-dwim git-gutter gotham-theme groovy-mode gruvbox-theme helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode inf-groovy javap-mode jazz-theme leuven-theme magit malabar-mode markdown-mode material-theme neotree noctilux-theme planet-theme racket-mode rainbow-delimiters smart-mode-line smex soft-stone-theme solarized-theme subatomic-theme sublime-themes tangotango-theme ujelly-theme use-package zenburn-theme))))
@@ -383,16 +384,6 @@
           (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
           (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
           (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)))
-;; =============================================================
-
-;; =============================================================
-;; TODO Set evil-leader as a prefix key
-(use-package eyebrowse
-  :pin melpa-stable
-  :ensure t
-  :config (progn
-            (eyebrowse-mode t)
-            (setq eyebrowse-new-workspace t)))
 ;; =============================================================
 
 ;; =============================================================
@@ -733,6 +724,17 @@
                   sauron-max-line-length 180
                   sauron-watch-nicks '("kovrik" "kovrik`" "kovrik``")))
   (sauron-start))
+;; =======================================================================
+
+;; =======================================================================
+;; TODO Ask for confirmation before close
+(use-package eyebrowse
+  :pin melpa-stable
+  :ensure t
+  :config (progn
+            (eyebrowse-mode t)
+            (eyebrowse-setup-evil-keys)
+            (setq eyebrowse-new-workspace t)))
 ;; =======================================================================
 
 ;; =======================================================================
