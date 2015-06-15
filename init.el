@@ -645,7 +645,7 @@
                         (git-gutter:linum-setup)
                         (global-git-gutter-mode 1)))
 
-            (if (eq system-type 'windows-nt)
+            (when (eq system-type 'windows-nt)
                 (progn
                   (setq exec-path (add-to-list 'exec-path "C:/Program Files (x86)/Git/bin"))
                   (setenv "PATH" (concat "C:\\Program Files (x86)\\Git\\bin;" (getenv "PATH")))))
@@ -701,8 +701,8 @@
                   sauron-separate-frame nil
                   ;; sauron-hide-mode-line t
                   sauron-max-line-length 180
-                  sauron-watch-nicks '("kovrik" "kovrik`" "kovrik``")))
-  (sauron-start))
+                  sauron-watch-nicks '("kovrik" "kovrik`" "kovrik``"))
+            (sauron-start)))
 ;; =======================================================================
 
 ;; =======================================================================
