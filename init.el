@@ -4,6 +4,8 @@
 
 ;;; Code:
 (setq debug-on-error t)
+
+;; ==========================================================================
 ;; Package management
 (when (>= emacs-major-version 24)
   (require 'package)
@@ -22,12 +24,12 @@
 ;; or use package-archive-contents
 (or (file-exists-p (concat package-user-dir "/archives"))
     (package-refresh-contents))
+
 ;; ==========================================================================
 ;; use-package
 (when (not (package-installed-p 'use-package))
-  (progn
-    (package-refresh-contents)
-    (package-install 'use-package)))
+  (package-refresh-contents)
+  (package-install 'use-package))
 
 (require 'use-package)
 (setq use-package-verbose t)
@@ -39,59 +41,45 @@
 
 (setq load-prefer-newer t)
 
-(progn
-  (defun ensure-package-installed (&rest packages)
-    "Assure every package in PACKAGES is installed, ask for installation if it’s not.  Return a list of installed packages or nil for every skipped package."
-    (dolist (p packages)
-      (when (not (package-installed-p p))
-        (when (y-or-n-p (format "Package %s is missing.  Install it? " p))
-          (package-install p)))))
+(defun ensure-packages-installed (&rest packages)
+  "Assure every package in PACKAGES is installed, ask for installation if it’s not.  Return a list of installed packages or nil for every skipped package."
+  (dolist (p packages)
+    (when (and (not (package-installed-p p))
+               (y-or-n-p (format "Package %s is missing.  Install it? " p)))
+      (package-install p))))
 
-  (ensure-package-installed
-   'queue
-   'async
-   'autopair
-   'browse-kill-ring
-   'dash
-   'epl
-   'f
-   'fold-dwim
-   'fringe-helper
-   'goto-chg
-   'highlight
-   'highlight-escape-sequences
-   'highlight-parentheses
-   'idle-highlight-mode
-   'markdown-mode
-   'pkg-info
-   's))
-;; ==========================================================================
+(ensure-packages-installed
+ 'queue
+ 'async
+ 'autopair
+ 'browse-kill-ring
+ 'dash
+ 'epl
+ 'f
+ 'fold-dwim
+ 'fringe-helper
+ 'goto-chg
+ 'highlight
+ 'highlight-escape-sequences
+ 'highlight-parentheses
+ 'idle-highlight-mode
+ 'markdown-mode
+ 'pkg-info
+ 's)
 
 ;; ==========================================================================
 ;; Themes
-(ensure-package-installed
+(ensure-packages-installed
  'ample-theme
- 'anti-zenburn-theme
- 'badger-theme
  'darcula-theme
- 'flatui-theme
- 'gotham-theme
- 'gruvbox-theme
- 'jazz-theme
  'leuven-theme
  'material-theme
  'minimal-theme
- 'monokai-theme
  'noctilux-theme
- 'planet-theme
  'soft-stone-theme
  'solarized-theme
- 'soothe-theme
- 'subatomic-theme
  'sublime-themes
- 'tangotango-theme
  'twilight-bright-theme
- 'ujelly-theme
  'zenburn-theme
  )
 ;; ==========================================================================
@@ -104,11 +92,11 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e")))
+    ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
  '(git-gutter:hide-gutter t)
  '(package-selected-packages
    (quote
-    (corral ample-theme auto-compile autopair badger-theme browse-kill-ring cider clojure-mode-extra-font-locking clojure-snippets color-theme-solarized company company-quickhelp darcula-theme dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-nerd-commenter evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flatui-theme flycheck flycheck-clojure flycheck-pos-tip fold-dwim git-gutter gotham-theme groovy-mode gruvbox-theme helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode inf-groovy javap-mode jazz-theme leuven-theme magit malabar-mode markdown-mode material-theme neotree noctilux-theme planet-theme racket-mode rainbow-delimiters smart-mode-line smex soft-stone-theme solarized-theme subatomic-theme sublime-themes tangotango-theme ujelly-theme use-package zenburn-theme))))
+    (corral ample-theme auto-compile autopair browse-kill-ring cider clojure-mode-extra-font-locking color-theme-solarized company company-quickhelp darcula-theme dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-nerd-commenter evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim git-gutter helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode leuven-theme magit markdown-mode material-theme neotree noctilux-theme racket-mode rainbow-delimiters smart-mode-line soft-stone-theme solarized-theme sublime-themes use-package zenburn-theme))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -154,7 +142,7 @@
 ;; =========================================================================
 ;; Init and globals
 
-;; change backups dir
+;; Backups directory
 (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
 
 (prefer-coding-system 'utf-8)
@@ -190,28 +178,19 @@
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
-(global-set-key [escape] 'keyboard-quit)
+(global-set-key [escape]    'keyboard-quit)
 (global-set-key (kbd "RET") 'newline-and-indent)
-
+(global-set-key (kbd "C-h") 'find-function-at-point)
 ;; Reload file from disk
 (global-set-key (kbd "C-c r") 'revert-buffer)
-(global-set-key (kbd "C-h")   'find-function-at-point)
 
-(defun linum-on ()
-  "Turn linum-m0de on."
-  (linum-mode 1))
-
-(defun linum-off ()
-  "Turn linum mode off."
-  (linum-mode -1))
-
-(defun evil-off ()
-  "Turn evil mode off."
-  (evil-mode -1))
+(defun linum-on  () "Turn 'linum-mode' on."  (linum-mode 1))
+(defun linum-off () "Turn 'linum-mode' off." (linum-mode -1))
 ;; =========================================================================
 ;; Colors and Fonts
 ;; (load-theme 'twilight-bright)
 ;; (load-theme 'noctilux)
+;; (load-theme 'material-light)
 
 (let ((myfont
        (cond
@@ -251,7 +230,7 @@
   :config (progn
             (setq eshell-cmpl-cycle-completions nil
                   eshell-save-history-on-exit   t
-                  eshell-cmpl-dir-ignore        "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'")))
+                  eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'")))
 ;; =========================================================================
 
 ;; =========================================================================
