@@ -226,6 +226,16 @@
             (put 'dired-find-alternate-file 'disabled nil)
             (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)))
 ;; =========================================================================
+
+;; =========================================================================
+;; FIXME Not working with Helm Find Files
+(use-package tramp
+  :ensure t
+  :config (progn
+            (setq tramp-default-method "ssh")))
+;; =========================================================================
+
+;; =========================================================================
 (use-package eshell
   :config (progn
             (setq eshell-cmpl-cycle-completions nil
