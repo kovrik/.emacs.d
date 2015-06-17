@@ -406,10 +406,10 @@
                 helm-move-to-line-cycle-in-source     t
                 helm-ff-search-library-in-sexp        t
                 helm-ff-file-name-history-use-recentf t
+                helm-ff-auto-update-initial-value     nil
                 helm-quick-update                     t
                 helm-yank-symbol-first                t
                 helm-bookmark-show-location           t
-                helm-ff-auto-update-initial-value     t
                 helm-recentf-fuzzy-match              t
                 helm-buffers-fuzzy-matching           t
                 helm-locate-fuzzy-match               t
@@ -724,6 +724,20 @@
             (eyebrowse-mode t)
             (eyebrowse-setup-evil-keys)
             (setq eyebrowse-new-workspace t)))
+;; =======================================================================
+
+;; =======================================================================
+;; TODO Configure
+(use-package shackle
+  :ensure t
+  :config (progn
+            (setq shackle-rules
+                  '(
+                     ;; '((magit-mode :same t))
+                     ("\\`\\*magit.*?\\*\\'" :regexp t :same t)
+                     (erc-mode :same t)
+                   ))
+            (shackle-mode t)))
 ;; =======================================================================
 
 ;; =======================================================================
