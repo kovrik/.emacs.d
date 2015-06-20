@@ -207,6 +207,10 @@
 (global-hl-line-mode)
 
 ;; =========================================================================
+(use-package paradox :ensure t)
+;; =========================================================================
+
+;; =========================================================================
 (use-package color-theme
   :ensure t
   :config (color-theme-initialize))
@@ -606,13 +610,7 @@
             (define-key evil-motion-state-map (kbd "C-w <up>")    'evil-window-rotate-upwards)
             (define-key evil-motion-state-map (kbd "C-w <right>") 'evil-window-rotate-upwards)
 
-            (use-package evil-numbers
-              :ensure t
-              :config (progn
-                        (define-key evil-normal-state-map (kbd "C-c +") 'evil-numbers/inc-at-pt)
-                        (define-key evil-normal-state-map (kbd "C-c =") 'evil-numbers/inc-at-pt)
-                        (define-key evil-normal-state-map (kbd "C-c -") 'evil-numbers/dec-at-pt)))
-
+            (use-package evil-numbers :ensure t)
             (use-package evil-search-highlight-persist
               :ensure t
               :config (progn
@@ -728,10 +726,12 @@
 
 ;; =======================================================================
 ;; TODO Configure
+;; FIXME Hangs sometimes
 (use-package shackle
   :ensure t
   :config (progn
-            (setq shackle-rules
+            (setq shackle-lighter "|#|"
+                  shackle-rules
                   '(
                      ;; '((magit-mode :same t))
                      ("\\`\\*magit.*?\\*\\'" :regexp t :same t)
