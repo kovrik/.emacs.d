@@ -123,7 +123,7 @@
  '(helm-selection ((t (:background "#bdeebd" :foreground "#000000"))))
  '(helm-source-header ((t (:background "#607d8b" :foreground "#ffffff" :height 120))))
  '(hl-line ((t (:background "#ccddee"))))
- '(link ((t (:foreground "#0000b8"))))
+ '(link ((t (:foreground "#bb00f8"))))
  '(magit-section-title ((t (:height 1.2 :family nil))))
  '(magit-item-highlight ((t (:background "#ffffbb"))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "#000000"))))
