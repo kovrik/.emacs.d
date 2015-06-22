@@ -666,9 +666,6 @@
                   ediff-split-window-function 'split-window-horizontally
                   ediff-diff-options "-w")
 
-            (define-key magit-mode-map (kbd "s") 'magit-stage-item)
-            (define-key magit-mode-map (kbd "u") 'magit-unstage-item)
-
             ;; Vim-like movement between changes
             (defun ediff-vim-like-navigation ()
               (ediff-setup-keymap)
