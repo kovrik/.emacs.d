@@ -722,18 +722,13 @@
 ;; =======================================================================
 
 ;; =======================================================================
-;; TODO Configure
 ;; FIXME Hangs sometimes
 (use-package shackle
   :ensure t
   :config (progn
-            (setq shackle-lighter "|#|"
-                  shackle-rules
-                  '(
-                     ;; '((magit-mode :same t))
-                     ("\\`\\*magit.*?\\*\\'" :regexp t :same t)
-                     (erc-mode :same t)
-                   ))
+            (setq shackle-lighter " |#|"
+                  shackle-rules '(("\\`\\*magit.*?\\*\\'" :regexp t :same t)
+                                  (erc-mode :same t)))
             (shackle-mode t)))
 ;; =======================================================================
 
