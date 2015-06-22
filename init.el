@@ -564,12 +564,12 @@
           (evil-mode 1))
   :config (progn
             ;; set evil-mode mode names
-            (setq evil-normal-state-tag   (propertize " -- NORMAL --")
-                  evil-emacs-state-tag    (propertize " -- EMACS --")
-                  evil-insert-state-tag   (propertize " -- INSERT --")
-                  evil-motion-state-tag   (propertize " -- MOTION --")
-                  evil-visual-state-tag   (propertize " -- VISUAL --")
-                  evil-operator-state-tag (propertize " -- OPEN --"))
+            ;; (setq evil-normal-state-tag   (propertize " -- N --")
+                  ;; evil-insert-state-tag   (propertize " -- I --")
+                  ;; evil-visual-state-tag   (propertize " -- V --")
+                  ;; evil-motion-state-tag   (propertize " -- M --")
+                  ;; evil-operator-state-tag (propertize " -- O --")
+                  ;; evil-emacs-state-tag    (propertize " -- E --"))
 
             ;; Emacs keys in INSERT mode
             (setcdr evil-insert-state-map nil)
@@ -690,6 +690,7 @@
 ;; =======================================================================
 (use-package undo-tree
   :ensure t
+  :diminish undo-tree-mode
   :config (progn
             (global-undo-tree-mode)
             (setq undo-tree-visualizer-timestamps t
