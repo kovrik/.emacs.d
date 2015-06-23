@@ -20,8 +20,7 @@
 (add-to-list 'package-pinned-packages '(cider   . "melpa-stable") t)
 (add-to-list 'package-pinned-packages '(geiser  . "melpa-stable") t)
 
-;; Make sure to have downloaded archive description.
-;; or use package-archive-contents
+;; Make sure to have downloaded archive description
 (or (file-exists-p (concat package-user-dir "/archives"))
     (package-refresh-contents))
 
@@ -96,7 +95,8 @@
  '(git-gutter:hide-gutter t)
  '(package-selected-packages
    (quote
-    (corral ample-theme auto-compile autopair browse-kill-ring cider clojure-mode-extra-font-locking color-theme-solarized company company-quickhelp darcula-theme dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-nerd-commenter evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim git-gutter helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode leuven-theme magit markdown-mode material-theme neotree noctilux-theme racket-mode rainbow-delimiters smart-mode-line soft-stone-theme solarized-theme sublime-themes use-package zenburn-theme))))
+    (corral ample-theme auto-compile autopair browse-kill-ring cider clojure-mode-extra-font-locking color-theme-solarized company company-quickhelp darcula-theme dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-nerd-commenter evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim git-gutter helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode leuven-theme magit markdown-mode material-theme neotree noctilux-theme racket-mode rainbow-delimiters smart-mode-line soft-stone-theme solarized-theme sublime-themes use-package zenburn-theme)))
+ '(paradox-github-token t))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -124,8 +124,8 @@
  '(helm-source-header ((t (:background "#607d8b" :foreground "#ffffff" :height 120))))
  '(hl-line ((t (:background "#ccddee"))))
  '(link ((t (:foreground "#bb00f8"))))
- '(magit-section-title ((t (:height 1.2 :family nil))))
  '(magit-item-highlight ((t (:background "#ffffbb"))))
+ '(magit-section-title ((t (:height 1.2 :family nil))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "#000000"))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "#ff0000"))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "#0000b8"))))
@@ -289,17 +289,6 @@
 ;; =========================================================================
 
 ;; =========================================================================
-;; (use-package paredit
-;;   :ensure t
-;;   :init (progn
-;;           (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
-;;           (add-hook 'clojure-mode-hook    #'paredit-mode)
-;;           (add-hook 'lisp-mode-hook       #'paredit-mode)
-;;           (add-hook 'scheme-mode-hook     #'paredit-mode)
-;;           (add-hook 'racket-mode-hook     #'paredit-mode)))
-;; =========================================================================
-
-;; =========================================================================
 (use-package rainbow-delimiters
   :ensure t
   :config (progn
@@ -360,8 +349,8 @@
 ;; FIXME Prevent from random buffer switching on errors
 ;; FIXME Company mode not working well
 ;; FIXME Flycheck not working well
-(use-package geiser :ensure t :defer  t)
 
+;; (use-package geiser :ensure t :defer  t)
 (use-package racket-mode
   :defer  t
   :ensure t
@@ -374,9 +363,9 @@
   :diminish eldoc-mode
   :commands turn-on-eldoc-mode
   :init (progn
-          (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
+          (add-hook 'emacs-lisp-mode-hook       'turn-on-eldoc-mode)
           (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
-          (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)))
+          (add-hook 'ielm-mode-hook             'turn-on-eldoc-mode)))
 ;; =============================================================
 
 ;; =============================================================
@@ -422,7 +411,8 @@
                 helm-imenu-fuzzy-match                t
                 helm-apropos-fuzzy-match              t
                 helm-lisp-fuzzy-completion            t
-                helm-scroll-amount                    8)
+                helm-scroll-amount                    8
+                helm-echo-input-in-header-line        t)
 
           ;; rebind tab to do persistent action
           (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
@@ -563,14 +553,6 @@
                       (evil-leader/set-key "a"   'align-regexp)))
           (evil-mode 1))
   :config (progn
-            ;; set evil-mode mode names
-            ;; (setq evil-normal-state-tag   (propertize " -- N --")
-                  ;; evil-insert-state-tag   (propertize " -- I --")
-                  ;; evil-visual-state-tag   (propertize " -- V --")
-                  ;; evil-motion-state-tag   (propertize " -- M --")
-                  ;; evil-operator-state-tag (propertize " -- O --")
-                  ;; evil-emacs-state-tag    (propertize " -- E --"))
-
             ;; Emacs keys in INSERT mode
             (setcdr evil-insert-state-map nil)
             (setq evil-move-cursor-back t)
@@ -634,7 +616,8 @@
   :ensure t
   :defer  t
   :pin melpa-stable
-  :init (setq magit-last-seen-setup-instructions "1.4.0")
+  :diminish magit-auto-revert-mode
+  :init   (setq magit-last-seen-setup-instructions "1.4.0")
   :config (progn
             (use-package git-commit-mode :ensure t)
             (use-package git-rebase-mode :ensure t)
@@ -671,10 +654,20 @@
               (ediff-setup-keymap)
               (define-key ediff-mode-map "j" 'ediff-next-difference)
               (define-key ediff-mode-map "k" 'ediff-previous-difference))
+
             (add-hook 'ediff-mode-hook 'ediff-vim-like-navigation)
             ;; Restore previous windows state after Ediff quits
             (add-hook 'ediff-after-quit-hook-internal 'winner-undo))
   :bind (("C-x g" . magit-status)))
+;; =======================================================================
+
+;; =======================================================================
+(use-package web-mode
+  :pin melpa-stable
+  :ensure t
+  :config (progn
+            (add-to-list 'auto-mode-alist '("\\.html?\\'"   . web-mode))
+            (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))))
 ;; =======================================================================
 
 ;; =======================================================================
@@ -712,14 +705,14 @@
 ;; =======================================================================
 
 ;; =======================================================================
-;; TODO Ask for confirmation before close
 (use-package eyebrowse
   :pin melpa-stable
   :ensure t
   :config (progn
             (eyebrowse-mode t)
             (eyebrowse-setup-evil-keys)
-            (setq eyebrowse-new-workspace t)))
+            (setq eyebrowse-new-workspace t
+                  eyebrowse-close-window-config-prompt t)))
 ;; =======================================================================
 
 ;; =======================================================================
@@ -729,7 +722,8 @@
   :config (progn
             (setq shackle-lighter " |#|"
                   shackle-rules '(("\\`\\*magit.*?\\*\\'" :regexp t :same t)
-                                  (erc-mode :same t)))
+                                  (erc-mode  :same t)
+                                  (help-mode :same t)))
             (shackle-mode t)))
 ;; =======================================================================
 
