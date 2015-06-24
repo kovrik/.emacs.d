@@ -207,6 +207,11 @@
 (global-hl-line-mode)
 
 ;; =========================================================================
+;; TODO try
+(use-package async :ensure t)
+;; =========================================================================
+
+;; =========================================================================
 (use-package paradox :ensure t)
 ;; =========================================================================
 
@@ -514,7 +519,7 @@
             (add-hook 'org-mode-hook #'linum-off)
 
             ;; Let's have pretty source code blocks
-            (setq org-edit-src-content-indentation 0
+            (setq org-edit-src-content-indentation 2
                   org-src-tab-acts-natively t
                   org-src-fontify-natively t
                   org-src-preserve-indentation t
@@ -527,6 +532,7 @@
                   org-babel-clojure-backend 'cider)
 
             (org-babel-do-load-languages 'org-babel-load-languages '((emacs-lisp . t)
+                                                                     (java       . t)
                                                                      (clojure    . t)
                                                                      (scheme     . t)
                                                                      (sql        . t))))
@@ -593,6 +599,11 @@
             (define-key evil-motion-state-map (kbd "C-w <right>") 'evil-window-rotate-upwards)
 
             (use-package evil-numbers :ensure t)
+            (use-package evil-matchit
+              :ensure t
+              :config (progn
+                        (global-evil-matchit-mode 1)))
+
             (use-package evil-search-highlight-persist
               :ensure t
               :config (progn
@@ -639,7 +650,7 @@
             (when (eq system-type 'windows-nt)
                 (progn
                   (setq exec-path (add-to-list 'exec-path "C:/Program Files (x86)/Git/bin"))
-                  (setenv "PATH" (concat "C:\\Program Files (x86)\\Git\\bin;" (getenv "PATH")))))
+                  (setenv "PATH" (concat "C:/Program Files (x86)/Git/bin;" (getenv "PATH")))))
 
             (setq magit-diff-options '("-w")
                   magit-status-buffer-switch-function 'switch-to-buffer
