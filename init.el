@@ -40,47 +40,18 @@
 
 (setq load-prefer-newer t)
 
-(defun ensure-packages-installed (&rest packages)
+(defun ensure-packages-installed (packages)
   "Assure every package in PACKAGES is installed, ask for installation if it’s not.  Return a list of installed packages or nil for every skipped package."
   (dolist (p packages)
     (when (and (not (package-installed-p p))
                (y-or-n-p (format "Package %s is missing.  Install it? " p)))
       (package-install p))))
 
-(ensure-packages-installed
- 'queue
- 'async
- 'autopair
- 'browse-kill-ring
- 'dash
- 'epl
- 'f
- 'fold-dwim
- 'fringe-helper
- 'goto-chg
- 'highlight
- 'highlight-escape-sequences
- 'highlight-parentheses
- 'idle-highlight-mode
- 'markdown-mode
- 'pkg-info
- 's)
+(ensure-packages-installed '(queue async autopair browse-kill-ring dash epl f fold-dwim fringe-helper goto-chg highlight highlight-escape-sequences highlight-parentheses idle-highlight-mode markdown-mode pkg-info s))
 
 ;; ==========================================================================
 ;; Themes
-(ensure-packages-installed
- 'ample-theme
- 'darcula-theme
- 'leuven-theme
- 'material-theme
- 'minimal-theme
- 'noctilux-theme
- 'soft-stone-theme
- 'solarized-theme
- 'sublime-themes
- 'twilight-bright-theme
- 'zenburn-theme
- )
+(ensure-packages-installed '(ample-theme darcula-theme leuven-theme material-theme minimal-theme noctilux-theme soft-stone-theme solarized-theme sublime-themes twilight-bright-theme zenburn-theme))
 ;; ==========================================================================
 
 ;; ==========================================================================
@@ -125,7 +96,7 @@
  '(hl-line ((t (:background "#ccddee"))))
  '(link ((t (:foreground "#bb00f8"))))
  '(magit-item-highlight ((t (:background "#ffffbb"))))
- '(magit-section-title ((t (:height 1.2 :family nil))))
+ '(magit-section-title ((t (:height 1.1 :family nil :background "#ccddee"))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "#000000"))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "#ff0000"))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "#0000b8"))))
@@ -175,6 +146,7 @@
 (blink-cursor-mode -1)
 (winner-mode t)
 (desktop-save-mode t)
+(global-hl-line-mode)
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -187,10 +159,7 @@
 (defun linum-on  () "Turn 'linum-mode' on."  (linum-mode 1))
 (defun linum-off () "Turn 'linum-mode' off." (linum-mode -1))
 ;; =========================================================================
-;; Colors and Fonts
-;; (load-theme 'twilight-bright)
-;; (load-theme 'noctilux)
-;; (load-theme 'material-light)
+;; Fonts
 
 (let ((myfont
        (cond
@@ -203,16 +172,6 @@
   (print (format "Using font: %s" myfont))
   (set-face-attribute 'default nil :font myfont)
   (set-frame-font      myfont  nil t))
-
-(global-hl-line-mode)
-
-;; =========================================================================
-;; TODO try
-(use-package async :ensure t)
-;; =========================================================================
-
-;; =========================================================================
-(use-package paradox :ensure t)
 ;; =========================================================================
 
 ;; =========================================================================
@@ -232,16 +191,14 @@
 ;; =========================================================================
 (use-package dired
   :config (progn
-            (put 'dired-find-alternate-file 'disabled nil)
+            ;; (put 'dired-find-alternate-file 'disabled nil)
             (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)))
 ;; =========================================================================
 
 ;; =========================================================================
-;; FIXME Not working with Helm Find Files
 (use-package tramp
   :ensure t
-  :config (progn
-            (setq tramp-default-method "ssh")))
+  :config (progn (setq tramp-default-method "ssh")))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -311,33 +268,31 @@
   :config (progn
             (use-package cider :pin melpa :ensure t)
             (use-package clojure-mode-extra-font-locking :ensure t)
+
+            ;; FIXME ==================================
             ;; (use-package clojure-snippets :ensure t)
             ;; (use-package cider-eval-sexp-fu :ensure t :config (require 'cider-eval-sexp-fu))
-
-            ;; FIXME
             ;; (use-package kibit-mode
             ;;   :pin melpa-stable
             ;;   :ensure t)
+            ;; ========================================
 
             (use-package flycheck-clojure
               :pin melpa
               :ensure t
               :config (flycheck-clojure-setup))
 
-            (add-hook 'clojure-mode-hook 'flycheck-mode)
-
-            ;; Cider
+            (add-hook 'clojure-mode-hook    'flycheck-mode)
             (add-hook 'clojure-mode-hook    'turn-on-eldoc-mode)
             (add-hook 'cider-mode-hook      'cider-turn-on-eldoc-mode)
             (add-hook 'cider-mode-hook      'company-mode)
             (add-hook 'cider-repl-mode-hook 'company-mode)
 
-            (setq nrepl-log-messages t
-                  nrepl-hide-special-buffers t
+            (setq nrepl-log-messages           t
+                  nrepl-hide-special-buffers   t
                   cider-prefer-local-resources t
-                  ;; cider-repl-pop-to-buffer-on-connect nil
-                  cider-popup-stacktraces nil
-                  cider-repl-popup-stacktraces t)
+                  cider-repl-popup-stacktraces t
+                  cider-popup-stacktraces      nil)
 
             (defun cider-find-var-no-prompt ()
               "cider-find-var at point without prompt"
@@ -354,13 +309,12 @@
 ;; FIXME Prevent from random buffer switching on errors
 ;; FIXME Company mode not working well
 ;; FIXME Flycheck not working well
-
 ;; (use-package geiser :ensure t :defer  t)
+
 (use-package racket-mode
   :defer  t
   :ensure t
-  :config (progn
-            (add-hook 'racket-mode-hook #'company-quickhelp--disable)))
+  :config (progn (add-hook 'racket-mode-hook #'company-quickhelp--disable)))
 ;; =============================================================
 
 ;; =============================================================
@@ -378,12 +332,14 @@
   :defer  t
   :ensure t
   :config (progn
-            (when (eq system-type 'windows-nt)
-              (setq projectile-indexing-method 'alien))
-
             (setq projectile-keymap-prefix (kbd "C-c p")
                   projectile-completion-system 'helm
                   projectile-enable-caching t)
+
+            (when (eq system-type 'windows-nt)
+              (setq projectile-indexing-method 'alien
+                    ;; disable caching if indexing-method is 'alien
+                    projectile-enable-caching nil))
 
             ;; FIXME Why it executes Find Files after projectile-vc?
             (define-key projectile-mode-map (kbd "C-S-p") 'helm-projectile-switch-project)
@@ -395,10 +351,13 @@
   :ensure t
   :diminish helm-mode
   :init (progn
-          (use-package helm-swoop :ensure t)
           (require 'helm-config)
           (require 'helm-misc)
           (require 'helm-locate)
+          (use-package helm-swoop :ensure t)
+          (use-package helm-projectile
+            :ensure t
+            :config (progn (helm-projectile-on)))
 
           (setq helm-split-window-in-side-p           t
                 helm-move-to-line-cycle-in-source     t
@@ -421,15 +380,12 @@
 
           ;; rebind tab to do persistent action
           (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
-          ;; make TAB works in terminal
+          ;; make TAB work in terminal
           (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action)
-          ;; list actions using C-z
           (define-key helm-map (kbd "C-z") 'helm-select-action)
           (define-key helm-map (kbd "ESC") 'helm-keyboard-quit)
 
           (when (executable-find "curl") (setq helm-google-suggest-use-curl-p t))
-
-          ;; (global-set-key (kbd "M-x") 'helm-M-x)
 
           (autoload 'helm-descbinds      "helm-descbinds" t)
           (autoload 'helm-eshell-history "helm-eshell"    t)
@@ -443,12 +399,7 @@
           (add-hook 'eshell-mode-hook 'my-define-eshell-mode-map-keys)
 
           (helm-mode t)
-          (helm-adaptive-mode t)
-          ;; (helm-autoresize-mode 1)
-
-          (use-package helm-projectile
-            :ensure t
-            :config (progn (helm-projectile-on))))
+          (helm-adaptive-mode t))
   :bind (("C-c h"   . helm-command-prefix)
          ("M-x"     . helm-M-x)
          ("C-x b"   . helm-mini)
@@ -518,6 +469,7 @@
 
             (add-hook 'org-mode-hook #'linum-off)
 
+            ;; FIXME indentation
             ;; Let's have pretty source code blocks
             (setq org-edit-src-content-indentation 2
                   org-src-tab-acts-natively t
@@ -592,6 +544,7 @@
             (define-key evil-normal-state-map           (kbd "j") 'evil-next-visual-line)
             (define-key evil-normal-state-map           (kbd "k") 'evil-previous-visual-line)
 
+            ;; FIXME Make 'swap windows' instead of 'rotate windows'
             ;; Rotate windows
             (define-key evil-motion-state-map (kbd "C-w <left>")  'evil-window-rotate-downwards)
             (define-key evil-motion-state-map (kbd "C-w <down>")  'evil-window-rotate-downwards)
@@ -601,13 +554,11 @@
             (use-package evil-numbers :ensure t)
             (use-package evil-matchit
               :ensure t
-              :config (progn
-                        (global-evil-matchit-mode 1)))
+              :config (progn (global-evil-matchit-mode 1)))
 
             (use-package evil-search-highlight-persist
               :ensure t
-              :config (progn
-                        (global-evil-search-highlight-persist t)))
+              :config (progn (global-evil-search-highlight-persist t)))
 
             (use-package evil-nerd-commenter
               :ensure t
@@ -648,9 +599,8 @@
                         (global-git-gutter-mode 1)))
 
             (when (eq system-type 'windows-nt)
-                (progn
-                  (setq exec-path (add-to-list 'exec-path "C:/Program Files (x86)/Git/bin"))
-                  (setenv "PATH" (concat "C:/Program Files (x86)/Git/bin;" (getenv "PATH")))))
+              (setq exec-path (add-to-list 'exec-path "C:/Program Files (x86)/Git/bin"))
+              (setenv "PATH" (concat "C:/Program Files (x86)/Git/bin;" (getenv "PATH"))))
 
             (setq magit-diff-options '("-w")
                   magit-status-buffer-switch-function 'switch-to-buffer
@@ -659,6 +609,10 @@
                   ediff-window-setup-function 'ediff-setup-windows-plain
                   ediff-split-window-function 'split-window-horizontally
                   ediff-diff-options "-w")
+
+            ;; Don't know why these become unbind sometimes
+            (define-key magit-mode-map (kbd "s") 'magit-stage-item)
+            (define-key magit-mode-map (kbd "u") 'magit-unstage-item)
 
             ;; Vim-like movement between changes
             (defun ediff-vim-like-navigation ()
@@ -733,8 +687,9 @@
   :config (progn
             (setq shackle-lighter " |#|"
                   shackle-rules '(("\\`\\*magit.*?\\*\\'" :regexp t :same t)
-                                  (erc-mode  :same t)
-                                  (help-mode :same t)))
+                                  (erc-mode     :same t)
+                                  (help-mode    :same t)
+                                  (ibuffer-mode :same t)))
             (shackle-mode t)))
 ;; =======================================================================
 
@@ -749,6 +704,7 @@
 
             (erc-autojoin-mode t)
             (erc-scrolltobottom-enable)
+            (erc-scrolltobottom-mode t)
             (setq erc-autojoin-channels-alist '((".*\\.freenode.net" "#emacs"))
                   erc-hide-list '("JOIN" "PART" "QUIT" "NICK" "MODE")
                   erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
