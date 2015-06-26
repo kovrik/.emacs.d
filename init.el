@@ -4,7 +4,6 @@
 
 ;;; Code:
 (setq debug-on-error t)
-
 ;; ==========================================================================
 ;; Package management
 (when (>= emacs-major-version 24)
@@ -23,7 +22,6 @@
 ;; Make sure to have downloaded archive description
 (or (file-exists-p (concat package-user-dir "/archives"))
     (package-refresh-contents))
-
 ;; ==========================================================================
 ;; use-package
 (when (not (package-installed-p 'use-package))
@@ -34,10 +32,7 @@
 (setq use-package-verbose t)
 (require 'diminish)
 (require 'bind-key)
-(use-package auto-compile
-  :ensure t
-  :config (auto-compile-on-load-mode))
-
+(use-package auto-compile :ensure t :config (auto-compile-on-load-mode))
 (setq load-prefer-newer t)
 
 (defun ensure-packages-installed (packages)
@@ -147,20 +142,17 @@
 (winner-mode t)
 (desktop-save-mode t)
 (global-hl-line-mode)
-
 (fset 'yes-or-no-p 'y-or-n-p)
 
-(global-set-key [escape]    'keyboard-quit)
-(global-set-key (kbd "RET") 'newline-and-indent)
-(global-set-key (kbd "C-h") 'find-function-at-point)
-;; Reload file from disk
-(global-set-key (kbd "C-c r") 'revert-buffer)
+(bind-keys ([escape]      . keyboard-quit)
+           ((kbd "RET")   . newline-and-indent)
+           ((kbd "C-h")   . find-function-at-point)
+           ((kbd "C-c r") . revert-buffer))
 
 (defun linum-on  () "Turn 'linum-mode' on."  (linum-mode 1))
 (defun linum-off () "Turn 'linum-mode' off." (linum-mode -1))
 ;; =========================================================================
 ;; Fonts
-
 (let ((myfont
        (cond
          ((find-font (font-spec :name "Meslo LG S"))      "Meslo LG S 10")
@@ -169,15 +161,24 @@
          ((find-font (font-spec :name "Monaco"))          "Monaco 13")
          ((find-font (font-spec :name "Menlo"))           "Menlo 13")
          ((find-font (font-spec :name "Source Code Pro")) "Source Code Pro 13"))))
-  (print (format "Using font: %s" myfont))
   (set-face-attribute 'default nil :font myfont)
   (set-frame-font      myfont  nil t))
 ;; =========================================================================
 
 ;; =========================================================================
-(use-package color-theme
-  :ensure t
-  :config (color-theme-initialize))
+(use-package color-theme :ensure t :config (color-theme-initialize))
+;; =========================================================================
+
+;; =========================================================================
+(use-package fixme-mode :ensure t :config (fixme-mode t))
+;; =========================================================================
+
+;; =========================================================================
+(use-package eval-sexp-fu :ensure t)
+;; =========================================================================
+
+;; =========================================================================
+(use-package tramp :ensure t :config (progn (setq tramp-default-method "ssh")))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -189,30 +190,10 @@
 ;; =========================================================================
 
 ;; =========================================================================
-(use-package dired
-  :config (progn
-            ;; (put 'dired-find-alternate-file 'disabled nil)
-            (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)))
-;; =========================================================================
-
-;; =========================================================================
-(use-package tramp
-  :ensure t
-  :config (progn (setq tramp-default-method "ssh")))
-;; =========================================================================
-
-;; =========================================================================
 (use-package eshell
   :config (progn
-            (setq eshell-cmpl-cycle-completions nil
-                  eshell-save-history-on-exit   t
+            (setq eshell-save-history-on-exit   t
                   eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'")))
-;; =========================================================================
-
-;; =========================================================================
-(use-package fixme-mode
-  :ensure t
-  :config (fixme-mode t))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -232,22 +213,17 @@
 ;; =========================================================================
 
 ;; =========================================================================
-;; FIX eval-sexp-fu error: apply: Symbol's value as variable is void: hi
-(use-package eval-sexp-fu :ensure t)
-;; =========================================================================
-
-;; =========================================================================
 (use-package corral
   :ensure t
   :config (progn
             (setq corral-preserve-point t)
-            (global-set-key (kbd "M-9")  'corral-parentheses-backward)
-            (global-set-key (kbd "M-0")  'corral-parentheses-forward)
-            (global-set-key (kbd "M-[")  'corral-brackets-backward)
-            (global-set-key (kbd "M-]")  'corral-brackets-forward)
-            (global-set-key (kbd "M-{")  'corral-braces-backward)
-            (global-set-key (kbd "M-}")  'corral-braces-forward)
-            (global-set-key (kbd "M-\"") 'corral-double-quotes-backward)))
+            (bind-keys ((kbd "M-9")  . corral-parentheses-backward)
+                       ((kbd "M-0")  . corral-parentheses-forward)
+                       ((kbd "M-[")  . corral-brackets-backward)
+                       ((kbd "M-]")  . corral-brackets-forward)
+                       ((kbd "M-{")  . corral-braces-backward)
+                       ((kbd "M-}")  . corral-braces-forward)
+                       ((kbd "M-\"") . corral-double-quotes-backward))))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -268,7 +244,6 @@
   :config (progn
             (use-package cider :pin melpa :ensure t)
             (use-package clojure-mode-extra-font-locking :ensure t)
-
             ;; FIXME ==================================
             ;; (use-package clojure-snippets :ensure t)
             ;; (use-package cider-eval-sexp-fu :ensure t :config (require 'cider-eval-sexp-fu))
@@ -276,7 +251,6 @@
             ;;   :pin melpa-stable
             ;;   :ensure t)
             ;; ========================================
-
             (use-package flycheck-clojure
               :pin melpa
               :ensure t
@@ -298,10 +272,10 @@
               "cider-find-var at point without prompt"
               (interactive)
               (cider-find-var t nil))
-
-            (define-key clojure-mode-map (kbd "C-h")   #'cider-find-var-no-prompt)
-            (define-key clojure-mode-map (kbd "C-SPC") #'cider-eval-defun-at-point)
-            (define-key clojure-mode-map (kbd "C-M-x") #'cider-eval-defun-at-point)))
+            (bind-keys :map )clojure-mode-map
+                        ((kbd "C-h")   . cider-find-var-no-prompt)
+                        ((kbd "C-SPC") . cider-eval-defun-at-point)
+                        ((kbd "C-M-x") . cider-eval-defun-at-point)))
 ;; =============================================================
 
 ;; =============================================================
@@ -309,8 +283,14 @@
 ;; FIXME Prevent from random buffer switching on errors
 ;; FIXME Company mode not working well
 ;; FIXME Flycheck not working well
-;; (use-package geiser :ensure t :defer  t)
+;; FIXME Always display output in REPL
+;; (use-package geiser
+  ;; :ensure t
+  ;; :defer  t
+  ;; :init (setq geiser-mode-company-complete-module-key nil))
+;; =============================================================
 
+;; =============================================================
 (use-package racket-mode
   :defer  t
   :ensure t
@@ -355,9 +335,7 @@
           (require 'helm-misc)
           (require 'helm-locate)
           (use-package helm-swoop :ensure t)
-          (use-package helm-projectile
-            :ensure t
-            :config (progn (helm-projectile-on)))
+          (use-package helm-projectile :ensure t :config (helm-projectile-on))
 
           (setq helm-split-window-in-side-p           t
                 helm-move-to-line-cycle-in-source     t
@@ -378,12 +356,10 @@
                 helm-scroll-amount                    8
                 helm-echo-input-in-header-line        t)
 
-          ;; rebind tab to do persistent action
-          (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
-          ;; make TAB work in terminal
-          (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action)
-          (define-key helm-map (kbd "C-z") 'helm-select-action)
-          (define-key helm-map (kbd "ESC") 'helm-keyboard-quit)
+          (bind-keys :map helm-map ((kbd "<tab>") . helm-execute-persistent-action)
+                                   ((kbd "C-i")   . helm-execute-persistent-action)
+                                   ((kbd "C-z")   . helm-select-action)
+                                   ((kbd "ESC")   . helm-keyboard-quit))
 
           (when (executable-find "curl") (setq helm-google-suggest-use-curl-p t))
 
@@ -393,9 +369,9 @@
 
           (defun my-define-eshell-mode-map-keys ()
             (interactive)
-            (define-key eshell-mode-map (kbd "TAB")     #'helm-esh-pcomplete)
-            (define-key eshell-mode-map (kbd "C-c C-l") #'helm-eshell-history))
-
+            (bind-keys :map eshell-mode-map
+                       ((kbd "TAB")     . helm-esh-pcomplete)
+                       ((kbd "C-c C-l") . helm-eshell-history)))
           (add-hook 'eshell-mode-hook 'my-define-eshell-mode-map-keys)
 
           (helm-mode t)
@@ -420,12 +396,12 @@
   :config (progn
             (defun neotree-evil-keys ()
               (interactive)
-              (define-key evil-normal-state-local-map (kbd "S-h") 'neotree-hidden-file-toggle)
-              (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-enter)
-              (define-key evil-normal-state-local-map (kbd "SPC") 'neotree-enter)
-              (define-key evil-normal-state-local-map (kbd "q")   'neotree-hide)
-              (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter))
-
+              (bind-keys :map evil-normal-state-local-map
+                         ((kbd "S-h") . neotree-hidden-file-toggle)
+                         ((kbd "TAB") . neotree-enter)
+                         ((kbd "SPC") . neotree-enter)
+                         ((kbd "q")   . neotree-hide)
+                         ((kbd "RET") . neotree-enter)))
             (setq neo-theme 'ascii)
             (add-hook 'neotree-mode-hook #'neotree-evil-keys)))
 ;; =============================================================
@@ -539,27 +515,22 @@
             (define-key minibuffer-local-must-match-map [escape]  'minibuffer-keyboard-quit)
             (define-key minibuffer-local-isearch-map    [escape]  'minibuffer-keyboard-quit)
             (define-key evil-insert-state-map           [escape]  'evil-normal-state)
-            (define-key evil-normal-state-map           [next]    'evil-scroll-down)
-            (define-key evil-normal-state-map           [prior]   'evil-scroll-up)
-            (define-key evil-normal-state-map           (kbd "j") 'evil-next-visual-line)
-            (define-key evil-normal-state-map           (kbd "k") 'evil-previous-visual-line)
+            (bind-keys :map evil-normal-state-map ([next]  . evil-scroll-down)
+                                                  ([prior] . evil-scroll-up)
+                                                  ("j"     . evil-next-visual-line)
+                                                  ("k"     . evil-previous-visual-line))
 
             ;; FIXME Make 'swap windows' instead of 'rotate windows'
             ;; Rotate windows
-            (define-key evil-motion-state-map (kbd "C-w <left>")  'evil-window-rotate-downwards)
-            (define-key evil-motion-state-map (kbd "C-w <down>")  'evil-window-rotate-downwards)
-            (define-key evil-motion-state-map (kbd "C-w <up>")    'evil-window-rotate-upwards)
-            (define-key evil-motion-state-map (kbd "C-w <right>") 'evil-window-rotate-upwards)
+            (bind-keys :map evil-motion-state-map
+                       ("C-w <left>"  . evil-window-rotate-downwards)
+                       ("C-w <down>"  . evil-window-rotate-downwards)
+                       ("C-w <up>"    . evil-window-rotate-upwards)
+                       ("C-w <right>" . evil-window-rotate-upwards))
 
             (use-package evil-numbers :ensure t)
-            (use-package evil-matchit
-              :ensure t
-              :config (progn (global-evil-matchit-mode 1)))
-
-            (use-package evil-search-highlight-persist
-              :ensure t
-              :config (progn (global-evil-search-highlight-persist t)))
-
+            (use-package evil-matchit :ensure t :config (global-evil-matchit-mode 1))
+            (use-package evil-search-highlight-persist :ensure t :config (global-evil-search-highlight-persist t))
             (use-package evil-nerd-commenter
               :ensure t
               :config (progn
@@ -568,8 +539,8 @@
                           (interactive)
                           (evilnc-comment-or-uncomment-lines 1)
                           (evil-next-line))
-                        (global-set-key (kbd "C-;") 'comment-line-and-go-to-next)
-                        (global-set-key (kbd "C-/") 'comment-line-and-go-to-next)))
+                        (bind-keys ((kbd "C-;") . comment-line-and-go-to-next)
+                                   ((kbd "C-/") . comment-line-and-go-to-next))))
             (use-package evil-org :ensure t)))
 ;; =======================================================================
 
@@ -586,10 +557,10 @@
             (use-package git-gutter
               :ensure t
               :config (progn
-                        (global-set-key (kbd "C-x v =") 'git-gutter:popup-hunk)
-                        (global-set-key (kbd "C-x r")   'git-gutter:revert-hunk)
-                        (global-set-key (kbd "C-x p")   'git-gutter:previous-hunk)
-                        (global-set-key (kbd "C-x n")   'git-gutter:next-hunk)
+                        (bind-keys ("C-x v =" . git-gutter:popup-hunk)
+                                   ("C-x r"   . git-gutter:revert-hunk)
+                                   ("C-x p"   . git-gutter:previous-hunk)
+                                   ("C-x n"   . git-gutter:next-hunk))
 
                         (add-to-list 'git-gutter:update-hooks    'focus-in-hook)
                         (add-to-list 'git-gutter:update-commands 'other-window)
@@ -610,16 +581,17 @@
                   ediff-split-window-function 'split-window-horizontally
                   ediff-diff-options "-w")
 
-            ;; Don't know why these become unbind sometimes
-            (define-key magit-mode-map (kbd "s") 'magit-stage-item)
-            (define-key magit-mode-map (kbd "u") 'magit-unstage-item)
+            ;; FIX Don't know why these become unbind sometimes
+            (bind-keys :map magit-mode-map
+                       ((kbd "s") . magit-stage-item)
+                       ((kbd "u") . magit-unstage-item))
 
             ;; Vim-like movement between changes
             (defun ediff-vim-like-navigation ()
               (ediff-setup-keymap)
-              (define-key ediff-mode-map "j" 'ediff-next-difference)
-              (define-key ediff-mode-map "k" 'ediff-previous-difference))
-
+              (bind-keys :map ediff-mode-map
+                         ("j" . ediff-next-difference)
+                         ("k" . ediff-previous-difference)))
             (add-hook 'ediff-mode-hook 'ediff-vim-like-navigation)
             ;; Restore previous windows state after Ediff quits
             (add-hook 'ediff-after-quit-hook-internal 'winner-undo))
@@ -630,9 +602,8 @@
 (use-package web-mode
   :pin melpa-stable
   :ensure t
-  :config (progn
-            (add-to-list 'auto-mode-alist '("\\.html?\\'"   . web-mode))
-            (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))))
+  :config (progn (add-to-list 'auto-mode-alist '("\\.html?\\'"   . web-mode))
+                 (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))))
 ;; =======================================================================
 
 ;; =======================================================================
@@ -681,7 +652,6 @@
 ;; =======================================================================
 
 ;; =======================================================================
-;; FIXME Hangs sometimes
 (use-package shackle
   :ensure t
   :config (progn
@@ -736,13 +706,12 @@
     (other-window 1 nil)
     (when (= prefix 1) (switch-to-next-buffer)))
 
-  (bind-key "C-x 2"  #'my/hsplit-last-buffer)
-  (bind-key "C-x -"  #'my/hsplit-last-buffer)
-  (bind-key "C-x _"  #'my/hsplit-last-buffer)
-
-  (bind-key "C-x 3"  #'my/vsplit-last-buffer)
-  (bind-key "C-x \\" #'my/vsplit-last-buffer)
-  (bind-key "C-x |"  #'my/vsplit-last-buffer))
+  (bind-keys ("C-x 2"  . my/hsplit-last-buffer)
+             ("C-x -"  . my/hsplit-last-buffer)
+             ("C-x _"  . my/hsplit-last-buffer)
+             ("C-x 3"  . my/vsplit-last-buffer)
+             ("C-x \\" . my/vsplit-last-buffer)
+             ("C-x |"  . my/vsplit-last-buffer)))
 
 (defun bf-pretty-print-xml-region (begin end)
   "Pretty format XML markup in region.  You need to have `nxml-mode`.
@@ -751,12 +720,13 @@ this.  The function inserts linebreaks to separate tags that have
 nothing but whitespace between them.  It then indents the markup
 by using nxml's indentation rules.  Args: BEGIN END"
   (interactive "r")
-  (save-excursion
-    (nxml-mode)
-    (goto-char begin)
-    (while (search-forward-regexp "\>[ \\t]*\<" nil t)
-      (backward-char) (insert "\n") (setq end (1+ end)))
-    (indent-region begin end)))
+  (save-excursion (nxml-mode)
+                  (goto-char begin)
+                  (while (search-forward-regexp "\>[ \\t]*\<" nil t)
+                    (backward-char)
+                    (insert "\n")
+                    (setq end (1+ end)))
+                  (indent-region begin end)))
 
 (defun my-find-file ()
   "If currently in a project, then use Projectile to fuzzy find a file.
