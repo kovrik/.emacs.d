@@ -1,18 +1,15 @@
 ;;; init.el --- kovrik's Emacs config
-
 ;;; Commentary:
-
 ;;; Code:
 (setq debug-on-error t)
 ;; ==========================================================================
 ;; Package management
-(when (>= emacs-major-version 24)
-  (require 'package)
-  (setq package-archives '(("gnu"          . "http://elpa.gnu.org/packages/")
-                           ("org"          . "http://orgmode.org/elpa/")
-                           ("melpa"        . "http://melpa.org/packages/")
-                           ("melpa-stable" . "http://stable.melpa.org/packages/")
-                           ("marmalade"    . "http://marmalade-repo.org/packages/"))))
+(require 'package)
+(setq package-archives '(("gnu"          . "http://elpa.gnu.org/packages/")
+                         ("org"          . "http://orgmode.org/elpa/")
+                         ("melpa"        . "http://melpa.org/packages/")
+                         ("melpa-stable" . "http://stable.melpa.org/packages/")
+                         ("marmalade"    . "http://marmalade-repo.org/packages/")))
 (package-initialize)
 (add-to-list 'package-pinned-packages '(queue   . "gnu")          t)
 (add-to-list 'package-pinned-packages '(company . "gnu")          t)
@@ -22,6 +19,8 @@
 ;; Make sure to have downloaded archive description
 (or (file-exists-p (concat package-user-dir "/archives"))
     (package-refresh-contents))
+;; ==========================================================================
+
 ;; ==========================================================================
 ;; use-package
 (when (not (package-installed-p 'use-package))
@@ -34,7 +33,9 @@
 (require 'bind-key)
 (use-package auto-compile :ensure t :config (auto-compile-on-load-mode))
 (setq load-prefer-newer t)
+;; ==========================================================================
 
+;; ==========================================================================
 (defun ensure-packages-installed (packages)
   "Assure every package in PACKAGES is installed, ask for installation if it’s not.  Return a list of installed packages or nil for every skipped package."
   (dolist (p packages)
@@ -44,7 +45,6 @@
 
 (ensure-packages-installed '(queue async autopair browse-kill-ring dash epl f fold-dwim fringe-helper goto-chg highlight highlight-escape-sequences highlight-parentheses idle-highlight-mode markdown-mode pkg-info s))
 
-;; ==========================================================================
 ;; Themes
 (ensure-packages-installed '(ample-theme darcula-theme leuven-theme material-theme minimal-theme noctilux-theme soft-stone-theme solarized-theme sublime-themes twilight-bright-theme zenburn-theme))
 ;; ==========================================================================
@@ -61,8 +61,7 @@
  '(git-gutter:hide-gutter t)
  '(package-selected-packages
    (quote
-    (corral ample-theme auto-compile autopair browse-kill-ring cider clojure-mode-extra-font-locking color-theme-solarized company company-quickhelp darcula-theme dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-nerd-commenter evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim git-gutter helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode leuven-theme magit markdown-mode material-theme neotree noctilux-theme racket-mode rainbow-delimiters smart-mode-line soft-stone-theme solarized-theme sublime-themes use-package zenburn-theme)))
- '(paradox-github-token t))
+    (corral ample-theme auto-compile autopair browse-kill-ring cider clojure-mode-extra-font-locking color-theme-solarized company company-quickhelp darcula-theme dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-nerd-commenter evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim git-gutter helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode leuven-theme magit markdown-mode material-theme neotree noctilux-theme racket-mode rainbow-delimiters smart-mode-line soft-stone-theme solarized-theme sublime-themes use-package zenburn-theme))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -107,10 +106,6 @@
 
 ;; =========================================================================
 ;; Init and globals
-
-;; Backups directory
-(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
-
 (prefer-coding-system 'utf-8)
 (when (display-graphic-p)
   (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
@@ -123,25 +118,27 @@
 
 (setq-default indent-tabs-mode nil
               tab-width 2)
-(setq inhibit-startup-message t
+
+(setq backup-directory-alist '(("." . "~/.emacs.d/backups"))
+      inhibit-startup-message t
       inhibit-startup-echo-area-message t
+      initial-scratch-message nil
       scroll-margin 5
       scroll-conservatively 9999
       scroll-step 1
       sentence-end-double-space nil
-      initial-scratch-message nil
-      visible-bell nil
       ring-bell-function 'ignore
-      use-dialog-box nil)
+      use-dialog-box nil
+      visible-bell nil)
 
 (autopair-global-mode)
-(column-number-mode t)
-(global-font-lock-mode t)
-(show-paren-mode t)
-(blink-cursor-mode -1)
-(winner-mode t)
-(desktop-save-mode t)
+(column-number-mode)
+(desktop-save-mode)
+(global-font-lock-mode)
 (global-hl-line-mode)
+(show-paren-mode)
+(winner-mode)
+(blink-cursor-mode -1)
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (bind-keys ([escape]      . keyboard-quit)
@@ -153,14 +150,13 @@
 (defun linum-off () "Turn 'linum-mode' off." (linum-mode -1))
 ;; =========================================================================
 ;; Fonts
-(let ((myfont
-       (cond
-         ((find-font (font-spec :name "Meslo LG S"))      "Meslo LG S 10")
-         ((and (eq 'windows-nt system-type)
-               (find-font (font-spec :name "Consolas")))  "Consolas 11")
-         ((find-font (font-spec :name "Monaco"))          "Monaco 13")
-         ((find-font (font-spec :name "Menlo"))           "Menlo 13")
-         ((find-font (font-spec :name "Source Code Pro")) "Source Code Pro 13"))))
+(let ((myfont (cond
+               ((find-font (font-spec :name "Meslo LG S"))      "Meslo LG S 10")
+               ((and (eq 'windows-nt system-type)
+                     (find-font (font-spec :name "Consolas")))  "Consolas 11")
+               ((find-font (font-spec :name "Monaco"))          "Monaco 13")
+               ((find-font (font-spec :name "Menlo"))           "Menlo 13")
+               ((find-font (font-spec :name "Source Code Pro")) "Source Code Pro 13"))))
   (set-face-attribute 'default nil :font myfont)
   (set-frame-font      myfont  nil t))
 ;; =========================================================================
@@ -184,15 +180,14 @@
 ;; =========================================================================
 (use-package smart-mode-line
   :ensure t
-  :config (progn
-            (setq sml/theme 'light)
-            (sml/setup)))
+  :config (progn (setq sml/theme 'light)
+                 (sml/setup)))
 ;; =========================================================================
 
 ;; =========================================================================
 (use-package eshell
   :config (progn
-            (setq eshell-save-history-on-exit   t
+            (setq eshell-save-history-on-exit t
                   eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'")))
 ;; =========================================================================
 
@@ -217,13 +212,13 @@
   :ensure t
   :config (progn
             (setq corral-preserve-point t)
-            (bind-keys ((kbd "M-9")  . corral-parentheses-backward)
+            (bind-keys ((kbd "M-\"") . corral-double-quotes-backward)
+                       ((kbd "M-9")  . corral-parentheses-backward)
                        ((kbd "M-0")  . corral-parentheses-forward)
                        ((kbd "M-[")  . corral-brackets-backward)
                        ((kbd "M-]")  . corral-brackets-forward)
                        ((kbd "M-{")  . corral-braces-backward)
-                       ((kbd "M-}")  . corral-braces-forward)
-                       ((kbd "M-\"") . corral-double-quotes-backward))))
+                       ((kbd "M-}")  . corral-braces-forward))))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -272,10 +267,8 @@
               "cider-find-var at point without prompt"
               (interactive)
               (cider-find-var t nil))
-            (bind-keys :map )clojure-mode-map
-                        ((kbd "C-h")   . cider-find-var-no-prompt)
-                        ((kbd "C-SPC") . cider-eval-defun-at-point)
-                        ((kbd "C-M-x") . cider-eval-defun-at-point)))
+            (bind-keys :map clojure-mode-map ((kbd "C-h")   . cider-find-var-no-prompt)
+                                             ((kbd "C-M-x") . cider-eval-defun-at-point))))
 ;; =============================================================
 
 ;; =============================================================
@@ -294,7 +287,7 @@
 (use-package racket-mode
   :defer  t
   :ensure t
-  :config (progn (add-hook 'racket-mode-hook #'company-quickhelp--disable)))
+  :config (add-hook 'racket-mode-hook #'company-quickhelp--disable))
 ;; =============================================================
 
 ;; =============================================================
@@ -315,14 +308,10 @@
             (setq projectile-keymap-prefix (kbd "C-c p")
                   projectile-completion-system 'helm
                   projectile-enable-caching t)
-
             (when (eq system-type 'windows-nt)
               (setq projectile-indexing-method 'alien
                     ;; disable caching if indexing-method is 'alien
                     projectile-enable-caching nil))
-
-            ;; FIXME Why it executes Find Files after projectile-vc?
-            (define-key projectile-mode-map (kbd "C-S-p") 'helm-projectile-switch-project)
             (projectile-global-mode)))
 ;; =============================================================
 
@@ -369,11 +358,9 @@
 
           (defun my-define-eshell-mode-map-keys ()
             (interactive)
-            (bind-keys :map eshell-mode-map
-                       ((kbd "TAB")     . helm-esh-pcomplete)
-                       ((kbd "C-c C-l") . helm-eshell-history)))
+            (bind-keys :map eshell-mode-map ((kbd "TAB")     . helm-esh-pcomplete)
+                                            ((kbd "C-c C-l") . helm-eshell-history)))
           (add-hook 'eshell-mode-hook 'my-define-eshell-mode-map-keys)
-
           (helm-mode t)
           (helm-adaptive-mode t))
   :bind (("C-c h"   . helm-command-prefix)
@@ -413,18 +400,15 @@
   :config (progn
             (use-package company-quickhelp
               :ensure t
-              :config (progn
-                        (setq company-quickhelp-delay 0.5)
-                        (company-quickhelp-mode 1))
-              (require 'company-etags)
-              (add-to-list 'company-etags-modes 'clojure-mode))
-
+              :config (progn (setq company-quickhelp-delay 0.5)
+                             (company-quickhelp-mode       1)))
+            (require 'company-etags)
+            (add-to-list 'company-etags-modes 'clojure-mode)
             (setq company-show-numbers t
                   company-minimum-prefix-length 2
                   company-require-match 'never
                   company-dabbrev-downcase nil
                   company-dabbrev-ignore-case t)
-
             (define-key company-active-map (kbd "ESC") 'company-abort)
             (add-hook 'after-init-hook 'global-company-mode)))
 ;; =============================================================
@@ -434,9 +418,6 @@
   :ensure t
   :defer  t
   :config (progn
-            (let ((agenda-files (cl-remove-if-not 'file-exists-p '("~/org/todo.org"))))
-              (setq org-agenda-files agenda-files))
-
             (use-package org-bullets
               :ensure t
               :config (progn
@@ -444,8 +425,7 @@
                         (add-hook 'org-mode-hook #'org-bullets-on)))
 
             (add-hook 'org-mode-hook #'linum-off)
-
-            ;; FIXME indentation
+            ;; FIXME indentation in SRC blocks
             ;; Let's have pretty source code blocks
             (setq org-edit-src-content-indentation 2
                   org-src-tab-acts-natively t
@@ -457,7 +437,8 @@
                   org-enforce-todo-dependencies t
                   org-enforce-todo-checkbox-dependencies t
                   org-catch-invisible-edits 'error
-                  org-babel-clojure-backend 'cider)
+                  org-babel-clojure-backend 'cider
+                  org-agenda-files (cl-remove-if-not 'file-exists-p '("~/org/todo.org")))
 
             (org-babel-do-load-languages 'org-babel-load-languages '((emacs-lisp . t)
                                                                      (java       . t)
@@ -507,7 +488,6 @@
                 (abort-recursive-edit)))
 
             (global-set-key                             [escape]  'evil-exit-emacs-state)
-            (define-key evil-normal-state-map           [escape]  'keyboard-quit)
             (define-key evil-visual-state-map           [escape]  'keyboard-quit)
             (define-key minibuffer-local-map            [escape]  'minibuffer-keyboard-quit)
             (define-key minibuffer-local-ns-map         [escape]  'minibuffer-keyboard-quit)
@@ -515,10 +495,11 @@
             (define-key minibuffer-local-must-match-map [escape]  'minibuffer-keyboard-quit)
             (define-key minibuffer-local-isearch-map    [escape]  'minibuffer-keyboard-quit)
             (define-key evil-insert-state-map           [escape]  'evil-normal-state)
-            (bind-keys :map evil-normal-state-map ([next]  . evil-scroll-down)
-                                                  ([prior] . evil-scroll-up)
-                                                  ("j"     . evil-next-visual-line)
-                                                  ("k"     . evil-previous-visual-line))
+            (bind-keys :map evil-normal-state-map ([next]   . evil-scroll-down)
+                                                  ([prior]  . evil-scroll-up)
+                                                  ([escape] . keyboard-quit)
+                                                  ("j"      . evil-next-visual-line)
+                                                  ("k"      . evil-previous-visual-line))
 
             ;; FIXME Make 'swap windows' instead of 'rotate windows'
             ;; Rotate windows
@@ -554,8 +535,7 @@
   :config (progn
             (use-package git-commit-mode :ensure t)
             (use-package git-rebase-mode :ensure t)
-            (use-package git-gutter
-              :ensure t
+            (use-package git-gutter      :ensure t
               :config (progn
                         (bind-keys ("C-x v =" . git-gutter:popup-hunk)
                                    ("C-x r"   . git-gutter:revert-hunk)
@@ -564,7 +544,6 @@
 
                         (add-to-list 'git-gutter:update-hooks    'focus-in-hook)
                         (add-to-list 'git-gutter:update-commands 'other-window)
-
                         (custom-set-variables '(git-gutter:hide-gutter t))
                         (git-gutter:linum-setup)
                         (global-git-gutter-mode 1)))
@@ -582,16 +561,14 @@
                   ediff-diff-options "-w")
 
             ;; FIX Don't know why these become unbind sometimes
-            (bind-keys :map magit-mode-map
-                       ((kbd "s") . magit-stage-item)
-                       ((kbd "u") . magit-unstage-item))
+            (bind-keys :map magit-mode-map ((kbd "s") . magit-stage-item)
+                                           ((kbd "u") . magit-unstage-item))
 
             ;; Vim-like movement between changes
             (defun ediff-vim-like-navigation ()
               (ediff-setup-keymap)
-              (bind-keys :map ediff-mode-map
-                         ("j" . ediff-next-difference)
-                         ("k" . ediff-previous-difference)))
+              (bind-keys :map ediff-mode-map ("j" . ediff-next-difference)
+                                             ("k" . ediff-previous-difference)))
             (add-hook 'ediff-mode-hook 'ediff-vim-like-navigation)
             ;; Restore previous windows state after Ediff quits
             (add-hook 'ediff-after-quit-hook-internal 'winner-undo))
@@ -624,7 +601,6 @@
             (global-undo-tree-mode)
             (setq undo-tree-visualizer-timestamps t
                   undo-tree-visualizer-diff       t)
-            ;; disable some defaults
             (define-key undo-tree-map (kbd "C-/") nil)))
 ;; =======================================================================
 
@@ -706,12 +682,9 @@
     (other-window 1 nil)
     (when (= prefix 1) (switch-to-next-buffer)))
 
-  (bind-keys ("C-x 2"  . my/hsplit-last-buffer)
-             ("C-x -"  . my/hsplit-last-buffer)
-             ("C-x _"  . my/hsplit-last-buffer)
-             ("C-x 3"  . my/vsplit-last-buffer)
-             ("C-x \\" . my/vsplit-last-buffer)
-             ("C-x |"  . my/vsplit-last-buffer)))
+  (bind-keys ("C-x 2"  . my/hsplit-last-buffer) ("C-x 3"  . my/vsplit-last-buffer)
+             ("C-x -"  . my/hsplit-last-buffer) ("C-x \\" . my/vsplit-last-buffer)
+             ("C-x _"  . my/hsplit-last-buffer) ("C-x |"  . my/vsplit-last-buffer)))
 
 (defun bf-pretty-print-xml-region (begin end)
   "Pretty format XML markup in region.  You need to have `nxml-mode`.
@@ -737,8 +710,6 @@ Use Helm otherwise."
     (helm-find-files-1 "./")))
 (global-set-key (kbd "C-S-n") 'my-find-file)
 
-;; =======================================================================
-;; Colors stuff
 (defun calc-relative-luminance (hex)
   "Calculate relative luminance by colour's HEX value."
   (let ((rgb           (color-name-to-rgb hex))
