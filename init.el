@@ -730,6 +730,12 @@ Use Helm otherwise."
                                                                                "#000000"
                                                                              "#ffffff")))))))
   (font-lock-fontify-buffer))
+
+(defun kill-all-dired-buffers ()
+  "Kill all dired buffers."
+  (interactive)
+  (mapc (lambda (b) (when (eq 'dired-mode (buffer-local-value 'major-mode b))
+                      (kill-buffer b))) (buffer-list)))
 ;; =======================================================================
 (setq debug-on-error nil)
 (provide 'init)
