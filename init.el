@@ -10,7 +10,7 @@
                          ("melpa"        . "http://melpa.org/packages/")
                          ("melpa-stable" . "http://stable.melpa.org/packages/")
                          ("marmalade"    . "http://marmalade-repo.org/packages/")))
-(package-initialize)
+G(package-initialize)
 (add-to-list 'package-pinned-packages '(queue   . "gnu")          t)
 (add-to-list 'package-pinned-packages '(company . "gnu")          t)
 (add-to-list 'package-pinned-packages '(cider   . "melpa-stable") t)
@@ -46,7 +46,7 @@
 (ensure-packages-installed '(queue async autopair browse-kill-ring dash epl f fold-dwim fringe-helper goto-chg highlight highlight-escape-sequences highlight-parentheses idle-highlight-mode markdown-mode pkg-info s))
 
 ;; Themes
-(ensure-packages-installed '(ample-theme darcula-theme leuven-theme material-theme minimal-theme noctilux-theme soft-stone-theme solarized-theme sublime-themes twilight-bright-theme zenburn-theme))
+(ensure-packages-installed '(ample-theme flatland-theme darcula-theme leuven-theme material-theme minimal-theme noctilux-theme soft-stone-theme solarized-theme sublime-themes twilight-bright-theme zenburn-theme))
 ;; ==========================================================================
 
 ;; ==========================================================================
@@ -57,7 +57,7 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
+    ("26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" "a2e7b508533d46b701ad3b055e7c708323fb110b6676a8be458a758dd8f24e27" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
  '(git-gutter:hide-gutter t)
  '(package-selected-packages
    (quote
@@ -110,6 +110,7 @@
 (when (display-graphic-p)
   (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
 
+(set-window-fringes nil 8 0)
 (when window-system
   (tooltip-mode    -1)
   (tool-bar-mode   -1)
@@ -176,6 +177,10 @@
 ;; =========================================================================
 (use-package tramp :ensure t :config (progn (setq tramp-default-method "ssh")))
 ;; =========================================================================
+
+;; =======================================================================
+(use-package command-log-mode :ensure t)
+;; =======================================================================
 
 ;; =========================================================================
 (use-package smart-mode-line
@@ -663,6 +668,17 @@
                   erc-prompt-for-password nil
                   erc-header-line-face-method nil
                   erc-server-coding-system '(utf-8 . utf-8))))
+;; =======================================================================
+
+;; =======================================================================
+;; (use-package swiper
+;;   :ensure t
+;;   :config (progn
+;;             (ivy-mode 1)
+;;             (setq ivy-use-virtual-buffers t)
+;;             (global-set-key "\C-s" 'swiper)
+;;             (global-set-key (kbd "C-c C-r") 'ivy-resume)
+;;             (global-set-key [f6] 'ivy-resume)))
 ;; =======================================================================
 
 ;; =======================================================================
