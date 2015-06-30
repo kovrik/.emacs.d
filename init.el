@@ -774,5 +774,5 @@ Use Helm otherwise."
                       (kill-buffer b))) (buffer-list)))
 ;; =======================================================================
 (setq debug-on-error nil)
-(provide 'init
+(provide 'init)
 ;;; init.el ends here
