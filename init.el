@@ -8,9 +8,8 @@
 (setq package-archives '(("gnu"          . "http://elpa.gnu.org/packages/")
                          ("org"          . "http://orgmode.org/elpa/")
                          ("melpa"        . "http://melpa.org/packages/")
-                         ("melpa-stable" . "http://stable.melpa.org/packages/")
-                         ("marmalade"    . "http://marmalade-repo.org/packages/")))
-G(package-initialize)
+                         ("melpa-stable" . "http://stable.melpa.org/packages/")))
+(package-initialize)
 (add-to-list 'package-pinned-packages '(queue   . "gnu")          t)
 (add-to-list 'package-pinned-packages '(company . "gnu")          t)
 (add-to-list 'package-pinned-packages '(cider   . "melpa-stable") t)
@@ -110,7 +109,6 @@ G(package-initialize)
 (when (display-graphic-p)
   (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
 
-(set-window-fringes nil 8 0)
 (when window-system
   (tooltip-mode    -1)
   (tool-bar-mode   -1)
@@ -310,9 +308,28 @@ G(package-initialize)
   :defer  t
   :ensure t
   :config (progn
+            (defun my-projectile-switch-to-project ()
+              "My switch-to-project action for projectile.
+If project is a git-project, then run magit-status.
+Otherwise run projectile-find-file."
+              (let ((p (projectile-project-root))
+                    (git-projects (mapcar 'expand-file-name
+                                          (cl-remove-if-not
+                                           (lambda (p)
+                                             (unless (file-remote-p p)
+                                               (file-directory-p (concat p "/.git/"))))
+                                           projectile-known-projects))))
+                (if (member p git-projects)
+                    (magit-status p)
+                  (projectile-find-file))))
+
             (setq projectile-keymap-prefix (kbd "C-c p")
                   projectile-completion-system 'helm
-                  projectile-enable-caching t)
+                  projectile-enable-caching t
+                  projectile-switch-project-action 'my-projectile-switch-to-project)
+
+            (bind-key (kbd "C-S-p") 'projectile-switch-project)
+
             (when (eq system-type 'windows-nt)
               (setq projectile-indexing-method 'alien
                     ;; disable caching if indexing-method is 'alien
@@ -457,6 +474,7 @@ G(package-initialize)
 ;; =======================================================================
 
 ;; =======================================================================
+;; FIXME Motion keys (f, t, etc.) and "+ cancel visual-block mode
 (use-package evil
   :ensure t
   :init (progn
@@ -683,6 +701,8 @@ G(package-initialize)
 
 ;; =======================================================================
 ;; Misc
+(set-window-fringes nil 8 0)
+
 (progn
   (defun my/hsplit-last-buffer (prefix)
     "Split the window horizontally and display the previous buffer.  Args: PREFIX."
@@ -754,5 +774,5 @@ Use Helm otherwise."
                       (kill-buffer b))) (buffer-list)))
 ;; =======================================================================
 (setq debug-on-error nil)
-(provide 'init)
+(provide 'init
 ;;; init.el ends here
