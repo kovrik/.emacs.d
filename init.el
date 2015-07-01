@@ -701,8 +701,6 @@ Otherwise run projectile-find-file."
 
 ;; =======================================================================
 ;; Misc
-(set-window-fringes nil 8 0)
-
 (progn
   (defun my/hsplit-last-buffer (prefix)
     "Split the window horizontally and display the previous buffer.  Args: PREFIX."
