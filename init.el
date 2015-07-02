@@ -99,7 +99,7 @@
 ;; =========================================================================
 ;; PATH
 (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin" ":/usr/local/Cellar" (getenv "USERPROFILE")))
-(setq exec-path (append exec-path '("/usr/local/bin")))
+(add-to-list 'exec-path "/usr/local/bin")
 ;; =========================================================================
 
 ;; =========================================================================
@@ -175,9 +175,9 @@
 (use-package tramp :config (progn (setq tramp-default-method "ssh")))
 ;; =========================================================================
 
-;; =======================================================================
+;; =========================================================================
 (use-package command-log-mode)
-;; =======================================================================
+;; =========================================================================
 
 ;; =========================================================================
 (use-package smart-mode-line
@@ -546,7 +546,7 @@ Otherwise run projectile-find-file."
                         (global-git-gutter-mode 1)))
 
             (when (eq system-type 'windows-nt)
-              (setq exec-path (add-to-list 'exec-path "C:/Program Files (x86)/Git/bin"))
+              (add-to-list 'exec-path "C:/Program Files (x86)/Git/bin")
               (setenv "PATH" (concat "C:/Program Files (x86)/Git/bin;" (getenv "PATH"))))
 
             (setq magit-diff-options '("-w")
@@ -559,14 +559,14 @@ Otherwise run projectile-find-file."
 
             ;; FIX Don't know why these become unbind sometimes
             (bind-keys :map magit-mode-map ((kbd "s")   . magit-stage-item)
-                                           ((kbd "u")   . magit-unstage-item)
-                                           ((kbd "TAB") . magit-section-cycle))
+                       ((kbd "u")   . magit-unstage-item)
+                       ((kbd "TAB") . magit-section-cycle))
 
             ;; Vim-like movement between changes
             (defun ediff-vim-like-navigation ()
               (ediff-setup-keymap)
               (bind-keys :map ediff-mode-map ("j" . ediff-next-difference)
-                                             ("k" . ediff-previous-difference)))
+                         ("k" . ediff-previous-difference)))
             (add-hook 'ediff-mode-hook 'ediff-vim-like-navigation)
             ;; Restore previous windows state after Ediff quits
             (add-hook 'ediff-after-quit-hook-internal 'winner-undo))
