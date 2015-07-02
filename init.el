@@ -27,11 +27,12 @@
   (package-install 'use-package))
 
 (require 'use-package)
-(setq use-package-verbose t)
 (require 'diminish)
 (require 'bind-key)
-(use-package auto-compile :ensure t :config (auto-compile-on-load-mode))
-(setq load-prefer-newer t)
+(setq use-package-verbose t
+      load-prefer-newer t
+      use-package-always-ensure t)
+(use-package auto-compile :config (auto-compile-on-load-mode))
 ;; ==========================================================================
 
 ;; ==========================================================================
@@ -88,8 +89,6 @@
  '(helm-source-header ((t (:background "#607d8b" :foreground "#ffffff" :height 120))))
  '(hl-line ((t (:background "#ccddee"))))
  '(link ((t (:foreground "#bb00f8"))))
- '(magit-item-highlight ((t (:background "#ffffbb"))))
- '(magit-section-title ((t (:height 1.1 :family nil :background "#ccddee"))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "#000000"))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "#ff0000"))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "#0000b8"))))
@@ -161,28 +160,27 @@
 ;; =========================================================================
 
 ;; =========================================================================
-(use-package color-theme :ensure t :config (color-theme-initialize))
+(use-package color-theme :config (color-theme-initialize))
 ;; =========================================================================
 
 ;; =========================================================================
-(use-package fixme-mode :ensure t :config (fixme-mode t))
+(use-package fixme-mode :config (fixme-mode t))
 ;; =========================================================================
 
 ;; =========================================================================
-(use-package eval-sexp-fu :ensure t)
+(use-package eval-sexp-fu)
 ;; =========================================================================
 
 ;; =========================================================================
-(use-package tramp :ensure t :config (progn (setq tramp-default-method "ssh")))
+(use-package tramp :config (progn (setq tramp-default-method "ssh")))
 ;; =========================================================================
 
 ;; =======================================================================
-(use-package command-log-mode :ensure t)
+(use-package command-log-mode)
 ;; =======================================================================
 
 ;; =========================================================================
 (use-package smart-mode-line
-  :ensure t
   :config (progn (setq sml/theme 'light)
                  (sml/setup)))
 ;; =========================================================================
@@ -196,7 +194,6 @@
 
 ;; =========================================================================
 (use-package linum
-  :ensure t
   :config (progn
             (setq linum-format (if (display-graphic-p) " %3d" "%4d "))
             (add-hook 'prog-mode-hook #'linum-on)
@@ -205,14 +202,12 @@
 
 ;; =========================================================================
 (use-package expand-region
-  :ensure t
   :bind (("C-=" . er/expand-region)
          ("C--" . er/contract-region)))
 ;; =========================================================================
 
 ;; =========================================================================
 (use-package corral
-  :ensure t
   :config (progn
             (setq corral-preserve-point t)
             (bind-keys ((kbd "M-\"") . corral-double-quotes-backward)
@@ -226,7 +221,6 @@
 
 ;; =========================================================================
 (use-package rainbow-delimiters
-  :ensure t
   :config (progn
             (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
             (add-hook 'clojure-mode-hook    #'rainbow-delimiters-mode)
@@ -238,21 +232,15 @@
 ;; =========================================================================
 (use-package clojure-mode
   :defer  t
-  :ensure t
   :config (progn
-            (use-package cider :pin melpa :ensure t)
-            (use-package clojure-mode-extra-font-locking :ensure t)
+            (use-package cider :pin melpa)
+            (use-package clojure-mode-extra-font-locking)
             ;; FIXME ==================================
-            ;; (use-package clojure-snippets :ensure t)
-            ;; (use-package cider-eval-sexp-fu :ensure t :config (require 'cider-eval-sexp-fu))
-            ;; (use-package kibit-mode
-            ;;   :pin melpa-stable
-            ;;   :ensure t)
+            ;; (use-package clojure-snippets)
+            ;; (use-package cider-eval-sexp-fu :config (require 'cider-eval-sexp-fu))
+            ;; (use-package kibit-mode :pin melpa-stable)
             ;; ========================================
-            (use-package flycheck-clojure
-              :pin melpa
-              :ensure t
-              :config (flycheck-clojure-setup))
+            (use-package flycheck-clojure :pin melpa :config (flycheck-clojure-setup))
 
             (add-hook 'clojure-mode-hook    'flycheck-mode)
             (add-hook 'clojure-mode-hook    'turn-on-eldoc-mode)
@@ -281,15 +269,14 @@
 ;; FIXME Flycheck not working well
 ;; FIXME Always display output in REPL
 ;; (use-package geiser
-  ;; :ensure t
+  ;;
   ;; :defer  t
   ;; :init (setq geiser-mode-company-complete-module-key nil))
 ;; =============================================================
 
 ;; =============================================================
 (use-package racket-mode
-  :defer  t
-  :ensure t
+  :defer t
   :config (add-hook 'racket-mode-hook #'company-quickhelp--disable))
 ;; =============================================================
 
@@ -304,49 +291,14 @@
 ;; =============================================================
 
 ;; =============================================================
-(use-package projectile
-  :defer  t
-  :ensure t
-  :config (progn
-            (defun my-projectile-switch-to-project ()
-              "My switch-to-project action for projectile.
-If project is a git-project, then run magit-status.
-Otherwise run projectile-find-file."
-              (let ((p (projectile-project-root))
-                    (git-projects (mapcar 'expand-file-name
-                                          (cl-remove-if-not
-                                           (lambda (p)
-                                             (unless (file-remote-p p)
-                                               (file-directory-p (concat p "/.git/"))))
-                                           projectile-known-projects))))
-                (if (member p git-projects)
-                    (magit-status p)
-                  (projectile-find-file))))
-
-            (setq projectile-keymap-prefix (kbd "C-c p")
-                  projectile-completion-system 'helm
-                  projectile-enable-caching t
-                  projectile-switch-project-action 'my-projectile-switch-to-project)
-
-            (bind-key (kbd "C-S-p") 'projectile-switch-project)
-
-            (when (eq system-type 'windows-nt)
-              (setq projectile-indexing-method 'alien
-                    ;; disable caching if indexing-method is 'alien
-                    projectile-enable-caching nil))
-            (projectile-global-mode)))
-;; =============================================================
-
-;; =============================================================
 (use-package helm
-  :ensure t
   :diminish helm-mode
   :init (progn
           (require 'helm-config)
           (require 'helm-misc)
           (require 'helm-locate)
-          (use-package helm-swoop :ensure t)
-          (use-package helm-projectile :ensure t :config (helm-projectile-on))
+          (use-package helm-swoop)
+          (use-package helm-projectile :config (helm-projectile-on))
 
           (setq helm-split-window-in-side-p           t
                 helm-move-to-line-cycle-in-source     t
@@ -399,9 +351,41 @@ Otherwise run projectile-find-file."
 ;; =============================================================
 
 ;; =============================================================
+(use-package projectile
+  :defer t
+  :config (progn
+            (defun my-projectile-switch-to-project ()
+              "My switch-to-project action for projectile.
+If project is a git-project, then run magit-status.
+Otherwise run projectile-find-file."
+              (let ((p (projectile-project-root))
+                    (git-projects (mapcar 'expand-file-name
+                                          (cl-remove-if-not
+                                           (lambda (p)
+                                             (unless (file-remote-p p)
+                                               (file-directory-p (concat p "/.git/"))))
+                                           projectile-known-projects))))
+                (if (member p git-projects)
+                    (magit-status p)
+                  (projectile-find-file))))
+
+            (setq projectile-keymap-prefix (kbd "C-c p")
+                  projectile-completion-system 'helm
+                  projectile-enable-caching t
+                  projectile-switch-project-action 'my-projectile-switch-to-project)
+
+            (global-set-key (kbd "C-S-p") 'projectile-switch-project)
+
+            (when (eq system-type 'windows-nt)
+              (setq projectile-indexing-method 'alien
+                    ;; disable caching if indexing-method is 'alien
+                    projectile-enable-caching nil))
+            (projectile-global-mode))
+  :bind (("C-S-p" . projectile-switch-project)))
+;; =============================================================
+
+;; =============================================================
 (use-package neotree
-  :ensure t
-  :bind ("<f2>" . neotree-toggle)
   :config (progn
             (defun neotree-evil-keys ()
               (interactive)
@@ -412,16 +396,15 @@ Otherwise run projectile-find-file."
                          ((kbd "q")   . neotree-hide)
                          ((kbd "RET") . neotree-enter)))
             (setq neo-theme 'ascii)
-            (add-hook 'neotree-mode-hook #'neotree-evil-keys)))
+            (add-hook 'neotree-mode-hook #'neotree-evil-keys))
+  :bind ("<f2>" . neotree-toggle))
 ;; =============================================================
 
 ;; =============================================================
 (use-package company
   :pin gnu
-  :ensure t
   :config (progn
             (use-package company-quickhelp
-              :ensure t
               :config (progn (setq company-quickhelp-delay 0.5)
                              (company-quickhelp-mode       1)))
             (require 'company-etags)
@@ -437,11 +420,9 @@ Otherwise run projectile-find-file."
 
 ;; =============================================================
 (use-package org
-  :ensure t
-  :defer  t
+  :defer t
   :config (progn
             (use-package org-bullets
-              :ensure t
               :config (progn
                         (defun org-bullets-on () (org-bullets-mode 1))
                         (add-hook 'org-mode-hook #'org-bullets-on)))
@@ -476,11 +457,9 @@ Otherwise run projectile-find-file."
 ;; =======================================================================
 ;; FIXME Motion keys (f, t, etc.) and "+ cancel visual-block mode
 (use-package evil
-  :ensure t
   :init (progn
           (setq evil-default-cursor t)
           (use-package evil-leader
-            :ensure t
             :init (global-evil-leader-mode)
             :config (progn
                       (setq evil-leader/in-all-states t)
@@ -532,11 +511,10 @@ Otherwise run projectile-find-file."
                        ("C-w <up>"    . evil-window-rotate-upwards)
                        ("C-w <right>" . evil-window-rotate-upwards))
 
-            (use-package evil-numbers :ensure t)
-            (use-package evil-matchit :ensure t :config (global-evil-matchit-mode 1))
-            (use-package evil-search-highlight-persist :ensure t :config (global-evil-search-highlight-persist t))
+            (use-package evil-numbers)
+            (use-package evil-matchit :config (global-evil-matchit-mode 1))
+            (use-package evil-search-highlight-persist :config (global-evil-search-highlight-persist t))
             (use-package evil-nerd-commenter
-              :ensure t
               :config (progn
                         (evilnc-default-hotkeys)
                         (defun comment-line-and-go-to-next ()
@@ -545,20 +523,16 @@ Otherwise run projectile-find-file."
                           (evil-next-line))
                         (bind-keys ((kbd "C-;") . comment-line-and-go-to-next)
                                    ((kbd "C-/") . comment-line-and-go-to-next))))
-            (use-package evil-org :ensure t)))
+            (use-package evil-org)))
 ;; =======================================================================
 
 ;; =======================================================================
 (use-package magit
-  :ensure t
-  :defer  t
+  :defer t
   :pin melpa-stable
-  :diminish magit-auto-revert-mode
   :init   (setq magit-last-seen-setup-instructions "1.4.0")
   :config (progn
-            (use-package git-commit-mode :ensure t)
-            (use-package git-rebase-mode :ensure t)
-            (use-package git-gutter      :ensure t
+            (use-package git-gutter
               :config (progn
                         (bind-keys ("C-x v =" . git-gutter:popup-hunk)
                                    ("C-x r"   . git-gutter:revert-hunk)
@@ -584,8 +558,9 @@ Otherwise run projectile-find-file."
                   ediff-diff-options "-w")
 
             ;; FIX Don't know why these become unbind sometimes
-            (bind-keys :map magit-mode-map ((kbd "s") . magit-stage-item)
-                                           ((kbd "u") . magit-unstage-item))
+            (bind-keys :map magit-mode-map ((kbd "s")   . magit-stage-item)
+                                           ((kbd "u")   . magit-unstage-item)
+                                           ((kbd "TAB") . magit-section-cycle))
 
             ;; Vim-like movement between changes
             (defun ediff-vim-like-navigation ()
@@ -601,24 +576,20 @@ Otherwise run projectile-find-file."
 ;; =======================================================================
 (use-package web-mode
   :pin melpa-stable
-  :ensure t
   :config (progn (add-to-list 'auto-mode-alist '("\\.html?\\'"   . web-mode))
                  (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))))
 ;; =======================================================================
 
 ;; =======================================================================
 (use-package flycheck
-  :ensure t
   :config (progn
             (use-package flycheck-pos-tip
-              :ensure t
               :config (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
             (add-hook 'after-init-hook #'global-flycheck-mode)))
 ;; =======================================================================
 
 ;; =======================================================================
 (use-package undo-tree
-  :ensure t
   :diminish undo-tree-mode
   :config (progn
             (global-undo-tree-mode)
@@ -629,7 +600,6 @@ Otherwise run projectile-find-file."
 
 ;; =======================================================================
 (use-package sauron
-  :ensure t
   :config (progn
             (setq sauron-modules '(sauron-erc sauron-org sauron-notifications)
                   sauron-separate-frame nil
@@ -642,7 +612,6 @@ Otherwise run projectile-find-file."
 ;; =======================================================================
 (use-package eyebrowse
   :pin melpa-stable
-  :ensure t
   :config (progn
             (eyebrowse-mode t)
             (eyebrowse-setup-evil-keys)
@@ -652,7 +621,6 @@ Otherwise run projectile-find-file."
 
 ;; =======================================================================
 (use-package shackle
-  :ensure t
   :config (progn
             (setq shackle-lighter " |#|"
                   shackle-rules '(("\\`\\*magit.*?\\*\\'" :regexp t :same t)
@@ -664,11 +632,9 @@ Otherwise run projectile-find-file."
 
 ;; =======================================================================
 (use-package erc
-  :ensure t
-  :defer  t
+  :defer t
   :config (progn
             (use-package erc-hl-nicks
-              :ensure t
               :config (add-hook 'erc-mode-hook #'erc-hl-nicks-mode))
 
             (erc-autojoin-mode t)
@@ -686,17 +652,6 @@ Otherwise run projectile-find-file."
                   erc-prompt-for-password nil
                   erc-header-line-face-method nil
                   erc-server-coding-system '(utf-8 . utf-8))))
-;; =======================================================================
-
-;; =======================================================================
-;; (use-package swiper
-;;   :ensure t
-;;   :config (progn
-;;             (ivy-mode 1)
-;;             (setq ivy-use-virtual-buffers t)
-;;             (global-set-key "\C-s" 'swiper)
-;;             (global-set-key (kbd "C-c C-r") 'ivy-resume)
-;;             (global-set-key [f6] 'ivy-resume)))
 ;; =======================================================================
 
 ;; =======================================================================
@@ -741,7 +696,8 @@ Use Helm otherwise."
   (interactive)
   (if (projectile-project-p)
       (helm-projectile-find-file)
-    (helm-find-files-1 "./")))
+    (helm-find-files-1 (expand-file-name "./"))))
+
 (global-set-key (kbd "C-S-n") 'my-find-file)
 
 (defun calc-relative-luminance (hex)
