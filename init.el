@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (setq debug-on-error t)
-;; ==========================================================================
+;; =========================================================================
 ;; Package management
 (require 'package)
 (setq package-archives '(("gnu"          . "http://elpa.gnu.org/packages/")
@@ -18,9 +18,9 @@
 ;; Make sure to have downloaded archive description
 (or (file-exists-p (concat package-user-dir "/archives"))
     (package-refresh-contents))
-;; ==========================================================================
+;; =========================================================================
 
-;; ==========================================================================
+;; =========================================================================
 ;; use-package
 (when (not (package-installed-p 'use-package))
   (package-refresh-contents)
@@ -33,9 +33,9 @@
       load-prefer-newer t
       use-package-always-ensure t)
 (use-package auto-compile :config (auto-compile-on-load-mode))
-;; ==========================================================================
+;; =========================================================================
 
-;; ==========================================================================
+;; =========================================================================
 (defun ensure-packages-installed (packages)
   "Assure every package in PACKAGES is installed, ask for installation if it’s not.  Return a list of installed packages or nil for every skipped package."
   (dolist (p packages)
@@ -47,9 +47,9 @@
 
 ;; Themes
 (ensure-packages-installed '(ample-theme flatland-theme darcula-theme leuven-theme material-theme minimal-theme noctilux-theme soft-stone-theme solarized-theme sublime-themes twilight-bright-theme zenburn-theme))
-;; ==========================================================================
+;; =========================================================================
 
-;; ==========================================================================
+;; =========================================================================
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -98,8 +98,11 @@
  '(vertical-border ((t (:background "#ffffff")))))
 ;; =========================================================================
 ;; PATH
-(setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin" ":/usr/local/Cellar" (getenv "USERPROFILE")))
-(add-to-list 'exec-path "/usr/local/bin")
+(use-package exec-path-from-shell
+  :config (when (memq window-system '(mac ns))
+             (exec-path-from-shell-initialize)))
+;; (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin" ":/usr/local/Cellar" (getenv "USERPROFILE")))
+;; (add-to-list 'exec-path "/usr/local/bin")
 ;; =========================================================================
 
 ;; =========================================================================
@@ -116,7 +119,6 @@
 
 (setq-default indent-tabs-mode nil
               tab-width 2)
-
 (setq backup-directory-alist '(("." . "~/.emacs.d/backups"))
       inhibit-startup-message t
       inhibit-startup-echo-area-message t
@@ -160,6 +162,18 @@
 ;; =========================================================================
 
 ;; =========================================================================
+(use-package eval-sexp-fu)
+;; =========================================================================
+
+;; =========================================================================
+(use-package command-log-mode)
+;; =========================================================================
+
+;; =========================================================================
+(use-package restclient)
+;; =========================================================================
+
+;; =========================================================================
 (use-package color-theme :config (color-theme-initialize))
 ;; =========================================================================
 
@@ -168,15 +182,7 @@
 ;; =========================================================================
 
 ;; =========================================================================
-(use-package eval-sexp-fu)
-;; =========================================================================
-
-;; =========================================================================
-(use-package tramp :config (progn (setq tramp-default-method "ssh")))
-;; =========================================================================
-
-;; =========================================================================
-(use-package command-log-mode)
+(use-package tramp :config (setq tramp-default-method "ssh"))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -187,9 +193,8 @@
 
 ;; =========================================================================
 (use-package eshell
-  :config (progn
-            (setq eshell-save-history-on-exit t
-                  eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'")))
+  :config (setq eshell-save-history-on-exit t
+                eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'"))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -260,27 +265,26 @@
               (cider-find-var t nil))
             (bind-keys :map clojure-mode-map ((kbd "C-h")   . cider-find-var-no-prompt)
                                              ((kbd "C-M-x") . cider-eval-defun-at-point))))
-;; =============================================================
+;; ========================================================================
 
-;; =============================================================
-;; FIXME Not working
+;; ========================================================================
+;; FIXME Doesn't work!
 ;; FIXME Prevent from random buffer switching on errors
 ;; FIXME Company mode not working well
 ;; FIXME Flycheck not working well
 ;; FIXME Always display output in REPL
 ;; (use-package geiser
-  ;;
   ;; :defer  t
   ;; :init (setq geiser-mode-company-complete-module-key nil))
-;; =============================================================
+;; ========================================================================
 
-;; =============================================================
+;; ========================================================================
 (use-package racket-mode
   :defer t
   :config (add-hook 'racket-mode-hook #'company-quickhelp--disable))
-;; =============================================================
+;; ========================================================================
 
-;; =============================================================
+;; ========================================================================
 (use-package eldoc
   :diminish eldoc-mode
   :commands turn-on-eldoc-mode
@@ -288,9 +292,9 @@
           (add-hook 'emacs-lisp-mode-hook       'turn-on-eldoc-mode)
           (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
           (add-hook 'ielm-mode-hook             'turn-on-eldoc-mode)))
-;; =============================================================
+;; ========================================================================
 
-;; =============================================================
+;; ========================================================================
 (use-package helm
   :diminish helm-mode
   :init (progn
@@ -348,9 +352,9 @@
          ("M-s /"   . helm-multi-swoop)
          ("C-x c!"  . helm-calcul-expression)
          ("C-x c:"  . helm-eval-expression-with-eldoc)))
-;; =============================================================
+;; ========================================================================
 
-;; =============================================================
+;; ========================================================================
 (use-package projectile
   :defer t
   :config (progn
@@ -382,9 +386,9 @@ Otherwise run projectile-find-file."
                     projectile-enable-caching nil))
             (projectile-global-mode))
   :bind (("C-S-p" . projectile-switch-project)))
-;; =============================================================
+;; ========================================================================
 
-;; =============================================================
+;; ========================================================================
 (use-package neotree
   :config (progn
             (defun neotree-evil-keys ()
@@ -398,9 +402,9 @@ Otherwise run projectile-find-file."
             (setq neo-theme 'ascii)
             (add-hook 'neotree-mode-hook #'neotree-evil-keys))
   :bind ("<f2>" . neotree-toggle))
-;; =============================================================
+;; ========================================================================
 
-;; =============================================================
+;; ========================================================================
 (use-package company
   :pin gnu
   :config (progn
@@ -416,9 +420,9 @@ Otherwise run projectile-find-file."
                   company-dabbrev-ignore-case t)
             (define-key company-active-map (kbd "ESC") 'company-abort)
             (add-hook 'after-init-hook 'global-company-mode)))
-;; =============================================================
+;; ========================================================================
 
-;; =============================================================
+;; ========================================================================
 (use-package org
   :defer t
   :config (progn
@@ -452,9 +456,9 @@ Otherwise run projectile-find-file."
          ("\C-ca" . org-agenda)
          ("\C-cb" . org-iswitchb)
          ("<f12>" . org-agenda)))
-;; =======================================================================
+;; ========================================================================
 
-;; =======================================================================
+;; ========================================================================
 ;; FIXME Motion keys (f, t, etc.) and "+ cancel visual-block mode
 (use-package evil
   :init (progn
@@ -470,6 +474,21 @@ Otherwise run projectile-find-file."
                       (evil-leader/set-key "a"   'align-regexp)))
           (evil-mode 1))
   :config (progn
+            (use-package evil-org)
+            (use-package evil-numbers)
+            (use-package evil-matchit :config (global-evil-matchit-mode 1))
+            (use-package evil-search-highlight-persist :config (global-evil-search-highlight-persist t))
+            (use-package evil-nerd-commenter
+              :config (progn
+                        (evilnc-default-hotkeys)
+                        (defun my-comment-line-and-go-to-next ()
+                          "Comment current line and go to next."
+                          (interactive)
+                          (evilnc-comment-or-uncomment-lines 1)
+                          (evil-next-line)))
+              :bind (("C-;" . my-comment-line-and-go-to-next)
+                     ("C-/" . my-comment-line-and-go-to-next)))
+
             ;; Emacs keys in INSERT mode
             (setcdr evil-insert-state-map nil)
             (setq evil-move-cursor-back t)
@@ -509,24 +528,10 @@ Otherwise run projectile-find-file."
                        ("C-w <left>"  . evil-window-rotate-downwards)
                        ("C-w <down>"  . evil-window-rotate-downwards)
                        ("C-w <up>"    . evil-window-rotate-upwards)
-                       ("C-w <right>" . evil-window-rotate-upwards))
+                       ("C-w <right>" . evil-window-rotate-upwards))))
+;; ========================================================================
 
-            (use-package evil-numbers)
-            (use-package evil-matchit :config (global-evil-matchit-mode 1))
-            (use-package evil-search-highlight-persist :config (global-evil-search-highlight-persist t))
-            (use-package evil-nerd-commenter
-              :config (progn
-                        (evilnc-default-hotkeys)
-                        (defun comment-line-and-go-to-next ()
-                          (interactive)
-                          (evilnc-comment-or-uncomment-lines 1)
-                          (evil-next-line))
-                        (bind-keys ((kbd "C-;") . comment-line-and-go-to-next)
-                                   ((kbd "C-/") . comment-line-and-go-to-next))))
-            (use-package evil-org)))
-;; =======================================================================
-
-;; =======================================================================
+;; ========================================================================
 (use-package magit
   :defer t
   :pin melpa-stable
@@ -548,6 +553,8 @@ Otherwise run projectile-find-file."
             (when (eq system-type 'windows-nt)
               (add-to-list 'exec-path "C:/Program Files (x86)/Git/bin")
               (setenv "PATH" (concat "C:/Program Files (x86)/Git/bin;" (getenv "PATH"))))
+
+            (evil-set-initial-state 'magit-popup-mode 'emacs)
 
             (setq magit-diff-options '("-w")
                   magit-status-buffer-switch-function 'switch-to-buffer
@@ -571,24 +578,24 @@ Otherwise run projectile-find-file."
             ;; Restore previous windows state after Ediff quits
             (add-hook 'ediff-after-quit-hook-internal 'winner-undo))
   :bind (("C-x g" . magit-status)))
-;; =======================================================================
+;; ========================================================================
 
-;; =======================================================================
+;; ========================================================================
 (use-package web-mode
   :pin melpa-stable
   :config (progn (add-to-list 'auto-mode-alist '("\\.html?\\'"   . web-mode))
                  (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))))
-;; =======================================================================
+;; ========================================================================
 
-;; =======================================================================
+;; ========================================================================
 (use-package flycheck
   :config (progn
             (use-package flycheck-pos-tip
               :config (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
             (add-hook 'after-init-hook #'global-flycheck-mode)))
-;; =======================================================================
+;; ========================================================================
 
-;; =======================================================================
+;; ========================================================================
 (use-package undo-tree
   :diminish undo-tree-mode
   :config (progn
@@ -596,9 +603,9 @@ Otherwise run projectile-find-file."
             (setq undo-tree-visualizer-timestamps t
                   undo-tree-visualizer-diff       t)
             (define-key undo-tree-map (kbd "C-/") nil)))
-;; =======================================================================
+;; ========================================================================
 
-;; =======================================================================
+;; ========================================================================
 (use-package sauron
   :config (progn
             (setq sauron-modules '(sauron-erc sauron-org sauron-notifications)
@@ -607,9 +614,9 @@ Otherwise run projectile-find-file."
                   sauron-max-line-length 180
                   sauron-watch-nicks '("kovrik" "kovrik`" "kovrik``"))
             (sauron-start)))
-;; =======================================================================
+;; ========================================================================
 
-;; =======================================================================
+;; ========================================================================
 (use-package eyebrowse
   :pin melpa-stable
   :config (progn
@@ -617,9 +624,9 @@ Otherwise run projectile-find-file."
             (eyebrowse-setup-evil-keys)
             (setq eyebrowse-new-workspace t
                   eyebrowse-close-window-config-prompt t)))
-;; =======================================================================
+;; ========================================================================
 
-;; =======================================================================
+;; ========================================================================
 (use-package shackle
   :config (progn
             (setq shackle-lighter " |#|"
@@ -628,9 +635,9 @@ Otherwise run projectile-find-file."
                                   (help-mode    :same t)
                                   (ibuffer-mode :same t)))
             (shackle-mode t)))
-;; =======================================================================
+;; ========================================================================
 
-;; =======================================================================
+;; ========================================================================
 (use-package erc
   :defer t
   :config (progn
@@ -640,6 +647,9 @@ Otherwise run projectile-find-file."
             (erc-autojoin-mode t)
             (erc-scrolltobottom-enable)
             (erc-scrolltobottom-mode t)
+
+            (evil-set-initial-state 'erc-mode 'emacs)
+
             (setq erc-autojoin-channels-alist '((".*\\.freenode.net" "#emacs"))
                   erc-hide-list '("JOIN" "PART" "QUIT" "NICK" "MODE")
                   erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
@@ -652,9 +662,9 @@ Otherwise run projectile-find-file."
                   erc-prompt-for-password nil
                   erc-header-line-face-method nil
                   erc-server-coding-system '(utf-8 . utf-8))))
-;; =======================================================================
+;; ========================================================================
 
-;; =======================================================================
+;; ========================================================================
 ;; Misc
 (progn
   (defun my/hsplit-last-buffer (prefix)
@@ -726,7 +736,7 @@ Use Helm otherwise."
   (interactive)
   (mapc (lambda (b) (when (eq 'dired-mode (buffer-local-value 'major-mode b))
                       (kill-buffer b))) (buffer-list)))
-;; =======================================================================
+;; ========================================================================
 (setq debug-on-error nil)
 (provide 'init)
 ;;; init.el ends here
