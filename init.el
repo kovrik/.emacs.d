@@ -147,7 +147,7 @@
            ((kbd "C-h")   . find-function-at-point)
            ((kbd "C-c r") . revert-buffer))
 
-(defun linum-on  () "Turn 'linum-mode' on."  (linum-mode 1))
+(defun linum-on  () "Turn 'linum-mode' on."  (linum-mode  1))
 (defun linum-off () "Turn 'linum-mode' off." (linum-mode -1))
 ;; =========================================================================
 ;; Fonts
@@ -332,14 +332,14 @@
                   (delete-windows-on "*Completions*"))
                 (abort-recursive-edit)))
 
-            (global-set-key                             [escape]  'evil-exit-emacs-state)
-            (define-key evil-visual-state-map           [escape]  'keyboard-quit)
-            (define-key minibuffer-local-map            [escape]  'minibuffer-keyboard-quit)
-            (define-key minibuffer-local-ns-map         [escape]  'minibuffer-keyboard-quit)
-            (define-key minibuffer-local-completion-map [escape]  'minibuffer-keyboard-quit)
-            (define-key minibuffer-local-must-match-map [escape]  'minibuffer-keyboard-quit)
-            (define-key minibuffer-local-isearch-map    [escape]  'minibuffer-keyboard-quit)
-            (define-key evil-insert-state-map           [escape]  'evil-normal-state)
+            (global-set-key                             [escape] 'evil-exit-emacs-state)
+            (define-key evil-visual-state-map           [escape] 'keyboard-quit)
+            (define-key minibuffer-local-map            [escape] 'minibuffer-keyboard-quit)
+            (define-key minibuffer-local-ns-map         [escape] 'minibuffer-keyboard-quit)
+            (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+            (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+            (define-key minibuffer-local-isearch-map    [escape] 'minibuffer-keyboard-quit)
+            (define-key evil-insert-state-map           [escape] 'evil-normal-state)
             (bind-keys :map evil-normal-state-map ([next]   . evil-scroll-down)
                                                   ([prior]  . evil-scroll-up)
                                                   ([escape] . keyboard-quit)
@@ -756,4 +756,3 @@ Use Helm otherwise."
 (setq debug-on-error nil)
 (provide 'init)
 ;;; init.el ends here
-
