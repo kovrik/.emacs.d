@@ -101,8 +101,9 @@
 (use-package exec-path-from-shell
   :config (when (memq window-system '(mac ns))
              (exec-path-from-shell-initialize)))
-;; (setenv "PATH" (concat (getenv "PATH") ":/usr/local/bin" ":/usr/local/Cellar" (getenv "USERPROFILE")))
-;; (add-to-list 'exec-path "/usr/local/bin")
+
+(when (eq 'windows-nt system-type)
+  (setenv "PATH" (concat (getenv "PATH") (getenv "USERPROFILE"))))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -182,19 +183,15 @@
 ;; =========================================================================
 
 ;; =========================================================================
-(use-package tramp :config (setq tramp-default-method "ssh"))
+(use-package tramp
+  :config (when  (eq window-system 'w32)
+            (setq tramp-default-method "scpx")))
 ;; =========================================================================
 
 ;; =========================================================================
 (use-package smart-mode-line
   :config (progn (setq sml/theme 'light)
                  (sml/setup)))
-;; =========================================================================
-
-;; =========================================================================
-(use-package eshell
-  :config (setq eshell-save-history-on-exit t
-                eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'"))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -282,6 +279,78 @@
 (use-package racket-mode
   :defer t
   :config (add-hook 'racket-mode-hook #'company-quickhelp--disable))
+;; ========================================================================
+
+;; ========================================================================
+;; FIXME Motion keys (f, C-f, C-b, G etc.) force quit Visual modes!
+(use-package evil
+  :init (progn
+          (use-package evil-leader
+            :init (global-evil-leader-mode)
+            :config (progn
+                      (setq evil-leader/in-all-states t)
+                      (evil-leader/set-leader ",")
+                      (evil-leader/set-key "SPC" 'lazy-highlight-cleanup)
+                      (evil-leader/set-key "SPC" 'evil-search-highlight-persist-remove-all)
+                      (evil-leader/set-key "f"   'find-file-at-point)
+                      (evil-leader/set-key "a"   'align-regexp)))
+          (evil-mode 1))
+  :config (progn
+            (use-package evil-org)
+            (use-package evil-numbers)
+            (use-package evil-matchit :config (global-evil-matchit-mode 1))
+            (use-package evil-search-highlight-persist :config (global-evil-search-highlight-persist t))
+            (use-package evil-nerd-commenter
+              :config (progn
+                        (evilnc-default-hotkeys)
+                        (defun my-comment-line-and-go-to-next ()
+                          "Comment current line and go to next."
+                          (interactive)
+                          (evilnc-comment-or-uncomment-lines 1)
+                          (evil-next-line)))
+              :bind (("C-;" . my-comment-line-and-go-to-next)
+                     ("C-/" . my-comment-line-and-go-to-next)))
+
+            ;; Emacs keys in INSERT mode
+            (setcdr evil-insert-state-map nil)
+            (setq evil-move-cursor-back t
+                  evil-default-cursor   t)
+
+            ;; :q command to just kill buffer, but do not close window
+            (evil-ex-define-cmd "q[uit]" 'kill-this-buffer)
+            (evil-ex-define-cmd "ls"     'ibuffer-list-buffers)
+
+            ;; ESC quits
+            (defun minibuffer-keyboard-quit ()
+              "Abort recursive edit.
+               In Delete Selection mode, if the mark is active, just deactivate it;
+               then it takes a second \\[keyboard-quit] to abort the minibuffer."
+              (interactive)
+              (if (and delete-selection-mode transient-mark-mode mark-active)
+                  (setq deactivate-mark  t)
+                (when (get-buffer "*Completions*")
+                  (delete-windows-on "*Completions*"))
+                (abort-recursive-edit)))
+
+            (global-set-key                             [escape]  'evil-exit-emacs-state)
+            (define-key evil-visual-state-map           [escape]  'keyboard-quit)
+            (define-key minibuffer-local-map            [escape]  'minibuffer-keyboard-quit)
+            (define-key minibuffer-local-ns-map         [escape]  'minibuffer-keyboard-quit)
+            (define-key minibuffer-local-completion-map [escape]  'minibuffer-keyboard-quit)
+            (define-key minibuffer-local-must-match-map [escape]  'minibuffer-keyboard-quit)
+            (define-key minibuffer-local-isearch-map    [escape]  'minibuffer-keyboard-quit)
+            (define-key evil-insert-state-map           [escape]  'evil-normal-state)
+            (bind-keys :map evil-normal-state-map ([next]   . evil-scroll-down)
+                                                  ([prior]  . evil-scroll-up)
+                                                  ([escape] . keyboard-quit)
+                                                  ("j"      . evil-next-visual-line)
+                                                  ("k"      . evil-previous-visual-line))
+            ;; FIXME Make 'swap windows' instead of 'rotate windows'
+            (bind-keys :map evil-motion-state-map
+                       ("C-w <left>"  . evil-window-rotate-downwards)
+                       ("C-w <down>"  . evil-window-rotate-downwards)
+                       ("C-w <up>"    . evil-window-rotate-upwards)
+                       ("C-w <right>" . evil-window-rotate-upwards))))
 ;; ========================================================================
 
 ;; ========================================================================
@@ -459,79 +528,6 @@ Otherwise run projectile-find-file."
 ;; ========================================================================
 
 ;; ========================================================================
-;; FIXME Motion keys (f, t, etc.) and "+ cancel visual-block mode
-(use-package evil
-  :init (progn
-          (setq evil-default-cursor t)
-          (use-package evil-leader
-            :init (global-evil-leader-mode)
-            :config (progn
-                      (setq evil-leader/in-all-states t)
-                      (evil-leader/set-leader ",")
-                      (evil-leader/set-key "SPC" 'lazy-highlight-cleanup)
-                      (evil-leader/set-key "SPC" 'evil-search-highlight-persist-remove-all)
-                      (evil-leader/set-key "f"   'find-file-at-point)
-                      (evil-leader/set-key "a"   'align-regexp)))
-          (evil-mode 1))
-  :config (progn
-            (use-package evil-org)
-            (use-package evil-numbers)
-            (use-package evil-matchit :config (global-evil-matchit-mode 1))
-            (use-package evil-search-highlight-persist :config (global-evil-search-highlight-persist t))
-            (use-package evil-nerd-commenter
-              :config (progn
-                        (evilnc-default-hotkeys)
-                        (defun my-comment-line-and-go-to-next ()
-                          "Comment current line and go to next."
-                          (interactive)
-                          (evilnc-comment-or-uncomment-lines 1)
-                          (evil-next-line)))
-              :bind (("C-;" . my-comment-line-and-go-to-next)
-                     ("C-/" . my-comment-line-and-go-to-next)))
-
-            ;; Emacs keys in INSERT mode
-            (setcdr evil-insert-state-map nil)
-            (setq evil-move-cursor-back t)
-
-            ;; :q command to just kill buffer, but do not close window
-            (evil-ex-define-cmd "q[uit]" 'kill-this-buffer)
-            (evil-ex-define-cmd "ls"     'ibuffer-list-buffers)
-
-            ;; ESC quits
-            (defun minibuffer-keyboard-quit ()
-              "Abort recursive edit.
-               In Delete Selection mode, if the mark is active, just deactivate it;
-               then it takes a second \\[keyboard-quit] to abort the minibuffer."
-              (interactive)
-              (if (and delete-selection-mode transient-mark-mode mark-active)
-                  (setq deactivate-mark  t)
-                (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
-                (abort-recursive-edit)))
-
-            (global-set-key                             [escape]  'evil-exit-emacs-state)
-            (define-key evil-visual-state-map           [escape]  'keyboard-quit)
-            (define-key minibuffer-local-map            [escape]  'minibuffer-keyboard-quit)
-            (define-key minibuffer-local-ns-map         [escape]  'minibuffer-keyboard-quit)
-            (define-key minibuffer-local-completion-map [escape]  'minibuffer-keyboard-quit)
-            (define-key minibuffer-local-must-match-map [escape]  'minibuffer-keyboard-quit)
-            (define-key minibuffer-local-isearch-map    [escape]  'minibuffer-keyboard-quit)
-            (define-key evil-insert-state-map           [escape]  'evil-normal-state)
-            (bind-keys :map evil-normal-state-map ([next]   . evil-scroll-down)
-                                                  ([prior]  . evil-scroll-up)
-                                                  ([escape] . keyboard-quit)
-                                                  ("j"      . evil-next-visual-line)
-                                                  ("k"      . evil-previous-visual-line))
-
-            ;; FIXME Make 'swap windows' instead of 'rotate windows'
-            ;; Rotate windows
-            (bind-keys :map evil-motion-state-map
-                       ("C-w <left>"  . evil-window-rotate-downwards)
-                       ("C-w <down>"  . evil-window-rotate-downwards)
-                       ("C-w <up>"    . evil-window-rotate-upwards)
-                       ("C-w <right>" . evil-window-rotate-upwards))))
-;; ========================================================================
-
-;; ========================================================================
 (use-package magit
   :defer t
   :pin melpa-stable
@@ -554,8 +550,6 @@ Otherwise run projectile-find-file."
               (add-to-list 'exec-path "C:/Program Files (x86)/Git/bin")
               (setenv "PATH" (concat "C:/Program Files (x86)/Git/bin;" (getenv "PATH"))))
 
-            (evil-set-initial-state 'magit-popup-mode 'emacs)
-
             (setq magit-diff-options '("-w")
                   magit-status-buffer-switch-function 'switch-to-buffer
                   magit-diff-refine-hunk t
@@ -565,20 +559,29 @@ Otherwise run projectile-find-file."
                   ediff-diff-options "-w")
 
             ;; FIX Don't know why these become unbind sometimes
-            (bind-keys :map magit-mode-map ((kbd "s")   . magit-stage-item)
+            (bind-keys :map magit-mode-map
+                       ((kbd "s")   . magit-stage-item)
                        ((kbd "u")   . magit-unstage-item)
                        ((kbd "TAB") . magit-section-cycle))
 
             ;; Vim-like movement between changes
             (defun ediff-vim-like-navigation ()
               (ediff-setup-keymap)
-              (bind-keys :map ediff-mode-map ("j" . ediff-next-difference)
+              (bind-keys :map ediff-mode-map
+                         ("j" . ediff-next-difference)
                          ("k" . ediff-previous-difference)))
             (add-hook 'ediff-mode-hook 'ediff-vim-like-navigation)
             ;; Restore previous windows state after Ediff quits
             (add-hook 'ediff-after-quit-hook-internal 'winner-undo))
   :bind (("C-x g" . magit-status)))
 ;; ========================================================================
+
+;; =========================================================================
+(use-package eshell
+  :config (progn
+            (setq eshell-save-history-on-exit t
+                  eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'")))
+;; =========================================================================
 
 ;; ========================================================================
 (use-package web-mode
@@ -643,12 +646,9 @@ Otherwise run projectile-find-file."
   :config (progn
             (use-package erc-hl-nicks
               :config (add-hook 'erc-mode-hook #'erc-hl-nicks-mode))
-
             (erc-autojoin-mode t)
             (erc-scrolltobottom-enable)
             (erc-scrolltobottom-mode t)
-
-            (evil-set-initial-state 'erc-mode 'emacs)
 
             (setq erc-autojoin-channels-alist '((".*\\.freenode.net" "#emacs"))
                   erc-hide-list '("JOIN" "PART" "QUIT" "NICK" "MODE")
@@ -736,7 +736,24 @@ Use Helm otherwise."
   (interactive)
   (mapc (lambda (b) (when (eq 'dired-mode (buffer-local-value 'major-mode b))
                       (kill-buffer b))) (buffer-list)))
+
+(defun my-evil-off ()
+  "Turn 'evil-mode' off and change cursor type to bar."
+  (interactive)
+  (turn-off-evil-mode)
+  (setq cursor-type 'bar))
+;; ========================================================================
+;; Disable evil-mode in some major modes
+(dolist (mode-hook '(shell-mode-hook
+                     term-mode-hook
+                     magit-mode-hook
+                     erc-mode-hook
+                     eshell-mode-hook
+                     comint-mode-hook
+                     nrepl-connected-hook))
+  (add-hook mode-hook 'my-evil-off))
 ;; ========================================================================
 (setq debug-on-error nil)
 (provide 'init)
 ;;; init.el ends here
+
