@@ -282,7 +282,6 @@
 ;; ========================================================================
 
 ;; ========================================================================
-;; FIXME Motion keys (f, C-f, C-b, G etc.) force quit Visual modes!
 (use-package evil
   :init (progn
           (use-package evil-leader
@@ -298,8 +297,14 @@
   :config (progn
             (use-package evil-org)
             (use-package evil-numbers)
-            (use-package evil-matchit :config (global-evil-matchit-mode 1))
-            (use-package evil-search-highlight-persist :config (global-evil-search-highlight-persist t))
+            (use-package evil-matchit
+              :config (progn
+                        (defun evil-matchit-on () (evil-matchit-mode))
+                        (add-hook 'nxml-mode-hook 'evil-matchit-on)
+                        (add-hook 'html-mode-hook 'evil-matchit-on)
+                        (add-hook 'web-mode-hook  'evil-matchit-on)))
+            (use-package evil-search-highlight-persist
+              :config (global-evil-search-highlight-persist t))
             (use-package evil-nerd-commenter
               :config (progn
                         (evilnc-default-hotkeys)
@@ -560,9 +565,10 @@ Otherwise run projectile-find-file."
 
             ;; FIX Don't know why these become unbind sometimes
             (bind-keys :map magit-mode-map
-                       ((kbd "s")   . magit-stage-item)
-                       ((kbd "u")   . magit-unstage-item)
-                       ((kbd "TAB") . magit-section-cycle))
+                       ((kbd "s")         . magit-stage-item)
+                       ((kbd "u")         . magit-unstage-item)
+                       ((kbd "TAB")       . magit-section-cycle)
+                       ((kbd "<backtab>") . magit-section-cycle-global))
 
             ;; Vim-like movement between changes
             (defun ediff-vim-like-navigation ()
