@@ -94,8 +94,7 @@
  '(rainbow-delimiters-depth-3-face ((t (:foreground "#0000b8"))))
  '(rainbow-delimiters-depth-4-face ((t (:foreground "#ff8c00"))))
  '(rainbow-delimiters-depth-5-face ((t (:foreground "#009800"))))
- '(rainbow-delimiters-depth-6-face ((t (:foreground "#ff00ff"))))
- '(vertical-border ((t (:background "#ffffff")))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "#ff00ff")))))
 ;; =========================================================================
 ;; PATH
 (use-package exec-path-from-shell
@@ -151,15 +150,22 @@
 (defun linum-off () "Turn 'linum-mode' off." (linum-mode -1))
 ;; =========================================================================
 ;; Fonts
-(let ((myfont (cond
-               ((find-font (font-spec :name "Meslo LG S"))      "Meslo LG S 10")
-               ((and (eq 'windows-nt system-type)
-                     (find-font (font-spec :name "Consolas")))  "Consolas 11")
-               ((find-font (font-spec :name "Monaco"))          "Monaco 13")
-               ((find-font (font-spec :name "Menlo"))           "Menlo 13")
-               ((find-font (font-spec :name "Source Code Pro")) "Source Code Pro 13"))))
+(defun font-exists-p (f)
+  "Return t if font F (F is a font-spec with :name key) exists."
+  (member (font-get f :name) (font-family-list)))
+
+(let ((myfont (cl-find-if 'font-exists-p (list (font-spec :name "Meslo LG S"      :size 13)
+                                               (and (eq 'windows-nt system-type)
+                                                    (font-spec :name "Consolas"   :size 14))
+                                               (font-spec :name "Menlo"           :size 13)
+                                               (font-spec :name "Monaco"          :size 13)
+                                               (font-spec :name "Source Code Pro" :size 13)))))
   (set-face-attribute 'default nil :font myfont)
   (set-frame-font      myfont  nil t))
+;; =========================================================================
+
+;; =========================================================================
+(use-package bug-hunter)
 ;; =========================================================================
 
 ;; =========================================================================
