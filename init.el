@@ -99,7 +99,7 @@
 ;; PATH
 (use-package exec-path-from-shell
   :config (when (memq window-system '(mac ns))
-             (exec-path-from-shell-initialize)))
+            (exec-path-from-shell-initialize)))
 
 (when (eq 'windows-nt system-type)
   (setenv "PATH" (concat (getenv "PATH") (getenv "USERPROFILE"))))
@@ -152,16 +152,20 @@
 ;; Fonts
 (defun font-exists-p (f)
   "Return t if font F (F is a font-spec with :name key) exists."
-  (member (font-get f :name) (font-family-list)))
+  (when (not (null f))
+    (member (font-get f :name) (font-family-list))))
 
-(let ((myfont (cl-find-if 'font-exists-p (list (font-spec :name "Meslo LG S"      :size 13)
-                                               (and (eq 'windows-nt system-type)
-                                                    (font-spec :name "Consolas"   :size 14))
-                                               (font-spec :name "Menlo"           :size 13)
-                                               (font-spec :name "Monaco"          :size 13)
-                                               (font-spec :name "Source Code Pro" :size 13)))))
-  (set-face-attribute 'default nil :font myfont)
-  (set-frame-font      myfont  nil t))
+
+(let ((myfont (cl-find-if 'font-exists-p
+                          (list (font-spec :name "Meslo LG S"      :size 13)
+                                (and (eq 'windows-nt system-type)
+                                     (font-spec :name "Consolas"   :size 14))
+                                (font-spec :name "Monaco"          :size 13)
+                                (font-spec :name "Menlo"           :size 14)
+                                (font-spec :name "Source Code Pro" :size 13)))))
+  (when myfont
+    (set-face-attribute 'default nil :font myfont)
+    (set-frame-font      myfont  nil t)))
 ;; =========================================================================
 
 ;; =========================================================================
