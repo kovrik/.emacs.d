@@ -132,6 +132,7 @@
       visible-bell nil)
 
 (autopair-global-mode)
+(diminish 'autopair-mode)
 (column-number-mode)
 (desktop-save-mode)
 (global-font-lock-mode)
@@ -234,6 +235,8 @@
 ;; =========================================================================
 (use-package rainbow-delimiters
   :config (progn
+            (setq rainbow-delimiters-max-face-count 9
+                  rainbow-delimiters-outermost-only-face-count 8)
             (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
             (add-hook 'clojure-mode-hook    #'rainbow-delimiters-mode)
             (add-hook 'lisp-mode-hook       #'rainbow-delimiters-mode)
@@ -386,7 +389,6 @@
           (require 'helm-misc)
           (require 'helm-locate)
           (use-package helm-swoop)
-          (use-package helm-projectile :config (helm-projectile-on))
 
           (setq helm-split-window-in-side-p           t
                 helm-move-to-line-cycle-in-source     t
@@ -424,7 +426,8 @@
                                             ((kbd "C-c C-l") . helm-eshell-history)))
           (add-hook 'eshell-mode-hook 'my-define-eshell-mode-map-keys)
           (helm-mode t)
-          (helm-adaptive-mode t))
+          (helm-adaptive-mode t)
+          )
   :bind (("C-c h"   . helm-command-prefix)
          ("M-x"     . helm-M-x)
          ("C-x b"   . helm-mini)
@@ -441,11 +444,15 @@
 ;; ========================================================================
 (use-package projectile
   :defer t
+  :diminish projectile-mode
   :config (progn
+            (use-package helm-projectile :config (helm-projectile-on))
+
             (defun my-projectile-switch-to-project ()
               "My switch-to-project action for projectile.
 If project is a git-project, then run magit-status.
 Otherwise run projectile-find-file."
+              (interactive)
               (let ((p (projectile-project-root))
                     (git-projects (mapcar 'expand-file-name
                                           (cl-remove-if-not
@@ -491,6 +498,7 @@ Otherwise run projectile-find-file."
 ;; ========================================================================
 (use-package company
   :pin gnu
+  :diminish company-mode
   :config (progn
             (use-package company-quickhelp
               :config (progn (setq company-quickhelp-delay 0.5)
