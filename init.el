@@ -29,6 +29,7 @@
 (require 'use-package)
 (require 'diminish)
 (require 'bind-key)
+(require 'uniquify)
 (setq use-package-verbose t
       load-prefer-newer t
       use-package-always-ensure t)
@@ -129,15 +130,17 @@
       sentence-end-double-space nil
       ring-bell-function 'ignore
       use-dialog-box nil
-      visible-bell nil)
+      visible-bell nil
+      uniquify-buffer-name-style 'forward)
 
+(fringe-mode '(4 . 0))
 (autopair-global-mode)
 (diminish 'autopair-mode)
+(show-paren-mode)
 (column-number-mode)
 (desktop-save-mode)
 (global-font-lock-mode)
 (global-hl-line-mode)
-(show-paren-mode)
 (winner-mode)
 (blink-cursor-mode -1)
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -152,10 +155,9 @@
 ;; =========================================================================
 ;; Fonts
 (defun font-exists-p (f)
-  "Return t if font F (F is a font-spec with :name key) exists."
+  "Return t if font F (font-spec with :name key) exists."
   (when (not (null f))
     (member (font-get f :name) (font-family-list))))
-
 
 (let ((myfont (cl-find-if 'font-exists-p
                           (list (font-spec :name "Meslo LG S"      :size 13)
@@ -328,6 +330,9 @@
                           (evil-next-line)))
               :bind (("C-;" . my-comment-line-and-go-to-next)
                      ("C-/" . my-comment-line-and-go-to-next)))
+            (use-package evil-surround
+              :config (progn
+                        (global-evil-surround-mode 1)))
 
             ;; Emacs keys in INSERT mode
             (setcdr evil-insert-state-map nil)
@@ -363,12 +368,8 @@
                                                   ([escape] . keyboard-quit)
                                                   ("j"      . evil-next-visual-line)
                                                   ("k"      . evil-previous-visual-line))
-            ;; FIXME Make 'swap windows' instead of 'rotate windows'
-            (bind-keys :map evil-motion-state-map
-                       ("C-w <left>"  . evil-window-rotate-downwards)
-                       ("C-w <down>"  . evil-window-rotate-downwards)
-                       ("C-w <up>"    . evil-window-rotate-upwards)
-                       ("C-w <right>" . evil-window-rotate-upwards))))
+            (bind-keys :map evil-motion-state-map ("C-w m" . maximize-window)
+                                                  ("C-w u" . winner-undo))))
 ;; ========================================================================
 
 ;; ========================================================================
@@ -433,6 +434,7 @@
          ("C-x b"   . helm-mini)
          ("C-x C-b" . helm-buffers-list)
          ("C-x C-f" . helm-find-files)
+         ("C-x f"   . helm-find-files)
          ("C-x C-r" . helm-recentf)
          ("M-y"     . helm-show-kill-ring)
          ("M-s o"   . helm-swoop)
@@ -501,8 +503,8 @@ Otherwise run projectile-find-file."
   :diminish company-mode
   :config (progn
             (use-package company-quickhelp
-              :config (progn (setq company-quickhelp-delay 0.5)
-                             (company-quickhelp-mode       1)))
+              :config (progn (setq company-quickhelp-delay 0.7)
+                             (company-quickhelp-mode 1)))
             (require 'company-etags)
             (add-to-list 'company-etags-modes 'clojure-mode)
             (setq company-show-numbers t
@@ -525,7 +527,6 @@ Otherwise run projectile-find-file."
 
             (add-hook 'org-mode-hook #'linum-off)
             ;; FIXME indentation in SRC blocks
-            ;; Let's have pretty source code blocks
             (setq org-edit-src-content-indentation 2
                   org-src-tab-acts-natively t
                   org-src-fontify-natively t
@@ -581,7 +582,7 @@ Otherwise run projectile-find-file."
                   ediff-split-window-function 'split-window-horizontally
                   ediff-diff-options "-w")
 
-            ;; FIX Don't know why these become unbind sometimes
+            ;; FIX Don't know why these become unbound sometimes
             (bind-keys :map magit-mode-map
                        ((kbd "s")         . magit-stage-item)
                        ((kbd "u")         . magit-unstage-item)
@@ -658,9 +659,12 @@ Otherwise run projectile-find-file."
   :config (progn
             (setq shackle-lighter " |#|"
                   shackle-rules '(("\\`\\*magit.*?\\*\\'" :regexp t :same t)
-                                  (erc-mode     :same t)
-                                  (help-mode    :same t)
-                                  (ibuffer-mode :same t)))
+                                  ("\\`\\*helm.*?\\*\\'"  :regexp t :align t :ratio 0.4)
+                                  (compilation-mode :ignore t)
+                                  (erc-mode         :same   t)
+                                  (proced-mode      :same   t)
+                                  (help-mode        :same   t)
+                                  (ibuffer-mode     :same   t)))
             (shackle-mode t)))
 ;; ========================================================================
 
@@ -691,23 +695,23 @@ Otherwise run projectile-find-file."
 ;; ========================================================================
 ;; Misc
 (progn
-  (defun my/hsplit-last-buffer (prefix)
+  (defun my-hsplit-last-buffer (prefix)
     "Split the window horizontally and display the previous buffer.  Args: PREFIX."
     (interactive "p")
     (split-window-vertically)
     (other-window 1 nil)
     (when (= prefix 1) (switch-to-next-buffer)))
 
-  (defun my/vsplit-last-buffer (prefix)
+  (defun my-vsplit-last-buffer (prefix)
     "Split the window vertically and display the previous buffer.  Args: PREFIX."
     (interactive "p")
     (split-window-horizontally)
     (other-window 1 nil)
     (when (= prefix 1) (switch-to-next-buffer)))
 
-  (bind-keys ("C-x 2"  . my/hsplit-last-buffer) ("C-x 3"  . my/vsplit-last-buffer)
-             ("C-x -"  . my/hsplit-last-buffer) ("C-x \\" . my/vsplit-last-buffer)
-             ("C-x _"  . my/hsplit-last-buffer) ("C-x |"  . my/vsplit-last-buffer)))
+  (bind-keys ("C-x 2"  . my-hsplit-last-buffer) ("C-x 3"  . my-vsplit-last-buffer)
+             ("C-x -"  . my-hsplit-last-buffer) ("C-x \\" . my-vsplit-last-buffer)
+             ("C-x _"  . my-hsplit-last-buffer) ("C-x |"  . my-vsplit-last-buffer)))
 
 (defun bf-pretty-print-xml-region (begin end)
   "Pretty format XML markup in region.  You need to have `nxml-mode`.
@@ -774,9 +778,11 @@ Use Helm otherwise."
                      erc-mode-hook
                      eshell-mode-hook
                      comint-mode-hook
+                     proced-mode-hook
                      nrepl-connected-hook))
   (add-hook mode-hook 'my-evil-off))
 ;; ========================================================================
 (setq debug-on-error nil)
 (provide 'init)
 ;;; init.el ends here
+(add-hook focus-out-hook)
