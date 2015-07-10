@@ -785,4 +785,3 @@ Use Helm otherwise."
 (setq debug-on-error nil)
 (provide 'init)
 ;;; init.el ends here
-(add-hook focus-out-hook)
