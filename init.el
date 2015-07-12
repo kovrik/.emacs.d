@@ -69,6 +69,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(cursor ((t (:background "purple"))))
  '(default ((t (:weight normal))))
  '(diff-added ((t (:foreground "#ffffff" :background "#43a047"))))
  '(diff-changed ((t (:foreground "#000000" :background "#ffc107"))))
@@ -333,6 +334,7 @@
             (use-package evil-surround
               :config (progn
                         (global-evil-surround-mode 1)))
+            (use-package evil-ranger)
 
             ;; Emacs keys in INSERT mode
             (setcdr evil-insert-state-map nil)
