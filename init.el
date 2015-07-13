@@ -334,7 +334,7 @@
             (use-package evil-surround
               :config (progn
                         (global-evil-surround-mode 1)))
-            (use-package evil-ranger)
+            ;; (use-package evil-ranger)
 
             ;; Emacs keys in INSERT mode
             (setcdr evil-insert-state-map nil)
