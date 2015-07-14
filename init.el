@@ -58,7 +58,7 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" "a2e7b508533d46b701ad3b055e7c708323fb110b6676a8be458a758dd8f24e27" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
+    ("8f2e60e25bd33a29f45867d99c49afd9d7f3f3ed8a60926d32d5a23c790de240" "118717ce0a2645a0cf240b044999f964577ee10137b1f992b09a317d5073c02d" "26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" "a2e7b508533d46b701ad3b055e7c708323fb110b6676a8be458a758dd8f24e27" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
  '(git-gutter:hide-gutter t)
  '(package-selected-packages
    (quote
@@ -69,8 +69,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(cursor ((t (:background "purple"))))
  '(default ((t (:weight normal))))
+ '(cursor ((t (:background "purple"))))
  '(diff-added ((t (:foreground "#ffffff" :background "#43a047"))))
  '(diff-changed ((t (:foreground "#000000" :background "#ffc107"))))
  '(diff-removed ((t (:foreground "#ffffff" :background "#e53935"))))
@@ -88,7 +88,7 @@
  '(git-gutter:deleted ((t (:foreground "#e53935" :background "#e53935"))))
  '(git-gutter:modified ((t (:foreground "#ffc107" :background "#ffc107"))))
  '(helm-selection ((t (:background "#bdeebd" :foreground "#000000"))))
- '(helm-source-header ((t (:background "#607d8b" :foreground "#ffffff" :height 120))))
+ '(helm-source-header ((t (:background "#607d8b" :foreground "#ffffff" :height 100))))
  '(hl-line ((t (:background "#ccddee"))))
  '(link ((t (:foreground "#bb00f8"))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "#000000"))))
@@ -104,7 +104,7 @@
             (exec-path-from-shell-initialize)))
 
 (when (eq 'windows-nt system-type)
-  (setenv "PATH" (concat (getenv "PATH") (getenv "USERPROFILE"))))
+  (setq exec-path (append (parse-colon-path (getenv "PATH")) (parse-colon-path (getenv "USERPROFILE")) exec-path)))
 ;; =========================================================================
 
 ;; =========================================================================
