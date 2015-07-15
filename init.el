@@ -313,14 +313,16 @@
   :config (progn
             (use-package evil-org)
             (use-package evil-numbers)
+            (use-package evil-ranger)
+            (use-package evil-surround :config (global-evil-surround-mode 1))
+            (use-package evil-search-highlight-persist
+              :config (global-evil-search-highlight-persist t))
             (use-package evil-matchit
               :config (progn
                         (defun evil-matchit-on () (evil-matchit-mode))
                         (add-hook 'nxml-mode-hook 'evil-matchit-on)
                         (add-hook 'html-mode-hook 'evil-matchit-on)
                         (add-hook 'web-mode-hook  'evil-matchit-on)))
-            (use-package evil-search-highlight-persist
-              :config (global-evil-search-highlight-persist t))
             (use-package evil-nerd-commenter
               :config (progn
                         (evilnc-default-hotkeys)
@@ -331,10 +333,6 @@
                           (evil-next-line)))
               :bind (("C-;" . my-comment-line-and-go-to-next)
                      ("C-/" . my-comment-line-and-go-to-next)))
-            (use-package evil-surround
-              :config (progn
-                        (global-evil-surround-mode 1)))
-            ;; (use-package evil-ranger)
 
             ;; Emacs keys in INSERT mode
             (setcdr evil-insert-state-map nil)
@@ -599,7 +597,32 @@ Otherwise run projectile-find-file."
                          ("k" . ediff-previous-difference)))
             (add-hook 'ediff-mode-hook 'ediff-vim-like-navigation)
             ;; Restore previous windows state after Ediff quits
-            (add-hook 'ediff-after-quit-hook-internal 'winner-undo))
+            (add-hook 'ediff-after-quit-hook-internal 'winner-undo)
+
+            ;; FIXME Not working with diff3.exe
+            ;; Load after ediff-util.
+            (defun ediff-toggle-whitespace-sensitivity ()
+              "Toggle whitespace sensitivity for the current EDiff run.
+This does not affect the global EDiff settings.  The function
+automatically updates the diff to reflect the change."
+              (interactive)
+              (let ((post-update-message
+                     (if (string-match " ?-w$" ediff-actual-diff-options)
+                         (progn
+                           (setq ediff-actual-diff-options (concat ediff-diff-options " " ediff-ignore-case-option)
+                                 ;; ediff-actual-diff3-options (concat ediff-diff3-options " " ediff-ignore-case-option3)
+                                 )
+                           "Whitespace sensitivity on")
+                       (setq ediff-actual-diff-options (concat ediff-diff-options " " ediff-ignore-case-option " -w")
+                             ;; ediff-actual-diff3-options (concat ediff-diff3-options " " ediff-ignore-case-option3 " -w")
+                             )
+                       "Whitespace sensitivity off")))
+                (print ediff-actual-diff3-options)
+                (ediff-update-diffs)
+                (message post-update-message)))
+
+            (add-hook 'ediff-keymap-setup-hook
+                      #'(lambda () (define-key ediff-mode-map [?W] 'ediff-toggle-whitespace-sensitivity))))
   :bind (("C-x g" . magit-status)))
 ;; ========================================================================
 
@@ -765,6 +788,12 @@ Use Helm otherwise."
   "Kill all dired buffers."
   (interactive)
   (mapc (lambda (b) (when (eq 'dired-mode (buffer-local-value 'major-mode b))
+                      (kill-buffer b))) (buffer-list)))
+
+(defun kill-all-ediff-buffers ()
+  "Kill all ediff buffers."
+  (interactive)
+  (mapc (lambda (b) (when (string-match "^*ediff-.*\\*$" (buffer-name b))
                       (kill-buffer b))) (buffer-list)))
 
 (defun my-evil-off ()
