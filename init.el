@@ -132,7 +132,8 @@
       ring-bell-function 'ignore
       use-dialog-box nil
       visible-bell nil
-      uniquify-buffer-name-style 'forward)
+      uniquify-buffer-name-style 'forward
+      show-trailing-whitespace t)
 
 (fringe-mode '(4 . 0))
 (autopair-global-mode)
@@ -145,11 +146,16 @@
 (winner-mode)
 (blink-cursor-mode -1)
 (fset 'yes-or-no-p 'y-or-n-p)
+(put 'narrow-to-defun  'disabled nil)
+(put 'narrow-to-page   'disabled nil)
+(put 'narrow-to-region 'disabled nil)
 
 (bind-keys ([escape]      . keyboard-quit)
            ((kbd "RET")   . newline-and-indent)
            ((kbd "C-h")   . find-function-at-point)
-           ((kbd "C-c r") . revert-buffer))
+           ((kbd "C-c r") . revert-buffer)
+           ((kbd "C-c n") . narrow-to-region)
+           ((kbd "C-c w") . widen))
 
 (defun linum-on  () "Turn 'linum-mode' on."  (linum-mode  1))
 (defun linum-off () "Turn 'linum-mode' off." (linum-mode -1))
@@ -186,6 +192,10 @@
 
 ;; =========================================================================
 (use-package restclient)
+;; =========================================================================
+
+;; =========================================================================
+(use-package iedit)
 ;; =========================================================================
 
 ;; =========================================================================
@@ -308,12 +318,12 @@
                       (evil-leader/set-key "SPC" 'lazy-highlight-cleanup)
                       (evil-leader/set-key "SPC" 'evil-search-highlight-persist-remove-all)
                       (evil-leader/set-key "f"   'find-file-at-point)
-                      (evil-leader/set-key "a"   'align-regexp)))
+                      (evil-leader/set-key "a"   'align-regexp)
+                      (evil-leader/set-key "s"   'delete-trailing-whitespace)))
           (evil-mode 1))
   :config (progn
             (use-package evil-org)
             (use-package evil-numbers)
-            (use-package evil-ranger)
             (use-package evil-surround :config (global-evil-surround-mode 1))
             (use-package evil-search-highlight-persist
               :config (global-evil-search-highlight-persist t))
@@ -331,8 +341,7 @@
                           (interactive)
                           (evilnc-comment-or-uncomment-lines 1)
                           (evil-next-line)))
-              :bind (("C-;" . my-comment-line-and-go-to-next)
-                     ("C-/" . my-comment-line-and-go-to-next)))
+              :bind (("C-/" . my-comment-line-and-go-to-next)))
 
             ;; Emacs keys in INSERT mode
             (setcdr evil-insert-state-map nil)
@@ -370,6 +379,7 @@
                                                   ("k"      . evil-previous-visual-line))
             (bind-keys :map evil-motion-state-map ("C-w m" . maximize-window)
                                                   ("C-w u" . winner-undo))))
+;; (use-package evil-ranger :init (require 'dired))
 ;; ========================================================================
 
 ;; ========================================================================
