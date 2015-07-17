@@ -10,10 +10,7 @@
                          ("melpa"        . "http://melpa.org/packages/")
                          ("melpa-stable" . "http://stable.melpa.org/packages/")))
 (package-initialize)
-(add-to-list 'package-pinned-packages '(queue   . "gnu")          t)
-(add-to-list 'package-pinned-packages '(company . "gnu")          t)
-(add-to-list 'package-pinned-packages '(cider   . "melpa-stable") t)
-(add-to-list 'package-pinned-packages '(geiser  . "melpa-stable") t)
+(add-to-list 'package-pinned-packages '(queue . "gnu") t)
 
 ;; Make sure to have downloaded archive description
 (or (file-exists-p (concat package-user-dir "/archives"))
@@ -59,10 +56,9 @@
  '(custom-safe-themes
    (quote
     ("52706f54fd3e769a0895d1786796450081b994378901d9c3fb032d3094788337" "8f2e60e25bd33a29f45867d99c49afd9d7f3f3ed8a60926d32d5a23c790de240" "118717ce0a2645a0cf240b044999f964577ee10137b1f992b09a317d5073c02d" "26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" "a2e7b508533d46b701ad3b055e7c708323fb110b6676a8be458a758dd8f24e27" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
- '(git-gutter:hide-gutter t)
  '(package-selected-packages
    (quote
-    (corral ample-theme auto-compile autopair browse-kill-ring cider clojure-mode-extra-font-locking color-theme-solarized company company-quickhelp darcula-theme dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-nerd-commenter evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim git-gutter helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode leuven-theme magit markdown-mode material-theme neotree noctilux-theme racket-mode rainbow-delimiters smart-mode-line soft-stone-theme solarized-theme sublime-themes use-package zenburn-theme))))
+    (corral ample-theme auto-compile autopair browse-kill-ring cider clojure-mode-extra-font-locking color-theme-solarized company company-quickhelp darcula-theme dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-nerd-commenter evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode leuven-theme magit markdown-mode material-theme neotree noctilux-theme racket-mode rainbow-delimiters smart-mode-line soft-stone-theme solarized-theme sublime-themes use-package zenburn-theme))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -84,9 +80,6 @@
  '(flycheck-fringe-warning ((t (:background "#ffc107" :foreground "#ffc107"))))
  '(font-lock-keyword-face ((t (:foreground "#8B008B"))))
  '(font-lock-string-face ((t (:foreground "dark green"))))
- '(git-gutter:added ((t (:foreground "#43a047" :background "#43a047"))))
- '(git-gutter:deleted ((t (:foreground "#e53935" :background "#e53935"))))
- '(git-gutter:modified ((t (:foreground "#ffc107" :background "#ffc107"))))
  '(helm-selection ((t (:background "#bdeebd" :foreground "#000000"))))
  '(helm-source-header ((t (:background "#607d8b" :foreground "#ffffff" :height 100))))
  '(hl-line ((t (:background "#ccddee"))))
@@ -109,7 +102,7 @@
 ;; =========================================================================
 
 ;; =========================================================================
-;; Init and globals
+;; Globals
 (prefer-coding-system 'utf-8)
 (when (display-graphic-p)
   (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
@@ -151,12 +144,12 @@
 (put 'narrow-to-page   'disabled nil)
 (put 'narrow-to-region 'disabled nil)
 
-(bind-keys ([escape]      . keyboard-quit)
-           ((kbd "RET")   . newline-and-indent)
-           ((kbd "C-h")   . find-function-at-point)
-           ((kbd "C-c r") . revert-buffer)
-           ((kbd "C-c n") . narrow-to-region)
-           ((kbd "C-c w") . widen))
+(bind-keys ([escape] . keyboard-quit)
+           ("RET"    . newline-and-indent)
+           ("C-h"    . find-function-at-point)
+           ("C-c r"  . revert-buffer)
+           ("C-c n"  . narrow-to-region)
+           ("C-c w"  . widen))
 
 (defun linum-on  () "Turn 'linum-mode' on."  (linum-mode  1))
 (defun linum-off () "Turn 'linum-mode' off." (linum-mode -1))
@@ -180,22 +173,11 @@
 ;; =========================================================================
 
 ;; =========================================================================
+;; Packages without config
 (use-package bug-hunter)
-;; =========================================================================
-
-;; =========================================================================
 (use-package eval-sexp-fu)
-;; =========================================================================
-
-;; =========================================================================
 (use-package command-log-mode)
-;; =========================================================================
-
-;; =========================================================================
 (use-package restclient)
-;; =========================================================================
-
-;; =========================================================================
 (use-package iedit)
 ;; =========================================================================
 
@@ -237,13 +219,13 @@
 (use-package corral
   :config (progn
             (setq corral-preserve-point t)
-            (bind-keys ((kbd "M-\"") . corral-double-quotes-backward)
-                       ((kbd "M-9")  . corral-parentheses-backward)
-                       ((kbd "M-0")  . corral-parentheses-forward)
-                       ((kbd "M-[")  . corral-brackets-backward)
-                       ((kbd "M-]")  . corral-brackets-forward)
-                       ((kbd "M-{")  . corral-braces-backward)
-                       ((kbd "M-}")  . corral-braces-forward))))
+            (bind-keys ("M-\"" . corral-double-quotes-backward)
+                       ("M-9"  . corral-parentheses-backward)
+                       ("M-0"  . corral-parentheses-forward)
+                       ("M-["  . corral-brackets-backward)
+                       ("M-]"  . corral-brackets-forward)
+                       ("M-{"  . corral-braces-backward)
+                       ("M-}"  . corral-braces-forward))))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -287,8 +269,8 @@
               "cider-find-var at point without prompt"
               (interactive)
               (cider-find-var t nil))
-            (bind-keys :map clojure-mode-map ((kbd "C-h")   . cider-find-var-no-prompt)
-                       ((kbd "C-M-x") . cider-eval-defun-at-point))))
+            (bind-keys :map clojure-mode-map ("C-h"   . cider-find-var-no-prompt)
+                                             ("C-M-x" . cider-eval-defun-at-point))))
 ;; ========================================================================
 
 ;; ========================================================================
@@ -298,6 +280,7 @@
 ;; FIXME Flycheck not working well
 ;; FIXME Always display output in REPL
 ;; (use-package geiser
+;; :pin melpa-stable
 ;; :defer  t
 ;; :init (setq geiser-mode-company-complete-module-key nil))
 ;; ========================================================================
@@ -374,12 +357,12 @@
             (define-key minibuffer-local-isearch-map    [escape] 'minibuffer-keyboard-quit)
             (define-key evil-insert-state-map           [escape] 'evil-normal-state)
             (bind-keys :map evil-normal-state-map ([next]   . evil-scroll-down)
-                       ([prior]  . evil-scroll-up)
-                       ([escape] . keyboard-quit)
-                       ("j"      . evil-next-visual-line)
-                       ("k"      . evil-previous-visual-line))
+                                                  ([prior]  . evil-scroll-up)
+                                                  ([escape] . keyboard-quit)
+                                                  ("j"      . evil-next-visual-line)
+                                                  ("k"      . evil-previous-visual-line))
             (bind-keys :map evil-motion-state-map ("C-w m" . maximize-window)
-                       ("C-w u" . winner-undo))))
+                                                  ("C-w u" . winner-undo))))
 ;; (use-package evil-ranger :init (require 'dired))
 ;; ========================================================================
 
@@ -428,10 +411,10 @@
           (helm-mode t)
           (helm-adaptive-mode t)
 
-          (bind-keys :map helm-map ((kbd "<tab>") . helm-execute-persistent-action)
-                                   ((kbd "C-i")   . helm-execute-persistent-action)
-                                   ((kbd "C-z")   . helm-select-action)
-                                   ((kbd "ESC")   . helm-keyboard-quit)))
+          (bind-keys :map helm-map ("<tab>"  . helm-execute-persistent-action)
+                                   ("C-i"    . helm-execute-persistent-action)
+                                   ("C-z"    . helm-select-action)
+                                   ([escape] . helm-keyboard-quit)))
   :bind (("M-x"     . helm-M-x)
          ("M-y"     . helm-show-kill-ring)
          ("M-s o"   . helm-swoop)
@@ -486,12 +469,11 @@ Otherwise run projectile-find-file."
   :config (progn
             (defun neotree-evil-keys ()
               (interactive)
-              (bind-keys :map evil-normal-state-local-map
-                         ((kbd "S-h") . neotree-hidden-file-toggle)
-                         ((kbd "TAB") . neotree-enter)
-                         ((kbd "SPC") . neotree-enter)
-                         ((kbd "q")   . neotree-hide)
-                         ((kbd "RET") . neotree-enter)))
+              (bind-keys :map evil-normal-state-local-map ("S-h"   . neotree-hidden-file-toggle)
+                                                          ("<tab>" . neotree-enter)
+                                                          ("q"     . neotree-hide)
+                                                          ("SPC"   . neotree-enter)
+                                                          ("RET"   . neotree-enter)))
             (setq neo-theme 'ascii)
             (add-hook 'neotree-mode-hook #'neotree-evil-keys))
   :bind ("<f2>" . neotree-toggle))
@@ -557,27 +539,15 @@ Otherwise run projectile-find-file."
   :pin melpa-stable
   :init   (setq magit-last-seen-setup-instructions "1.4.0")
   :config (progn
-            (use-package git-gutter
-              :config (progn
-                        (bind-keys ("C-x v =" . git-gutter:popup-hunk)
-                                   ("C-x r"   . git-gutter:revert-hunk)
-                                   ("C-x p"   . git-gutter:previous-hunk)
-                                   ("C-x n"   . git-gutter:next-hunk))
-
-                        (add-to-list 'git-gutter:update-hooks    'focus-in-hook)
-                        (add-to-list 'git-gutter:update-commands 'other-window)
-                        (git-gutter:linum-setup)
-                        (global-git-gutter-mode 1)))
-
             (setq magit-diff-options '("-w")
                   magit-status-buffer-switch-function 'switch-to-buffer
                   magit-diff-refine-hunk t)
 
             ;; FIX Don't know why these become unbound sometimes
-            (bind-keys :map magit-mode-map ;;((kbd "s")         . magit-stage-item)
-                                           ;;((kbd "u")         . magit-unstage-item)
-                                           ((kbd "TAB")       . magit-section-cycle)
-                                           ((kbd "<backtab>") . magit-section-cycle-global)))
+            (bind-keys :map magit-mode-map ;;("s"       . magit-stage-item)
+                                           ;;("u"       . magit-unstage-item)
+                                           ("<tab>"     . magit-section-cycle)
+                                           ("<backtab>" . magit-section-cycle-global)))
   :bind (("C-x g" . magit-status)))
 ;; ========================================================================
 
@@ -724,7 +694,7 @@ Use Helm otherwise."
       (helm-projectile-find-file)
     (helm-find-files-1 (expand-file-name "./"))))
 
-(global-set-key (kbd "C-S-n") 'my-find-file)
+(bind-key "C-S-n" 'my-find-file)
 
 (defun calc-relative-luminance (hex)
   "Calculate relative luminance by colour's HEX value."
@@ -766,14 +736,10 @@ Use Helm otherwise."
   (setq cursor-type 'bar))
 ;; ========================================================================
 ;; Disable evil-mode in some major modes
-(dolist (mode-hook '(shell-mode-hook
-                     term-mode-hook
-                     magit-mode-hook
-                     erc-mode-hook
-                     eshell-mode-hook
-                     comint-mode-hook
-                     proced-mode-hook
-                     nrepl-connected-hook))
+(dolist (mode-hook '(shell-mode-hook  term-mode-hook
+                     magit-mode-hook  erc-mode-hook
+                     eshell-mode-hook comint-mode-hook
+                     proced-mode-hook nrepl-connected-hook))
   (add-hook mode-hook 'my-evil-off))
 ;; ========================================================================
 (setq debug-on-error nil)
