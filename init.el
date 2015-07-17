@@ -425,27 +425,25 @@
           (autoload 'helm-eshell-history "helm-eshell"    t)
           (autoload 'helm-esh-pcomplete  "helm-eshell"    t)
 
-          (bind-keys :map helm-map ((kbd "<tab>") . helm-execute-persistent-action)
-                     ((kbd "C-i")   . helm-execute-persistent-action)
-                     ((kbd "C-z")   . helm-select-action)
-                     ((kbd "ESC")   . helm-keyboard-quit))
+          (helm-mode t)
+          (helm-adaptive-mode t)
 
-          (bind-keys :map eshell-mode-map ((kbd "TAB")     . helm-esh-pcomplete)
-                     ((kbd "C-c C-l") . helm-eshell-history)))
-  (helm-mode t)
-  (helm-adaptive-mode t))
-:bind (("M-x"     . helm-M-x)
-       ("M-y"     . helm-show-kill-ring)
-       ("M-s o"   . helm-swoop)
-       ("M-s /"   . helm-multi-swoop)
-       ("C-c h"   . helm-command-prefix)
-       ("C-x b"   . helm-mini)
-       ("C-x f"   . helm-find-files)
-       ("C-x C-r" . helm-recentf)
-       ("C-x c!"  . helm-calcul-expression)
-       ("C-x c:"  . helm-eval-expression-with-eldoc)
-       ("C-x C-b" . helm-buffers-list)
-       ("C-x C-f" . helm-find-files)))
+          (bind-keys :map helm-map ((kbd "<tab>") . helm-execute-persistent-action)
+                                   ((kbd "C-i")   . helm-execute-persistent-action)
+                                   ((kbd "C-z")   . helm-select-action)
+                                   ((kbd "ESC")   . helm-keyboard-quit)))
+  :bind (("M-x"     . helm-M-x)
+         ("M-y"     . helm-show-kill-ring)
+         ("M-s o"   . helm-swoop)
+         ("M-s /"   . helm-multi-swoop)
+         ("C-c h"   . helm-command-prefix)
+         ("C-x b"   . helm-mini)
+         ("C-x f"   . helm-find-files)
+         ("C-x C-r" . helm-recentf)
+         ("C-x c!"  . helm-calcul-expression)
+         ("C-x c:"  . helm-eval-expression-with-eldoc)
+         ("C-x C-b" . helm-buffers-list)
+         ("C-x C-f" . helm-find-files)))
 ;; ========================================================================
 
 ;; ========================================================================
@@ -573,27 +571,24 @@ Otherwise run projectile-find-file."
 
             (setq magit-diff-options '("-w")
                   magit-status-buffer-switch-function 'switch-to-buffer
-                  magit-diff-refine-hunk t
-                  ediff-window-setup-function 'ediff-setup-windows-plain
-                  ediff-split-window-function 'split-window-horizontally
-                  ediff-diff-options "-w")
+                  magit-diff-refine-hunk t)
 
             ;; FIX Don't know why these become unbound sometimes
             (bind-keys :map magit-mode-map ;;((kbd "s")         . magit-stage-item)
                                            ;;((kbd "u")         . magit-unstage-item)
                                            ((kbd "TAB")       . magit-section-cycle)
-                                           ((kbd "<backtab>") . magit-section-cycle-global))
-
-            ;; Vim-like movement between changes
-            (defun ediff-vim-like-navigation ()
-              (ediff-setup-keymap)
-              (bind-keys :map ediff-mode-map
-                         ("j" . ediff-next-difference)
-                         ("k" . ediff-previous-difference)))
-            (add-hook 'ediff-mode-hook 'ediff-vim-like-navigation)
-            ;; Restore previous windows state after Ediff quits
-            (add-hook 'ediff-after-quit-hook-internal 'winner-undo))
+                                           ((kbd "<backtab>") . magit-section-cycle-global)))
   :bind (("C-x g" . magit-status)))
+;; ========================================================================
+
+;; ========================================================================
+(use-package ediff
+  :config (progn
+            (setq ediff-window-setup-function 'ediff-setup-windows-plain
+                  ediff-split-window-function 'split-window-horizontally
+                  ediff-diff-options "-w")))
+              ;; Restore previous windows state after Ediff quits
+              ;; (add-hook 'ediff-after-quit-hook-internal 'winner-undo)
 ;; ========================================================================
 
 ;; =========================================================================
