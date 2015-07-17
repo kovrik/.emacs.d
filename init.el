@@ -58,7 +58,7 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("8f2e60e25bd33a29f45867d99c49afd9d7f3f3ed8a60926d32d5a23c790de240" "118717ce0a2645a0cf240b044999f964577ee10137b1f992b09a317d5073c02d" "26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" "a2e7b508533d46b701ad3b055e7c708323fb110b6676a8be458a758dd8f24e27" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
+    ("52706f54fd3e769a0895d1786796450081b994378901d9c3fb032d3094788337" "8f2e60e25bd33a29f45867d99c49afd9d7f3f3ed8a60926d32d5a23c790de240" "118717ce0a2645a0cf240b044999f964577ee10137b1f992b09a317d5073c02d" "26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" "a2e7b508533d46b701ad3b055e7c708323fb110b6676a8be458a758dd8f24e27" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
  '(git-gutter:hide-gutter t)
  '(package-selected-packages
    (quote
@@ -104,7 +104,8 @@
             (exec-path-from-shell-initialize)))
 
 (when (eq 'windows-nt system-type)
-  (setq exec-path (append (parse-colon-path (getenv "PATH")) (parse-colon-path (getenv "USERPROFILE")) exec-path)))
+  (setq exec-path (append (parse-colon-path (getenv "PATH"))
+                          (parse-colon-path (getenv "USERPROFILE")) exec-path)))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -287,7 +288,7 @@
               (interactive)
               (cider-find-var t nil))
             (bind-keys :map clojure-mode-map ((kbd "C-h")   . cider-find-var-no-prompt)
-                                             ((kbd "C-M-x") . cider-eval-defun-at-point))))
+                       ((kbd "C-M-x") . cider-eval-defun-at-point))))
 ;; ========================================================================
 
 ;; ========================================================================
@@ -297,8 +298,8 @@
 ;; FIXME Flycheck not working well
 ;; FIXME Always display output in REPL
 ;; (use-package geiser
-  ;; :defer  t
-  ;; :init (setq geiser-mode-company-complete-module-key nil))
+;; :defer  t
+;; :init (setq geiser-mode-company-complete-module-key nil))
 ;; ========================================================================
 
 ;; ========================================================================
@@ -373,12 +374,12 @@
             (define-key minibuffer-local-isearch-map    [escape] 'minibuffer-keyboard-quit)
             (define-key evil-insert-state-map           [escape] 'evil-normal-state)
             (bind-keys :map evil-normal-state-map ([next]   . evil-scroll-down)
-                                                  ([prior]  . evil-scroll-up)
-                                                  ([escape] . keyboard-quit)
-                                                  ("j"      . evil-next-visual-line)
-                                                  ("k"      . evil-previous-visual-line))
+                       ([prior]  . evil-scroll-up)
+                       ([escape] . keyboard-quit)
+                       ("j"      . evil-next-visual-line)
+                       ("k"      . evil-previous-visual-line))
             (bind-keys :map evil-motion-state-map ("C-w m" . maximize-window)
-                                                  ("C-w u" . winner-undo))))
+                       ("C-w u" . winner-undo))))
 ;; (use-package evil-ranger :init (require 'dired))
 ;; ========================================================================
 
@@ -420,37 +421,31 @@
                 helm-scroll-amount                    8
                 helm-echo-input-in-header-line        t)
 
-          (bind-keys :map helm-map ((kbd "<tab>") . helm-execute-persistent-action)
-                                   ((kbd "C-i")   . helm-execute-persistent-action)
-                                   ((kbd "C-z")   . helm-select-action)
-                                   ((kbd "ESC")   . helm-keyboard-quit))
-
-          (when (executable-find "curl") (setq helm-google-suggest-use-curl-p t))
-
           (autoload 'helm-descbinds      "helm-descbinds" t)
           (autoload 'helm-eshell-history "helm-eshell"    t)
           (autoload 'helm-esh-pcomplete  "helm-eshell"    t)
 
-          (defun my-define-eshell-mode-map-keys ()
-            (interactive)
-            (bind-keys :map eshell-mode-map ((kbd "TAB")     . helm-esh-pcomplete)
-                                            ((kbd "C-c C-l") . helm-eshell-history)))
-          (add-hook 'eshell-mode-hook 'my-define-eshell-mode-map-keys)
-          (helm-mode t)
-          (helm-adaptive-mode t)
-          )
-  :bind (("C-c h"   . helm-command-prefix)
-         ("M-x"     . helm-M-x)
-         ("C-x b"   . helm-mini)
-         ("C-x C-b" . helm-buffers-list)
-         ("C-x C-f" . helm-find-files)
-         ("C-x f"   . helm-find-files)
-         ("C-x C-r" . helm-recentf)
-         ("M-y"     . helm-show-kill-ring)
-         ("M-s o"   . helm-swoop)
-         ("M-s /"   . helm-multi-swoop)
-         ("C-x c!"  . helm-calcul-expression)
-         ("C-x c:"  . helm-eval-expression-with-eldoc)))
+          (bind-keys :map helm-map ((kbd "<tab>") . helm-execute-persistent-action)
+                     ((kbd "C-i")   . helm-execute-persistent-action)
+                     ((kbd "C-z")   . helm-select-action)
+                     ((kbd "ESC")   . helm-keyboard-quit))
+
+          (bind-keys :map eshell-mode-map ((kbd "TAB")     . helm-esh-pcomplete)
+                     ((kbd "C-c C-l") . helm-eshell-history)))
+  (helm-mode t)
+  (helm-adaptive-mode t))
+:bind (("M-x"     . helm-M-x)
+       ("M-y"     . helm-show-kill-ring)
+       ("M-s o"   . helm-swoop)
+       ("M-s /"   . helm-multi-swoop)
+       ("C-c h"   . helm-command-prefix)
+       ("C-x b"   . helm-mini)
+       ("C-x f"   . helm-find-files)
+       ("C-x C-r" . helm-recentf)
+       ("C-x c!"  . helm-calcul-expression)
+       ("C-x c:"  . helm-eval-expression-with-eldoc)
+       ("C-x C-b" . helm-buffers-list)
+       ("C-x C-f" . helm-find-files)))
 ;; ========================================================================
 
 ;; ========================================================================
@@ -469,8 +464,8 @@ Otherwise run projectile-find-file."
                     (git-projects (mapcar 'expand-file-name
                                           (cl-remove-if-not
                                            (lambda (p)
-                                             (unless (file-remote-p p)
-                                               (file-directory-p (concat p "/.git/"))))
+                                             (if (not (file-remote-p p))
+                                                 (file-directory-p (concat p "/.git/"))))
                                            projectile-known-projects))))
                 (if (member p git-projects)
                     (magit-status p)
@@ -481,12 +476,9 @@ Otherwise run projectile-find-file."
                   projectile-enable-caching t
                   projectile-switch-project-action 'my-projectile-switch-to-project)
 
-            (global-set-key (kbd "C-S-p") 'projectile-switch-project)
-
             (when (eq system-type 'windows-nt)
               (setq projectile-indexing-method 'alien
-                    ;; disable caching if indexing-method is 'alien
-                    projectile-enable-caching nil))
+                    projectile-enable-caching  nil))
             (projectile-global-mode))
   :bind (("C-S-p" . projectile-switch-project)))
 ;; ========================================================================
@@ -576,28 +568,21 @@ Otherwise run projectile-find-file."
 
                         (add-to-list 'git-gutter:update-hooks    'focus-in-hook)
                         (add-to-list 'git-gutter:update-commands 'other-window)
-                        (custom-set-variables '(git-gutter:hide-gutter t))
                         (git-gutter:linum-setup)
                         (global-git-gutter-mode 1)))
-
-            (when (eq system-type 'windows-nt)
-              (add-to-list 'exec-path "C:/Program Files (x86)/Git/bin")
-              (setenv "PATH" (concat "C:/Program Files (x86)/Git/bin;" (getenv "PATH"))))
 
             (setq magit-diff-options '("-w")
                   magit-status-buffer-switch-function 'switch-to-buffer
                   magit-diff-refine-hunk t
-                  ;; magit-process-popup-time 20
                   ediff-window-setup-function 'ediff-setup-windows-plain
                   ediff-split-window-function 'split-window-horizontally
                   ediff-diff-options "-w")
 
             ;; FIX Don't know why these become unbound sometimes
-            (bind-keys :map magit-mode-map
-                       ((kbd "s")         . magit-stage-item)
-                       ((kbd "u")         . magit-unstage-item)
-                       ((kbd "TAB")       . magit-section-cycle)
-                       ((kbd "<backtab>") . magit-section-cycle-global))
+            (bind-keys :map magit-mode-map ;;((kbd "s")         . magit-stage-item)
+                                           ;;((kbd "u")         . magit-unstage-item)
+                                           ((kbd "TAB")       . magit-section-cycle)
+                                           ((kbd "<backtab>") . magit-section-cycle-global))
 
             ;; Vim-like movement between changes
             (defun ediff-vim-like-navigation ()
@@ -607,40 +592,14 @@ Otherwise run projectile-find-file."
                          ("k" . ediff-previous-difference)))
             (add-hook 'ediff-mode-hook 'ediff-vim-like-navigation)
             ;; Restore previous windows state after Ediff quits
-            (add-hook 'ediff-after-quit-hook-internal 'winner-undo)
-
-            ;; FIXME Not working with diff3.exe
-            ;; Load after ediff-util.
-            (defun ediff-toggle-whitespace-sensitivity ()
-              "Toggle whitespace sensitivity for the current EDiff run.
-This does not affect the global EDiff settings.  The function
-automatically updates the diff to reflect the change."
-              (interactive)
-              (let ((post-update-message
-                     (if (string-match " ?-w$" ediff-actual-diff-options)
-                         (progn
-                           (setq ediff-actual-diff-options (concat ediff-diff-options " " ediff-ignore-case-option)
-                                 ;; ediff-actual-diff3-options (concat ediff-diff3-options " " ediff-ignore-case-option3)
-                                 )
-                           "Whitespace sensitivity on")
-                       (setq ediff-actual-diff-options (concat ediff-diff-options " " ediff-ignore-case-option " -w")
-                             ;; ediff-actual-diff3-options (concat ediff-diff3-options " " ediff-ignore-case-option3 " -w")
-                             )
-                       "Whitespace sensitivity off")))
-                (print ediff-actual-diff3-options)
-                (ediff-update-diffs)
-                (message post-update-message)))
-
-            (add-hook 'ediff-keymap-setup-hook
-                      #'(lambda () (define-key ediff-mode-map [?W] 'ediff-toggle-whitespace-sensitivity))))
+            (add-hook 'ediff-after-quit-hook-internal 'winner-undo))
   :bind (("C-x g" . magit-status)))
 ;; ========================================================================
 
 ;; =========================================================================
 (use-package eshell
-  :config (progn
-            (setq eshell-save-history-on-exit t
-                  eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'")))
+  :config (setq eshell-save-history-on-exit t
+                eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'"))
 ;; =========================================================================
 
 ;; ========================================================================
@@ -695,11 +654,11 @@ automatically updates the diff to reflect the change."
             (setq shackle-lighter " |#|"
                   shackle-rules '(("\\`\\*magit.*?\\*\\'" :regexp t :same t)
                                   ("\\`\\*helm.*?\\*\\'"  :regexp t :align t :ratio 0.4)
-                                  (compilation-mode :ignore t)
-                                  (erc-mode         :same   t)
-                                  (proced-mode      :same   t)
-                                  (help-mode        :same   t)
-                                  (ibuffer-mode     :same   t)))
+                                  (compilation-mode       :ignore t)
+                                  (erc-mode               :same   t)
+                                  (proced-mode            :same   t)
+                                  (help-mode              :same   t)
+                                  (ibuffer-mode           :same   t)))
             (shackle-mode t)))
 ;; ========================================================================
 
@@ -707,8 +666,7 @@ automatically updates the diff to reflect the change."
 (use-package erc
   :defer t
   :config (progn
-            (use-package erc-hl-nicks
-              :config (add-hook 'erc-mode-hook #'erc-hl-nicks-mode))
+            (use-package erc-hl-nicks :config (add-hook 'erc-mode-hook #'erc-hl-nicks-mode))
             (erc-autojoin-mode t)
             (erc-scrolltobottom-enable)
             (erc-scrolltobottom-mode t)
