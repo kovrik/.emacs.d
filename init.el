@@ -274,18 +274,6 @@
 ;; ========================================================================
 
 ;; ========================================================================
-;; FIXME Doesn't work!
-;; FIXME Prevent from random buffer switching on errors
-;; FIXME Company mode not working well
-;; FIXME Flycheck not working well
-;; FIXME Always display output in REPL
-;; (use-package geiser
-;; :pin melpa-stable
-;; :defer  t
-;; :init (setq geiser-mode-company-complete-module-key nil))
-;; ========================================================================
-
-;; ========================================================================
 (use-package racket-mode
   :defer t
   :config (add-hook 'racket-mode-hook #'company-quickhelp--disable))
