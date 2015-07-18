@@ -157,19 +157,17 @@
 ;; Fonts
 (defun font-exists-p (f)
   "Return t if font F (font-spec with :name key) exists."
-  (when (not (null f))
-    (member (font-get f :name) (font-family-list))))
+  (and f (member (font-get f :name) (font-family-list))))
 
-(let ((myfont (cl-find-if 'font-exists-p
-                          (list (font-spec :name "Meslo LG S"      :size 13)
-                                (and (eq 'windows-nt system-type)
-                                     (font-spec :name "Consolas"   :size 14))
-                                (font-spec :name "Monaco"          :size 13)
-                                (font-spec :name "Menlo"           :size 14)
-                                (font-spec :name "Source Code Pro" :size 13)))))
-  (when myfont
-    (set-face-attribute 'default nil :font myfont)
-    (set-frame-font      myfont  nil t)))
+(let ((my-font (cl-find-if 'font-exists-p
+                           (list (and (eq system-type 'windows-nt)
+                                      (font-spec :name "Consolas"   :size 14))
+                                 (font-spec :name "Monaco"          :size 13)
+                                 (font-spec :name "Source Code Pro" :size 13)))))
+  (when my-font
+    (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
+    (set-face-attribute 'default nil :font my-font)
+    (set-frame-font      my-font  nil t)))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -635,7 +633,9 @@ Otherwise run projectile-find-file."
                   erc-input-line-position -2
                   erc-prompt-for-password nil
                   erc-header-line-face-method nil
-                  erc-server-coding-system '(utf-8 . utf-8))))
+                  erc-server-coding-system '(utf-8 . utf-8)
+                  erc-prompt ">"
+                  erc-accidental-paste-threshold-seconds 0.5)))
 ;; ========================================================================
 
 ;; ========================================================================
