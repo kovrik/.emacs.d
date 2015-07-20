@@ -73,7 +73,6 @@
  '(erc-direct-msg-face ((t (:foreground "#e53935"))))
  '(erc-input-face ((t (:foreground "dark green"))))
  '(erc-timestamp-face ((t (:foreground "#9966ca"))))
- '(eval-sexp-fu-flash ((t (:background "#039BE5"))))
  '(evil-search-highlight-persist-highlight-face ((t (:background "#ffffbb" :foreground "#000000"))))
  '(flycheck-fringe-error ((t (:background "#e53935" :foreground "#e53935"))))
  '(flycheck-fringe-info ((t (:background "#43a047" :foreground "#43a047"))))
@@ -160,7 +159,8 @@
   (and f (member (font-get f :name) (font-family-list))))
 
 (let ((my-font (cl-find-if 'font-exists-p
-                           (list (and (eq system-type 'windows-nt)
+                           (list (font-spec :name "Meslo LG S"      :size 13)
+                                 (and (eq system-type 'windows-nt)
                                       (font-spec :name "Consolas"   :size 14))
                                  (font-spec :name "Monaco"          :size 13)
                                  (font-spec :name "Source Code Pro" :size 13)))))
@@ -173,7 +173,7 @@
 ;; =========================================================================
 ;; Packages without config
 (use-package bug-hunter)
-(use-package eval-sexp-fu)
+;; (use-package eval-sexp-fu)
 (use-package command-log-mode)
 (use-package restclient)
 (use-package iedit)
@@ -269,6 +269,11 @@
               (cider-find-var t nil))
             (bind-keys :map clojure-mode-map ("C-h"   . cider-find-var-no-prompt)
                                              ("C-M-x" . cider-eval-defun-at-point))))
+;; ========================================================================
+
+;; ========================================================================
+;; FIXME
+(use-package geiser)
 ;; ========================================================================
 
 ;; ========================================================================
@@ -539,12 +544,19 @@ Otherwise run projectile-find-file."
 
 ;; ========================================================================
 (use-package ediff
+  :defer nil
   :config (progn
             (setq ediff-window-setup-function 'ediff-setup-windows-plain
                   ediff-split-window-function 'split-window-horizontally
-                  ediff-diff-options "-w")))
-              ;; Restore previous windows state after Ediff quits
-              ;; (add-hook 'ediff-after-quit-hook-internal 'winner-undo)
+                  ediff-diff-options          "-w")
+
+            ;; Restore window layout
+            (defun my-toggle-ediff-wide-display ()
+              "Turn off wide-display mode (if was enabled) before quitting ediff."
+              (when ediff-wide-display-p
+                (ediff-toggle-wide-display)))
+            (add-hook 'ediff-cleanup-hook 'my-toggle-ediff-wide-display)
+            (add-hook 'ediff-quit-hook    'winner-undo)))
 ;; ========================================================================
 
 ;; =========================================================================
