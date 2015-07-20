@@ -177,6 +177,7 @@
 (use-package command-log-mode)
 (use-package restclient)
 (use-package iedit)
+(use-package rainbow-mode)
 ;; =========================================================================
 
 ;; =========================================================================
