@@ -13,7 +13,7 @@
 (add-to-list 'package-pinned-packages '(queue . "gnu") t)
 
 ;; Make sure to have downloaded archive description
-(or (file-exists-p (concat package-user-dir "/archives"))
+(or (file-directory-p (expand-file-name (concat package-user-dir "/archives")))
     (package-refresh-contents))
 ;; =========================================================================
 
@@ -103,9 +103,6 @@
 ;; =========================================================================
 ;; Globals
 (prefer-coding-system 'utf-8)
-(when (display-graphic-p)
-  (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
-
 (when window-system
   (tooltip-mode    -1)
   (tool-bar-mode   -1)
@@ -196,7 +193,7 @@
 
 ;; =========================================================================
 ;; TODO Configure
-(use-package ranger)
+(use-package ranger :init (require 'dired))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -250,11 +247,6 @@
   :config (progn
             (use-package cider :pin melpa)
             (use-package clojure-mode-extra-font-locking)
-            ;; FIXME ==================================
-            ;; (use-package clojure-snippets)
-            ;; (use-package cider-eval-sexp-fu :config (require 'cider-eval-sexp-fu))
-            ;; (use-package kibit-mode :pin melpa-stable)
-            ;; ========================================
             (use-package flycheck-clojure :pin melpa :config (flycheck-clojure-setup))
 
             (add-hook 'clojure-mode-hook    'flycheck-mode)
@@ -310,10 +302,9 @@
               :config (global-evil-search-highlight-persist t))
             (use-package evil-matchit
               :config (progn
-                        (defun evil-matchit-on () (evil-matchit-mode))
-                        (add-hook 'nxml-mode-hook 'evil-matchit-on)
-                        (add-hook 'html-mode-hook 'evil-matchit-on)
-                        (add-hook 'web-mode-hook  'evil-matchit-on)))
+                        (add-hook 'nxml-mode-hook 'evil-matchit-mode)
+                        (add-hook 'html-mode-hook 'evil-matchit-mode)
+                        (add-hook 'web-mode-hook  'evil-matchit-mode)))
             (use-package evil-nerd-commenter
               :config (progn
                         (evilnc-default-hotkeys)
@@ -329,7 +320,7 @@
             (setq evil-move-cursor-back t
                   evil-default-cursor   t)
 
-            ;; :q command to just kill buffer, but do not close window
+            ;; kill buffer, but don't close window
             (evil-ex-define-cmd "q[uit]" 'kill-this-buffer)
             (evil-ex-define-cmd "ls"     'ibuffer-list-buffers)
 
@@ -360,7 +351,6 @@
                                                   ("k"      . evil-previous-visual-line))
             (bind-keys :map evil-motion-state-map ("C-w m" . maximize-window)
                                                   ("C-w u" . winner-undo))))
-;; (use-package evil-ranger :init (require 'dired))
 ;; ========================================================================
 
 ;; ========================================================================
@@ -404,7 +394,6 @@
           (autoload 'helm-descbinds      "helm-descbinds" t)
           (autoload 'helm-eshell-history "helm-eshell"    t)
           (autoload 'helm-esh-pcomplete  "helm-eshell"    t)
-
           (helm-mode t)
           (helm-adaptive-mode t)
 
@@ -438,15 +427,13 @@
 If project is a git-project, then run magit-status.
 Otherwise run projectile-find-file."
               (interactive)
-              (let ((p (projectile-project-root))
-                    (git-projects (mapcar 'expand-file-name
-                                          (cl-remove-if-not
-                                           (lambda (p)
-                                             (if (not (file-remote-p p))
-                                                 (file-directory-p (concat p "/.git/"))))
-                                           projectile-known-projects))))
-                (if (member p git-projects)
-                    (magit-status p)
+              (let ((pr (projectile-project-root))
+                    (git-projects (cl-remove-if
+                                   (lambda (p) (or (file-remote-p p)
+                                                   (not (file-directory-p (concat p "/.git/")))))
+                                   (mapcar 'expand-file-name projectile-known-projects))))
+                (if (member pr git-projects)
+                    (magit-status pr)
                   (projectile-find-file))))
 
             (setq projectile-keymap-prefix (kbd "C-c p")
@@ -462,21 +449,6 @@ Otherwise run projectile-find-file."
 ;; ========================================================================
 
 ;; ========================================================================
-(use-package neotree
-  :config (progn
-            (defun neotree-evil-keys ()
-              (interactive)
-              (bind-keys :map evil-normal-state-local-map ("S-h"   . neotree-hidden-file-toggle)
-                                                          ("<tab>" . neotree-enter)
-                                                          ("q"     . neotree-hide)
-                                                          ("SPC"   . neotree-enter)
-                                                          ("RET"   . neotree-enter)))
-            (setq neo-theme 'ascii)
-            (add-hook 'neotree-mode-hook #'neotree-evil-keys))
-  :bind ("<f2>" . neotree-toggle))
-;; ========================================================================
-
-;; ========================================================================
 (use-package company
   :pin gnu
   :diminish company-mode
@@ -484,8 +456,6 @@ Otherwise run projectile-find-file."
             (use-package company-quickhelp
               :config (progn (setq company-quickhelp-delay 0.7)
                              (company-quickhelp-mode 1)))
-            (require 'company-etags)
-            (add-to-list 'company-etags-modes 'clojure-mode)
             (setq company-show-numbers t
                   company-minimum-prefix-length 2
                   company-require-match 'never
@@ -551,11 +521,10 @@ Otherwise run projectile-find-file."
 ;; ========================================================================
 (use-package ediff
   :defer nil
-  :config (progn
+  :config (pron
             (setq ediff-window-setup-function 'ediff-setup-windows-plain
                   ediff-split-window-function 'split-window-horizontally
                   ediff-diff-options          "-w")
-
             ;; Restore window layout
             (defun my-toggle-ediff-wide-display ()
               "Turn off wide-display mode (if was enabled) before quitting ediff."
@@ -601,7 +570,6 @@ Otherwise run projectile-find-file."
   :config (progn
             (setq sauron-modules '(sauron-erc sauron-org sauron-notifications)
                   sauron-separate-frame nil
-                  ;; sauron-hide-mode-line t
                   sauron-max-line-length 180
                   sauron-watch-nicks '("kovrik" "kovrik`" "kovrik``"))
             (sauron-start)))
@@ -702,34 +670,13 @@ Use Helm otherwise."
 
 (bind-key "C-S-n" 'my-find-file)
 
-(defun calc-relative-luminance (hex)
-  "Calculate relative luminance by colour's HEX value."
-  (let ((rgb           (color-name-to-rgb hex))
-        (itu-r-bt-709 '(0.2126 0.7152 0.0722)))
-    (if rgb
-        (apply '+ (mapcar* '* rgb itu-r-bt-709))
-      (error "Invalid HEX colour value: '%s'" hex))))
-
-;; TODO Add xah-syntax-color-hex-off function
-(defun xah-syntax-color-hex-on ()
-  "Syntax color hex color spec such as #ffff11110000 or #ff1100 in current buffer."
-  (interactive)
-  (font-lock-add-keywords nil
-                          '(("#\\([ABCDEFabcdef[:digit:]]\\{12\\}\\|[ABCDEFabcdef[:digit:]]\\{6\\}\\)"
-                             (0 (put-text-property (match-beginning 0) (match-end 0)
-                                                   'face (list :background (match-string-no-properties 0)
-                                                               :foreground (if (> (calc-relative-luminance (match-string-no-properties 0)) 0.5)
-                                                                               "#000000"
-                                                                             "#ffffff")))))))
-  (font-lock-fontify-buffer))
-
-(defun kill-all-dired-buffers ()
+(defun my-kill-all-dired-buffers ()
   "Kill all dired buffers."
   (interactive)
   (mapc (lambda (b) (when (eq 'dired-mode (buffer-local-value 'major-mode b))
                       (kill-buffer b))) (buffer-list)))
 
-(defun kill-all-ediff-buffers ()
+(defun my-kill-all-ediff-buffers ()
   "Kill all ediff buffers."
   (interactive)
   (mapc (lambda (b) (when (string-match "^*ediff-.*\\*$" (buffer-name b))
@@ -741,6 +688,7 @@ Use Helm otherwise."
   (turn-off-evil-mode)
   (setq cursor-type 'bar))
 ;; ========================================================================
+;; TODO Do the opposite - disable Evil everywhere except some modes
 ;; Disable evil-mode in some major modes
 (dolist (mode-hook '(shell-mode-hook  term-mode-hook
                      magit-mode-hook  erc-mode-hook
