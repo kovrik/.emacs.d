@@ -297,6 +297,7 @@
   :config (progn
             (use-package evil-org)
             (use-package evil-numbers)
+            (use-package evil-anzu)
             (use-package evil-surround :config (global-evil-surround-mode 1))
             (use-package evil-search-highlight-persist
               :config (global-evil-search-highlight-persist t))
