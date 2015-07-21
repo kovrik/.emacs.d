@@ -73,7 +73,7 @@
  '(erc-direct-msg-face ((t (:foreground "#e53935"))))
  '(erc-input-face ((t (:foreground "dark green"))))
  '(erc-timestamp-face ((t (:foreground "#9966ca"))))
- '(evil-search-highlight-persist-highlight-face ((t (:background "#ffffbb" :foreground "#000000"))))
+ '(evil-search-highlight-persist-highlight-face ((t (:background "#ffdd00" :foreground "#000000"))))
  '(flycheck-fringe-error ((t (:background "#e53935" :foreground "#e53935"))))
  '(flycheck-fringe-info ((t (:background "#43a047" :foreground "#43a047"))))
  '(flycheck-fringe-warning ((t (:background "#ffc107" :foreground "#ffc107"))))
