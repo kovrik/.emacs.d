@@ -293,8 +293,7 @@
                       (evil-leader/set-key "f"   'find-file-at-point)
                       (evil-leader/set-key "a"   'align-regexp)
                       (evil-leader/set-key "s"   'delete-trailing-whitespace)
-                      (add-hook 'prog-mode-hook #'evil-local-mode)
-                      (add-hook 'text-mode-hook #'evil-local-mode))))
+                      (evil-leader-mode t))))
   :config (progn
             (use-package evil-org)
             (use-package evil-numbers)
@@ -352,7 +351,24 @@
                                                   ("j"      . evil-next-visual-line)
                                                   ("k"      . evil-previous-visual-line))
             (bind-keys :map evil-motion-state-map ("C-w m" . maximize-window)
-                                                  ("C-w u" . winner-undo))))
+                       ("C-w u" . winner-undo))
+
+            (add-hook 'help-mode-hook #'evil-local-mode)
+            (add-hook 'prog-mode-hook #'evil-local-mode)
+            (add-hook 'text-mode-hook #'evil-local-mode)
+
+            (defun my-evil-off ()
+              "Turn 'evil-mode' off and change cursor type to bar."
+              (interactive)
+              (turn-off-evil-mode)
+              (setq cursor-type 'bar))
+
+            ;; Disable evil-mode in some major modes
+            (dolist (mode-hook '(shell-mode-hook  term-mode-hook
+                                 magit-mode-hook  erc-mode-hook
+                                 eshell-mode-hook comint-mode-hook
+                                 proced-mode-hook nrepl-connected-hook))
+              (add-hook mode-hook 'my-evil-off))))
 ;; ========================================================================
 
 ;; ========================================================================
@@ -687,18 +703,6 @@ Use Helm otherwise."
   (mapc (lambda (b) (when (string-match "^*ediff-.*\\*$" (buffer-name b))
                       (kill-buffer b))) (buffer-list)))
 
-(defun my-evil-off ()
-  "Turn 'evil-mode' off and change cursor type to bar."
-  (interactive)
-  (turn-off-evil-mode)
-  (setq cursor-type 'bar))
-;; ========================================================================
-;; Disable evil-mode in some major modes
-(dolist (mode-hook '(shell-mode-hook  term-mode-hook
-                     magit-mode-hook  erc-mode-hook
-                     eshell-mode-hook comint-mode-hook
-                     proced-mode-hook nrepl-connected-hook))
-  (add-hook mode-hook 'my-evil-off))
 ;; ========================================================================
 (setq debug-on-error nil)
 (provide 'init)
