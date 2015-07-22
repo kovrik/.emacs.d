@@ -292,8 +292,9 @@
                       (evil-leader/set-key "SPC" 'evil-search-highlight-persist-remove-all)
                       (evil-leader/set-key "f"   'find-file-at-point)
                       (evil-leader/set-key "a"   'align-regexp)
-                      (evil-leader/set-key "s"   'delete-trailing-whitespace)))
-          (evil-mode 1))
+                      (evil-leader/set-key "s"   'delete-trailing-whitespace)
+                      (add-hook 'prog-mode-hook #'evil-local-mode)
+                      (add-hook 'text-mode-hook #'evil-local-mode))))
   :config (progn
             (use-package evil-org)
             (use-package evil-numbers)
@@ -397,6 +398,9 @@
           (autoload 'helm-esh-pcomplete  "helm-eshell"    t)
           (helm-mode t)
           (helm-adaptive-mode t)
+
+          ;; Do not auto-expand '~/', '//', './', '../' in helm-find-files
+          (remove-hook 'helm-after-update-hook 'helm-ff-auto-expand-to-home-or-root)
 
           (bind-keys :map helm-map ("<tab>"  . helm-execute-persistent-action)
                                    ("C-i"    . helm-execute-persistent-action)
@@ -689,7 +693,6 @@ Use Helm otherwise."
   (turn-off-evil-mode)
   (setq cursor-type 'bar))
 ;; ========================================================================
-;; TODO Do the opposite - disable Evil everywhere except some modes
 ;; Disable evil-mode in some major modes
 (dolist (mode-hook '(shell-mode-hook  term-mode-hook
                      magit-mode-hook  erc-mode-hook
