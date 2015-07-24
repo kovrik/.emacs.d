@@ -34,17 +34,17 @@
 ;; =========================================================================
 
 ;; =========================================================================
-(defun ensure-packages-installed (packages)
+(defun my-ensure-packages-installed (packages)
   "Assure every package in PACKAGES is installed, ask for installation if it’s not.  Return a list of installed packages or nil for every skipped package."
   (dolist (p packages)
     (when (and (not (package-installed-p p))
                (y-or-n-p (format "Package %s is missing.  Install it? " p)))
       (package-install p))))
 
-(ensure-packages-installed '(queue async autopair browse-kill-ring dash epl f fold-dwim fringe-helper goto-chg highlight highlight-escape-sequences highlight-parentheses idle-highlight-mode markdown-mode pkg-info s))
+(my-ensure-packages-installed '(queue async autopair browse-kill-ring dash epl f fold-dwim fringe-helper goto-chg highlight highlight-escape-sequences highlight-parentheses idle-highlight-mode markdown-mode pkg-info s))
 
 ;; Themes
-(ensure-packages-installed '(ample-theme flatland-theme darcula-theme leuven-theme material-theme minimal-theme noctilux-theme soft-stone-theme solarized-theme sublime-themes twilight-bright-theme zenburn-theme))
+(my-ensure-packages-installed '(ample-theme flatland-theme darcula-theme leuven-theme material-theme minimal-theme noctilux-theme soft-stone-theme solarized-theme sublime-themes twilight-bright-theme zenburn-theme))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -147,15 +147,15 @@
            ("C-c n"  . narrow-to-region)
            ("C-c w"  . widen))
 
-(defun linum-on  () "Turn 'linum-mode' on."  (linum-mode  1))
-(defun linum-off () "Turn 'linum-mode' off." (linum-mode -1))
+(defun my-linum-on  () "Turn 'linum-mode' on."  (linum-mode  1))
+(defun my-linum-off () "Turn 'linum-mode' off." (linum-mode -1))
 ;; =========================================================================
 ;; Fonts
-(defun font-exists-p (f)
+(defun my-font-exists-p (f)
   "Return t if font F (font-spec with :name key) exists."
   (and f (member (font-get f :name) (font-family-list))))
 
-(let ((my-font (cl-find-if 'font-exists-p
+(let ((my-font (cl-find-if 'my-font-exists-p
                            (list (font-spec :name "Meslo LG S"      :size 13)
                                  (and (eq system-type 'windows-nt)
                                       (font-spec :name "Consolas"   :size 14))
@@ -206,8 +206,8 @@
 (use-package linum
   :config (progn
             (setq linum-format (if (display-graphic-p) " %3d" "%4d "))
-            (add-hook 'prog-mode-hook #'linum-on)
-            (add-hook 'text-mode-hook #'linum-on)))
+            (add-hook 'prog-mode-hook #'my-linum-on)
+            (add-hook 'text-mode-hook #'my-linum-on)))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -261,11 +261,11 @@
                   cider-repl-popup-stacktraces t
                   cider-popup-stacktraces      nil)
 
-            (defun cider-find-var-no-prompt ()
+            (defun my-cider-find-var-no-prompt ()
               "cider-find-var at point without prompt"
               (interactive)
               (cider-find-var t nil))
-            (bind-keys :map clojure-mode-map ("C-h"   . cider-find-var-no-prompt)
+            (bind-keys :map clojure-mode-map ("C-h"   . my-cider-find-var-no-prompt)
                                              ("C-M-x" . cider-eval-defun-at-point))))
 ;; ========================================================================
 
@@ -492,10 +492,10 @@ Otherwise run projectile-find-file."
   :config (progn
             (use-package org-bullets
               :config (progn
-                        (defun org-bullets-on () (org-bullets-mode 1))
-                        (add-hook 'org-mode-hook #'org-bullets-on)))
+                        (defun my-org-bullets-on () (org-bullets-mode 1))
+                        (add-hook 'org-mode-hook #'my-org-bullets-on)))
 
-            (add-hook 'org-mode-hook #'linum-off)
+            (add-hook 'org-mode-hook #'my-linum-off)
             ;; FIXME indentation in SRC blocks
             (setq org-edit-src-content-indentation 2
                   org-src-tab-acts-natively t
