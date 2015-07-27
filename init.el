@@ -541,8 +541,7 @@ Otherwise run projectile-find-file."
 
 ;; ========================================================================
 (use-package ediff
-  :defer nil
-  :config (pron
+  :config (progn
             (setq ediff-window-setup-function 'ediff-setup-windows-plain
                   ediff-split-window-function 'split-window-horizontally
                   ediff-diff-options          "-w")
@@ -702,7 +701,6 @@ Use Helm otherwise."
   (interactive)
   (mapc (lambda (b) (when (string-match "^*ediff-.*\\*$" (buffer-name b))
                       (kill-buffer b))) (buffer-list)))
-
 ;; ========================================================================
 (setq debug-on-error nil)
 (provide 'init)
