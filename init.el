@@ -242,6 +242,49 @@
 ;; =========================================================================
 
 ;; =========================================================================
+(use-package eval-in-repl
+  :config (progn
+            ;; Elisp
+            (require 'eval-in-repl-ielm)
+            (define-key emacs-lisp-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
+            (define-key lisp-interaction-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
+            (define-key Info-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
+
+            ;; Clojure
+            ;; (require 'cider) ; if not done elsewhere
+            (require 'eval-in-repl-cider)
+            (define-key clojure-mode-map (kbd "<C-return>") 'eir-eval-in-cider)
+
+            ;; Common Lisp
+            ;; (require 'slime) ; if not done elsewhere
+            ;; (require 'eval-in-repl-slime)
+            ;; (add-hook 'lisp-mode-hook
+            ;;           '(lambda ()
+            ;;              (local-set-key (kbd "<C-return>") 'eir-eval-in-slime)))
+
+            ;; Geiser support (for Racket and Guile Scheme)
+            ;; When using this, turn off racket-mode and scheme supports
+            ;; (require 'geiser) ; if not done elsewhere
+            ;; (require 'eval-in-repl-geiser)
+            ;; (add-hook 'geiser-mode-hook
+                      ;; '(lambda ()
+                         ;; (local-set-key (kbd "<C-return>") 'eir-eval-in-geiser)))
+            ;; racket-mode support (for Racket; if not using Geiser)
+            (require 'racket-mode) ; if not done elsewhere
+            (require 'eval-in-repl-racket)
+            (define-key racket-mode-map (kbd "<C-return>") 'eir-eval-in-racket)
+
+            ;; Scheme support (if not using Geiser))
+            ;; (require 'scheme)    ; if not done elsewhere
+            ;; (require 'cmuscheme) ; if not done elsewhere
+            ;; (require 'eval-in-repl-scheme)
+            ;; (add-hook 'scheme-mode-hook
+            ;;    '(lambda ()
+;;       (local-set-key (kbd "<C-return>") 'eir-eval-in-scheme)))
+))
+;; =========================================================================
+
+;; =========================================================================
 (use-package clojure-mode
   :defer  t
   :config (progn
