@@ -58,7 +58,7 @@
     ("52706f54fd3e769a0895d1786796450081b994378901d9c3fb032d3094788337" "8f2e60e25bd33a29f45867d99c49afd9d7f3f3ed8a60926d32d5a23c790de240" "118717ce0a2645a0cf240b044999f964577ee10137b1f992b09a317d5073c02d" "26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" "a2e7b508533d46b701ad3b055e7c708323fb110b6676a8be458a758dd8f24e27" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
  '(package-selected-packages
    (quote
-    (corral ample-theme auto-compile autopair browse-kill-ring cider clojure-mode-extra-font-locking color-theme-solarized company company-quickhelp darcula-theme dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-nerd-commenter evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode leuven-theme magit markdown-mode material-theme neotree noctilux-theme racket-mode rainbow-delimiters smart-mode-line soft-stone-theme solarized-theme sublime-themes use-package zenburn-theme))))
+    (corral ample-theme auto-compile autopair browse-kill-ring cider clojure-mode-extra-font-locking color-theme-solarized company company-quickhelp darcula-theme dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode leuven-theme magit markdown-mode material-theme neotree noctilux-theme racket-mode rainbow-delimiters smart-mode-line soft-stone-theme solarized-theme sublime-themes use-package zenburn-theme))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -306,14 +306,16 @@
                         (add-hook 'nxml-mode-hook 'evil-matchit-mode)
                         (add-hook 'html-mode-hook 'evil-matchit-mode)
                         (add-hook 'web-mode-hook  'evil-matchit-mode)))
-            (use-package evil-nerd-commenter
+            (use-package evil-commentary
               :config (progn
-                        (evilnc-default-hotkeys)
                         (defun my-comment-line-and-go-to-next ()
                           "Comment current line and go to next."
                           (interactive)
-                          (evilnc-comment-or-uncomment-lines 1)
-                          (evil-next-line)))
+                          (evil-commentary-line (line-beginning-position)
+                                                (line-end-position)
+                                                'line)
+                          (evil-next-line))
+                        (evil-commentary-mode))
               :bind (("C-/" . my-comment-line-and-go-to-next)))
 
             ;; Emacs keys in INSERT mode
@@ -601,6 +603,7 @@ Otherwise run projectile-find-file."
   :config (progn
             (eyebrowse-mode t)
             (eyebrowse-setup-evil-keys)
+            (define-key evil-motion-state-map (kbd "gc") nil)
             (setq eyebrowse-new-workspace t
                   eyebrowse-close-window-config-prompt t)))
 ;; ========================================================================
