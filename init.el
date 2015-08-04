@@ -55,7 +55,8 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("52706f54fd3e769a0895d1786796450081b994378901d9c3fb032d3094788337" "8f2e60e25bd33a29f45867d99c49afd9d7f3f3ed8a60926d32d5a23c790de240" "118717ce0a2645a0cf240b044999f964577ee10137b1f992b09a317d5073c02d" "26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" "a2e7b508533d46b701ad3b055e7c708323fb110b6676a8be458a758dd8f24e27" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
+    ("3d5ef3d7ed58c9ad321f05360ad8a6b24585b9c49abcee67bdcbb0fe583a6950" "3cd28471e80be3bd2657ca3f03fbb2884ab669662271794360866ab60b6cb6e6" "7bde52fdac7ac54d00f3d4c559f2f7aa899311655e7eb20ec5491f3b5c533fe8" "52706f54fd3e769a0895d1786796450081b994378901d9c3fb032d3094788337" "8f2e60e25bd33a29f45867d99c49afd9d7f3f3ed8a60926d32d5a23c790de240" "118717ce0a2645a0cf240b044999f964577ee10137b1f992b09a317d5073c02d" "26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" "a2e7b508533d46b701ad3b055e7c708323fb110b6676a8be458a758dd8f24e27" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
+ '(linum-format " %5i ")
  '(package-selected-packages
    (quote
     (corral ample-theme auto-compile autopair browse-kill-ring cider clojure-mode-extra-font-locking color-theme-solarized company company-quickhelp darcula-theme dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode leuven-theme magit markdown-mode material-theme neotree noctilux-theme racket-mode rainbow-delimiters smart-mode-line soft-stone-theme solarized-theme sublime-themes use-package zenburn-theme))))
@@ -733,20 +734,30 @@ Use Helm otherwise."
   (if (projectile-project-p)
       (helm-projectile-find-file)
     (helm-find-files-1 (expand-file-name "./"))))
-
 (bind-key "C-S-n" 'my-find-file)
+
+(defun my-kill-buffers (&rest args)
+  "Kill buffers."
+  (defun my-kill-buffer-by-p (pred)
+    (let ((matched-buffers (cl-remove-if-not pred (buffer-list))))
+      (when (y-or-n-p (format "Kill %s buffers?" (length matched-buffers)))
+        (mapc 'kill-buffer matched-buffers)
+        (message (format "Killed %s buffer(s)." (length matched-buffers))))))
+  (let ((regex (plist-get args :regex))
+        (mode  (plist-get args :mode)))
+    (my-kill-buffer-by-p (cond
+                           (regex (lambda (b) (string-match regex (buffer-name b))))
+                           (mode  (lambda (b) (eq mode (buffer-local-value 'major-mode b))))))))
 
 (defun my-kill-all-dired-buffers ()
   "Kill all dired buffers."
   (interactive)
-  (mapc (lambda (b) (when (eq 'dired-mode (buffer-local-value 'major-mode b))
-                      (kill-buffer b))) (buffer-list)))
+  (my-kill-buffers :mode 'dired-mode))
 
 (defun my-kill-all-ediff-buffers ()
   "Kill all ediff buffers."
   (interactive)
-  (mapc (lambda (b) (when (string-match "^*ediff-.*\\*$" (buffer-name b))
-                      (kill-buffer b))) (buffer-list)))
+  (my-kill-buffers :regex "^*ediff-.*\\*$"))
 ;; ========================================================================
 (setq debug-on-error nil)
 (provide 'init)
