@@ -231,16 +231,44 @@
 ;; =========================================================================
 
 ;; =========================================================================
-(use-package rainbow-delimiters
+(use-package clojure-mode
+  :defer  t
+  :pin melpa-stable
   :config (progn
-            (setq rainbow-delimiters-max-face-count 9
-                  rainbow-delimiters-outermost-only-face-count 8)
-            (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
-            (add-hook 'clojure-mode-hook    #'rainbow-delimiters-mode)
-            (add-hook 'lisp-mode-hook       #'rainbow-delimiters-mode)
-            (add-hook 'scheme-mode-hook     #'rainbow-delimiters-mode)
-            (add-hook 'racket-mode-hook     #'rainbow-delimiters-mode)))
-;; =========================================================================
+            (use-package cider :pin melpa)
+            (use-package clojure-mode-extra-font-locking)
+            (use-package flycheck-clojure :pin melpa :config (flycheck-clojure-setup))
+
+            (add-hook 'clojure-mode-hook    'flycheck-mode)
+            (add-hook 'clojure-mode-hook    'turn-on-eldoc-mode)
+            (add-hook 'cider-mode-hook      'cider-turn-on-eldoc-mode)
+            (add-hook 'cider-mode-hook      'company-mode)
+            (add-hook 'cider-repl-mode-hook 'company-mode)
+
+            (setq nrepl-log-messages           t
+                  nrepl-hide-special-buffers   t
+                  cider-prefer-local-resources t
+                  cider-repl-popup-stacktraces t
+                  cider-popup-stacktraces      nil)
+
+            (defun cider-find-var-no-prompt ()
+              "cider-find-var at point without prompt"
+              (interactive)
+              (cider-find-var t nil))
+            (bind-keys :map clojure-mode-map ((kbd "C-h")   . cider-find-var-no-prompt)
+                                             ((kbd "C-M-x") . cider-eval-defun-at-point))))
+;; ========================================================================
+
+;; ========================================================================
+;; FIXME
+(use-package geiser)
+;; ========================================================================
+
+;; ========================================================================
+(use-package racket-mode
+  :defer t
+  :config (add-hook 'racket-mode-hook #'company-quickhelp--disable))
+;; ========================================================================
 
 ;; =========================================================================
 (use-package eval-in-repl
@@ -265,11 +293,11 @@
 
             ;; Geiser support (for Racket and Guile Scheme)
             ;; When using this, turn off racket-mode and scheme supports
-            ;; (require 'geiser) ; if not done elsewhere
-            ;; (require 'eval-in-repl-geiser)
-            ;; (add-hook 'geiser-mode-hook
-                      ;; '(lambda ()
-                         ;; (local-set-key (kbd "<C-return>") 'eir-eval-in-geiser)))
+            (require 'geiser) ; if not done elsewhere
+            (require 'eval-in-repl-geiser)
+            (add-hook 'geiser-mode-hook
+                      '(lambda ()
+                         (local-set-key (kbd "<C-return>") 'eir-eval-in-geiser)))
             ;; racket-mode support (for Racket; if not using Geiser)
             (require 'racket-mode) ; if not done elsewhere
             (require 'eval-in-repl-racket)
@@ -286,43 +314,16 @@
 ;; =========================================================================
 
 ;; =========================================================================
-(use-package clojure-mode
-  :defer  t
+(use-package rainbow-delimiters
   :config (progn
-            (use-package cider :pin melpa)
-            (use-package clojure-mode-extra-font-locking)
-            (use-package flycheck-clojure :pin melpa :config (flycheck-clojure-setup))
-
-            (add-hook 'clojure-mode-hook    'flycheck-mode)
-            (add-hook 'clojure-mode-hook    'turn-on-eldoc-mode)
-            (add-hook 'cider-mode-hook      'cider-turn-on-eldoc-mode)
-            (add-hook 'cider-mode-hook      'company-mode)
-            (add-hook 'cider-repl-mode-hook 'company-mode)
-
-            (setq nrepl-log-messages           t
-                  nrepl-hide-special-buffers   t
-                  cider-prefer-local-resources t
-                  cider-repl-popup-stacktraces t
-                  cider-popup-stacktraces      nil)
-
-            (defun my-cider-find-var-no-prompt ()
-              "cider-find-var at point without prompt"
-              (interactive)
-              (cider-find-var t nil))
-            (bind-keys :map clojure-mode-map ("C-h"   . my-cider-find-var-no-prompt)
-                                             ("C-M-x" . cider-eval-defun-at-point))))
-;; ========================================================================
-
-;; ========================================================================
-;; FIXME
-(use-package geiser)
-;; ========================================================================
-
-;; ========================================================================
-(use-package racket-mode
-  :defer t
-  :config (add-hook 'racket-mode-hook #'company-quickhelp--disable))
-;; ========================================================================
+            (setq rainbow-delimiters-max-face-count 9
+                  rainbow-delimiters-outermost-only-face-count 8)
+            (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
+            (add-hook 'clojure-mode-hook    #'rainbow-delimiters-mode)
+            (add-hook 'lisp-mode-hook       #'rainbow-delimiters-mode)
+            (add-hook 'scheme-mode-hook     #'rainbow-delimiters-mode)
+            (add-hook 'racket-mode-hook     #'rainbow-delimiters-mode)))
+;; =========================================================================
 
 ;; ========================================================================
 (use-package evil
