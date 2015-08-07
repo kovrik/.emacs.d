@@ -59,7 +59,7 @@
  '(linum-format " %5i ")
  '(package-selected-packages
    (quote
-    (corral ample-theme auto-compile autopair browse-kill-ring cider clojure-mode-extra-font-locking color-theme-solarized company company-quickhelp darcula-theme dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode leuven-theme magit markdown-mode material-theme neotree noctilux-theme racket-mode rainbow-delimiters smart-mode-line soft-stone-theme solarized-theme sublime-themes use-package zenburn-theme))))
+    (corral ample-theme auto-compile autopair browse-kill-ring cider clojure-mode-extra-font-locking color-theme-solarized company company-quickhelp darcula-theme dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode leuven-theme magit markdown-mode material-theme noctilux-theme racket-mode rainbow-delimiters smart-mode-line soft-stone-theme solarized-theme sublime-themes use-package zenburn-theme))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -75,6 +75,7 @@
  '(erc-input-face ((t (:foreground "dark green"))))
  '(erc-timestamp-face ((t (:foreground "#9966ca"))))
  '(evil-search-highlight-persist-highlight-face ((t (:background "#ffdd00" :foreground "#000000"))))
+ '(eyebrowse-mode-line-active ((t (:foreground "#e53935" :weight bold))))
  '(flycheck-fringe-error ((t (:background "#e53935" :foreground "#e53935"))))
  '(flycheck-fringe-info ((t (:background "#43a047" :foreground "#43a047"))))
  '(flycheck-fringe-warning ((t (:background "#ffc107" :foreground "#ffc107"))))
@@ -578,10 +579,8 @@ Otherwise run projectile-find-file."
                   magit-status-buffer-switch-function 'switch-to-buffer
                   magit-diff-refine-hunk t)
 
-            ;; FIX Don't know why these become unbound sometimes
-            (bind-keys :map magit-mode-map ;;("s"       . magit-stage-item)
-                                           ;;("u"       . magit-unstage-item)
-                                           ("<tab>"     . magit-section-cycle)
+            ;; FIX Don't know why some of these become unbound sometimes
+            (bind-keys :map magit-mode-map ("<tab>"     . magit-section-cycle)
                                            ("<backtab>" . magit-section-cycle-global)))
   :bind (("C-x g" . magit-status)))
 ;; ========================================================================
