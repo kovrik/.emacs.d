@@ -545,7 +545,8 @@ Otherwise run projectile-find-file."
 
             (add-hook 'org-mode-hook #'my-linum-off)
             ;; FIXME indentation in SRC blocks
-            (setq org-edit-src-content-indentation 2
+            (setq org-edit-src-content-indentation 0
+                  org-src-preserve-indentation nil 
                   org-src-tab-acts-natively t
                   org-src-fontify-natively t
                   org-src-preserve-indentation t
@@ -557,7 +558,6 @@ Otherwise run projectile-find-file."
                   org-catch-invisible-edits 'error
                   org-babel-clojure-backend 'cider
                   org-agenda-files (cl-remove-if-not 'file-exists-p '("~/org/todo.org")))
-
             (org-babel-do-load-languages 'org-babel-load-languages '((emacs-lisp . t)
                                                                      (java       . t)
                                                                      (clojure    . t)
