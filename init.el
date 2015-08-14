@@ -590,7 +590,6 @@ Otherwise run projectile-find-file."
                   magit-diff-refine-hunk t
                   magit-log-arguments '("--decorate" "--graph")
                   magit-log-cutoff-length 80)
-
             ;; FIX Don't know why some of these become unbound sometimes
             (bind-keys :map magit-mode-map ("<tab>"     . magit-section-cycle)
                                            ("<backtab>" . magit-section-cycle-global)))
@@ -773,7 +772,7 @@ Use Helm otherwise."
   (my-kill-buffers :regex "^*ediff-.*\\*$"))
 
 (defun my-align-repeat (start end regexp)
-  "Repeat alignment with respect to the given regular expression."
+  "Repeat alignment with respect to the given regular expression.  Args: START END REGEXP."
   (interactive "r\nsAlign regexp: ")
   (align-regexp start end (concat "\\(\\s-*\\)" regexp) 1 1 t))
 ;; ========================================================================
