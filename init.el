@@ -144,7 +144,6 @@
 
 (bind-keys ([escape] . keyboard-quit)
            ("RET"    . newline-and-indent)
-           ("C-h"    . find-function-at-point)
            ("C-c r"  . revert-buffer)
            ("C-c n"  . narrow-to-region)
            ("C-c w"  . widen))
@@ -196,6 +195,16 @@
 ;; =========================================================================
 ;; TODO Configure
 (use-package ranger :init (require 'dired))
+;; =========================================================================
+
+;; =========================================================================
+(use-package find-func
+  :config (progn
+            (bind-keys ("C-S-h" . find-function-at-point)
+                       ("C-h f" . find-function)
+                       ("C-h k" . find-function-on-key)
+                       ("C-h v" . find-variable)
+                       ("C-h l" . find-library))))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -575,9 +584,12 @@ Otherwise run projectile-find-file."
   :pin melpa-stable
   :init   (setq magit-last-seen-setup-instructions "1.4.0")
   :config (progn
-            (setq magit-diff-options '("-w")
-                  magit-status-buffer-switch-function 'switch-to-buffer
-                  magit-diff-refine-hunk t)
+            (setenv "GIT_ASKPASS" "git-gui--askpass")
+            (setq magit-status-buffer-switch-function 'switch-to-buffer
+                  magit-diff-options '("-w")
+                  magit-diff-refine-hunk t
+                  magit-log-arguments '("--decorate" "--graph")
+                  magit-log-cutoff-length 80)
 
             ;; FIX Don't know why some of these become unbound sometimes
             (bind-keys :map magit-mode-map ("<tab>"     . magit-section-cycle)
@@ -632,16 +644,6 @@ Otherwise run projectile-find-file."
 ;; ========================================================================
 
 ;; ========================================================================
-(use-package sauron
-  :config (progn
-            (setq sauron-modules '(sauron-erc sauron-org sauron-notifications)
-                  sauron-separate-frame nil
-                  sauron-max-line-length 180
-                  sauron-watch-nicks '("kovrik" "kovrik`" "kovrik``"))
-            (sauron-start)))
-;; ========================================================================
-
-;; ========================================================================
 (use-package eyebrowse
   :pin melpa-stable
   :config (progn
@@ -659,11 +661,22 @@ Otherwise run projectile-find-file."
                   shackle-rules '(("\\`\\*magit.*?\\*\\'" :regexp t :same t)
                                   ("\\`\\*helm.*?\\*\\'"  :regexp t :align t :ratio 0.4)
                                   (compilation-mode       :ignore t)
+                                  (sauron-mode            :ignore t)
                                   (erc-mode               :same   t)
                                   (proced-mode            :same   t)
                                   (help-mode              :same   t)
                                   (ibuffer-mode           :same   t)))
             (shackle-mode t)))
+;; ========================================================================
+
+;; ========================================================================
+(use-package sauron
+  :config (progn
+            (setq sauron-modules '(sauron-erc sauron-org sauron-notifications)
+                  sauron-separate-frame nil
+                  sauron-max-line-length 180
+                  sauron-watch-nicks '("kovrik" "kovrik`" "kovrik``"))
+            (sauron-start)))
 ;; ========================================================================
 
 ;; ========================================================================
@@ -758,6 +771,11 @@ Use Helm otherwise."
   "Kill all ediff buffers."
   (interactive)
   (my-kill-buffers :regex "^*ediff-.*\\*$"))
+
+(defun my-align-repeat (start end regexp)
+  "Repeat alignment with respect to the given regular expression."
+  (interactive "r\nsAlign regexp: ")
+  (align-regexp start end (concat "\\(\\s-*\\)" regexp) 1 1 t))
 ;; ========================================================================
 (setq debug-on-error nil)
 (provide 'init)
