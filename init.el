@@ -228,6 +228,14 @@
 ;; =========================================================================
 
 ;; =========================================================================
+(use-package swiper
+  :config (progn
+            (ivy-mode 1)
+            (setq ivy-use-virtual-buffers t)
+            (global-set-key "\C-s" 'swiper)))
+;; =========================================================================
+
+;; =========================================================================
 (use-package corral
   :config (progn
             (setq corral-preserve-point t)
@@ -280,7 +288,7 @@
   :config (add-hook 'racket-mode-hook #'company-quickhelp--disable))
 ;; ========================================================================
 
-;; =========================================================================
+;; ========================================================================
 (use-package eval-in-repl
   :config (progn
             ;; Elisp
@@ -321,9 +329,9 @@
             ;;    '(lambda ()
 ;;       (local-set-key (kbd "<C-return>") 'eir-eval-in-scheme)))
 ))
-;; =========================================================================
+;; ========================================================================
 
-;; =========================================================================
+;; ========================================================================
 (use-package rainbow-delimiters
   :config (progn
             (setq rainbow-delimiters-max-face-count 9
@@ -333,7 +341,7 @@
             (add-hook 'lisp-mode-hook       #'rainbow-delimiters-mode)
             (add-hook 'scheme-mode-hook     #'rainbow-delimiters-mode)
             (add-hook 'racket-mode-hook     #'rainbow-delimiters-mode)))
-;; =========================================================================
+;; ========================================================================
 
 ;; ========================================================================
 (use-package evil
@@ -555,7 +563,7 @@ Otherwise run projectile-find-file."
             (add-hook 'org-mode-hook #'my-linum-off)
             ;; FIXME indentation in SRC blocks
             (setq org-edit-src-content-indentation 0
-                  org-src-preserve-indentation nil 
+                  org-src-preserve-indentation nil
                   org-src-tab-acts-natively t
                   org-src-fontify-natively t
                   org-src-preserve-indentation t
