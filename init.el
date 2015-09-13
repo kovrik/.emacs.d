@@ -2,7 +2,10 @@
 ;;; Commentary:
 ;;; Code:
 (setq debug-on-error t)
+(setq gc-cons-threshold 100000000)
 ;; =========================================================================
+(let ((file-name-handler-alist nil))
+
 ;; Package management
 (require 'package)
 (setq package-archives '(("gnu"          . "http://elpa.gnu.org/packages/")
@@ -170,16 +173,16 @@
 
 ;; =========================================================================
 ;; Packages without config
-(use-package bug-hunter)
+(use-package bug-hunter :defer t)
 ;; (use-package eval-sexp-fu)
-(use-package command-log-mode)
-(use-package restclient)
-(use-package iedit)
-(use-package rainbow-mode)
+(use-package command-log-mode :defer t)
+(use-package restclient :defer t)
+(use-package iedit :defer t)
+(use-package rainbow-mode :defer t)
 ;; =========================================================================
 
 ;; =========================================================================
-(use-package color-theme :config (color-theme-initialize))
+(use-package color-theme :defer t :config (color-theme-initialize))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -188,13 +191,14 @@
 
 ;; =========================================================================
 (use-package tramp
+  :defer t
   :config (when  (eq window-system 'w32)
             (setq tramp-default-method "scpx")))
 ;; =========================================================================
 
 ;; =========================================================================
 ;; TODO Configure
-(use-package ranger :init (require 'dired))
+(use-package ranger :defer t :init (require 'dired))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -223,6 +227,7 @@
 
 ;; =========================================================================
 (use-package expand-region
+  :defer t
   :bind (("C-=" . er/expand-region)
          ("C--" . er/contract-region)))
 ;; =========================================================================
@@ -245,9 +250,13 @@
   :defer  t
   :pin melpa-stable
   :config (progn
-            (use-package cider :pin melpa)
+            (use-package cider :pin melpa :defer t)
             (use-package clojure-mode-extra-font-locking)
-            (use-package flycheck-clojure :pin melpa :config (flycheck-clojure-setup))
+            (use-package flycheck-clojure
+              :pin melpa
+              :config (progn
+                        (flycheck-clojure-setup)
+                        (setq flycheck-checkers (delete 'clojure-cider-typed flycheck-checkers))))
 
             (add-hook 'clojure-mode-hook    'flycheck-mode)
             (add-hook 'clojure-mode-hook    'turn-on-eldoc-mode)
@@ -271,7 +280,7 @@
 
 ;; ========================================================================
 ;; FIXME
-(use-package geiser)
+(use-package geiser :defer t)
 ;; ========================================================================
 
 ;; ========================================================================
@@ -282,6 +291,7 @@
 
 ;; =========================================================================
 (use-package eval-in-repl
+  :defer t
   :config (progn
             ;; Elisp
             (require 'eval-in-repl-ielm)
@@ -350,7 +360,7 @@
                       (evil-leader/set-key "s"   'delete-trailing-whitespace)
                       (evil-leader-mode t))))
   :config (progn
-            (use-package evil-org)
+            (use-package evil-org :defer t)
             (use-package evil-numbers)
             (use-package evil-anzu)
             (use-package evil-surround :config (global-evil-surround-mode 1))
@@ -445,7 +455,7 @@
           (require 'helm-config)
           (require 'helm-misc)
           (require 'helm-locate)
-          (use-package helm-swoop)
+          (use-package helm-swoop :defer t)
 
           (setq helm-split-window-in-side-p           t
                 helm-move-to-line-cycle-in-source     t
@@ -598,6 +608,7 @@ Otherwise run projectile-find-file."
 
 ;; ========================================================================
 (use-package ediff
+  :defer t
   :config (progn
             (setq ediff-window-setup-function 'ediff-setup-windows-plain
                   ediff-split-window-function 'split-window-horizontally
@@ -613,12 +624,14 @@ Otherwise run projectile-find-file."
 
 ;; =========================================================================
 (use-package eshell
+  :defer t
   :config (setq eshell-save-history-on-exit t
                 eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'"))
 ;; =========================================================================
 
 ;; ========================================================================
 (use-package web-mode
+  :defer t
   :pin melpa-stable
   :config (progn (add-to-list 'auto-mode-alist '("\\.html?\\'"   . web-mode))
                  (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))))
@@ -626,6 +639,7 @@ Otherwise run projectile-find-file."
 
 ;; ========================================================================
 (use-package flycheck
+  :defer t
   :config (progn
             (use-package flycheck-pos-tip
               :config (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
@@ -670,6 +684,7 @@ Otherwise run projectile-find-file."
 
 ;; ========================================================================
 (use-package sauron
+  :defer t
   :config (progn
             (setq sauron-modules '(sauron-erc sauron-org sauron-notifications)
                   sauron-separate-frame nil
@@ -776,6 +791,8 @@ Use Helm otherwise."
   (interactive "r\nsAlign regexp: ")
   (align-regexp start end (concat "\\(\\s-*\\)" regexp) 1 1 t))
 ;; ========================================================================
+)
+(setq gc-cons-threshold 800000)
 (setq debug-on-error nil)
 (provide 'init)
 ;;; init.el ends here
