@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (setq debug-on-error t)
+;; Prevent frequent GCs during init
 (setq gc-cons-threshold 100000000)
 ;; =========================================================================
 (let ((file-name-handler-alist nil))
@@ -174,7 +175,6 @@
 ;; =========================================================================
 ;; Packages without config
 (use-package bug-hunter :defer t)
-;; (use-package eval-sexp-fu)
 (use-package command-log-mode :defer t)
 (use-package restclient :defer t)
 (use-package iedit :defer t)
@@ -197,7 +197,6 @@
 ;; =========================================================================
 
 ;; =========================================================================
-;; TODO Configure
 (use-package ranger :defer t :init (require 'dired))
 ;; =========================================================================
 
@@ -230,14 +229,6 @@
   :defer t
   :bind (("C-=" . er/expand-region)
          ("C--" . er/contract-region)))
-;; =========================================================================
-
-;; =========================================================================
-(use-package swiper
-  :config (progn
-            (ivy-mode 1)
-            (setq ivy-use-virtual-buffers t)
-            (global-set-key "\C-s" 'swiper)))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -800,6 +791,7 @@ Use Helm otherwise."
   (align-regexp start end (concat "\\(\\s-*\\)" regexp) 1 1 t))
 ;; ========================================================================
 )
+;; Bring back to default value
 (setq gc-cons-threshold 800000)
 (setq debug-on-error nil)
 (provide 'init)
