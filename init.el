@@ -60,7 +60,6 @@
  '(custom-safe-themes
    (quote
     ("baec1c1685293d66ec4c623683ed87bbf7fc3ce4ccbaeca878c9b8ac8c3ab7b3" "3d5ef3d7ed58c9ad321f05360ad8a6b24585b9c49abcee67bdcbb0fe583a6950" "3cd28471e80be3bd2657ca3f03fbb2884ab669662271794360866ab60b6cb6e6" "7bde52fdac7ac54d00f3d4c559f2f7aa899311655e7eb20ec5491f3b5c533fe8" "52706f54fd3e769a0895d1786796450081b994378901d9c3fb032d3094788337" "8f2e60e25bd33a29f45867d99c49afd9d7f3f3ed8a60926d32d5a23c790de240" "118717ce0a2645a0cf240b044999f964577ee10137b1f992b09a317d5073c02d" "26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" "a2e7b508533d46b701ad3b055e7c708323fb110b6676a8be458a758dd8f24e27" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
- '(linum-format " %5i ")
  '(package-selected-packages
    (quote
     (corral ample-theme auto-compile autopair browse-kill-ring cider clojure-mode-extra-font-locking color-theme-solarized company company-quickhelp darcula-theme dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode leuven-theme magit markdown-mode material-theme noctilux-theme racket-mode rainbow-delimiters smart-mode-line soft-stone-theme solarized-theme sublime-themes use-package zenburn-theme))))
@@ -152,8 +151,8 @@
            ("C-c n"  . narrow-to-region)
            ("C-c w"  . widen))
 
-(defun my-linum-on  () "Turn 'linum-mode' on."  (linum-mode  1))
-(defun my-linum-off () "Turn 'linum-mode' off." (linum-mode -1))
+(defun my-nlinum-on  () "Turn 'nlinum-mode' on."  (nlinum-mode  1))
+(defun my-nlinum-off () "Turn 'nlinum-mode' off." (nlinum-mode -1))
 ;; =========================================================================
 ;; Fonts
 (defun my-font-exists-p (f)
@@ -174,6 +173,7 @@
 
 ;; =========================================================================
 ;; Packages without config
+(use-package nlinum :defer t)
 (use-package bug-hunter :defer t)
 (use-package command-log-mode :defer t)
 (use-package restclient :defer t)
@@ -214,14 +214,6 @@
 (use-package smart-mode-line
   :config (progn (setq sml/theme 'light)
                  (sml/setup)))
-;; =========================================================================
-
-;; =========================================================================
-(use-package linum
-  :config (progn
-            (setq linum-format (if (display-graphic-p) " %3d" "%4d "))
-            (add-hook 'prog-mode-hook #'my-linum-on)
-            (add-hook 'text-mode-hook #'my-linum-on)))
 ;; =========================================================================
 
 ;; =========================================================================
@@ -561,7 +553,7 @@ Otherwise run projectile-find-file."
                         (defun my-org-bullets-on () (org-bullets-mode 1))
                         (add-hook 'org-mode-hook #'my-org-bullets-on)))
 
-            (add-hook 'org-mode-hook #'my-linum-off)
+            (add-hook 'org-mode-hook #'my-nlinum-off)
             ;; FIXME indentation in SRC blocks
             (setq org-edit-src-content-indentation 0
                   org-src-preserve-indentation nil
