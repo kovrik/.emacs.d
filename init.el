@@ -4,7 +4,7 @@
 (setq debug-on-error t)
 ;; Prevent frequent GCs during init
 (setq gc-cons-threshold 100000000)
-;; =========================================================================
+
 (let ((file-name-handler-alist nil))
 
 ;; Package management
@@ -19,9 +19,7 @@
 ;; Make sure to have downloaded archive description
 (or (file-directory-p (expand-file-name (concat package-user-dir "/archives")))
     (package-refresh-contents))
-;; =========================================================================
-
-;; =========================================================================
+
 ;; use-package
 (when (not (package-installed-p 'use-package))
   (package-refresh-contents)
@@ -35,9 +33,7 @@
       load-prefer-newer t
       use-package-always-ensure t)
 (use-package auto-compile :config (auto-compile-on-load-mode))
-;; =========================================================================
-
-;; =========================================================================
+
 (defun my-ensure-packages-installed (packages)
   "Assure every package in PACKAGES is installed, ask for installation if it’s not.  Return a list of installed packages or nil for every skipped package."
   (dolist (p packages)
@@ -49,9 +45,7 @@
 
 ;; Themes
 (my-ensure-packages-installed '(ample-theme flatland-theme darcula-theme leuven-theme material-theme minimal-theme noctilux-theme soft-stone-theme solarized-theme sublime-themes twilight-bright-theme zenburn-theme))
-;; =========================================================================
-
-;; =========================================================================
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -94,7 +88,7 @@
  '(rainbow-delimiters-depth-4-face ((t (:foreground "#ff8c00"))))
  '(rainbow-delimiters-depth-5-face ((t (:foreground "#009800"))))
  '(rainbow-delimiters-depth-6-face ((t (:foreground "#ff00ff")))))
-;; =========================================================================
+
 ;; PATH
 (use-package exec-path-from-shell
   :config (when (memq window-system '(mac ns))
@@ -103,9 +97,7 @@
 (when (eq 'windows-nt system-type)
   (setq exec-path (append (parse-colon-path (getenv "PATH"))
                           (parse-colon-path (getenv "USERPROFILE")) exec-path)))
-;; =========================================================================
-
-;; =========================================================================
+
 ;; Globals
 (prefer-coding-system 'utf-8)
 (when window-system
@@ -153,7 +145,7 @@
 
 (defun my-nlinum-on  () "Turn 'nlinum-mode' on."  (nlinum-mode  1))
 (defun my-nlinum-off () "Turn 'nlinum-mode' off." (nlinum-mode -1))
-;; =========================================================================
+
 ;; Fonts
 (defun my-font-exists-p (f)
   "Return t if font F (font-spec with :name key) exists."
@@ -169,9 +161,7 @@
     (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
     (set-face-attribute 'default nil :font my-font)
     (set-frame-font      my-font  nil t)))
-;; =========================================================================
-
-;; =========================================================================
+
 ;; Packages without config
 (use-package nlinum :defer t)
 (use-package bug-hunter :defer t)
@@ -179,28 +169,18 @@
 (use-package restclient :defer t)
 (use-package iedit :defer t)
 (use-package rainbow-mode :defer t)
-;; =========================================================================
-
-;; =========================================================================
+
 (use-package color-theme :defer t :config (color-theme-initialize))
-;; =========================================================================
-
-;; =========================================================================
+
 (use-package fixme-mode :config (fixme-mode t))
-;; =======================================================================
-
-;; =========================================================================
+
 (use-package tramp
   :defer t
   :config (when  (eq window-system 'w32)
             (setq tramp-default-method "scpx")))
-;; =========================================================================
-
-;; =========================================================================
+
 (use-package ranger :defer t :init (require 'dired))
-;; =========================================================================
-
-;; =========================================================================
+
 (use-package find-func
   :config (progn
             (bind-keys ("C-S-h" . find-function-at-point)
@@ -208,22 +188,16 @@
                        ("C-h k" . find-function-on-key)
                        ("C-h v" . find-variable)
                        ("C-h l" . find-library))))
-;; =========================================================================
-
-;; =========================================================================
+
 (use-package smart-mode-line
   :config (progn (setq sml/theme 'light)
                  (sml/setup)))
-;; =========================================================================
-
-;; =========================================================================
+
 (use-package expand-region
   :defer t
   :bind (("C-=" . er/expand-region)
          ("C--" . er/contract-region)))
-;; =========================================================================
-
-;; =========================================================================
+
 (use-package corral
   :config (progn
             (setq corral-preserve-point t)
@@ -234,9 +208,7 @@
                        ("M-]"  . corral-brackets-forward)
                        ("M-{"  . corral-braces-backward)
                        ("M-}"  . corral-braces-forward))))
-;; =========================================================================
-
-;; =========================================================================
+
 (use-package clojure-mode
   :defer  t
   :pin melpa-stable
@@ -267,20 +239,14 @@
               (cider-find-var t nil))
             (bind-keys :map clojure-mode-map ((kbd "C-h")   . cider-find-var-no-prompt)
                                              ((kbd "C-M-x") . cider-eval-defun-at-point))))
-;; ========================================================================
-
-;; ========================================================================
+
 ;; FIXME
 (use-package geiser :defer t)
-;; ========================================================================
-
-;; ========================================================================
+
 (use-package racket-mode
   :defer t
   :config (add-hook 'racket-mode-hook #'company-quickhelp--disable))
-;; ========================================================================
-
-;; ========================================================================
+
 (use-package eval-in-repl
   :defer t
   :config (progn
@@ -322,9 +288,7 @@
             ;;    '(lambda ()
 ;;       (local-set-key (kbd "<C-return>") 'eir-eval-in-scheme)))
 ))
-;; ========================================================================
-
-;; ========================================================================
+
 (use-package rainbow-delimiters
   :config (progn
             (setq rainbow-delimiters-max-face-count 9
@@ -334,9 +298,7 @@
             (add-hook 'lisp-mode-hook       #'rainbow-delimiters-mode)
             (add-hook 'scheme-mode-hook     #'rainbow-delimiters-mode)
             (add-hook 'racket-mode-hook     #'rainbow-delimiters-mode)))
-;; ========================================================================
-
-;; ========================================================================
+
 (use-package evil
   :init (progn
           (use-package evil-leader
@@ -427,9 +389,7 @@
                                  eshell-mode-hook comint-mode-hook
                                  proced-mode-hook nrepl-connected-hook))
               (add-hook mode-hook 'my-evil-off))))
-;; ========================================================================
-
-;; ========================================================================
+
 (use-package eldoc
   :diminish eldoc-mode
   :commands turn-on-eldoc-mode
@@ -437,9 +397,7 @@
           (add-hook 'emacs-lisp-mode-hook       'turn-on-eldoc-mode)
           (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
           (add-hook 'ielm-mode-hook             'turn-on-eldoc-mode)))
-;; ========================================================================
-
-;; ========================================================================
+
 (use-package helm
   :diminish helm-mode
   :init (progn
@@ -492,9 +450,7 @@
          ("C-x c:"  . helm-eval-expression-with-eldoc)
          ("C-x C-b" . helm-buffers-list)
          ("C-x C-f" . helm-find-files)))
-;; ========================================================================
-
-;; ========================================================================
+
 (use-package projectile
   :defer t
   :diminish projectile-mode
@@ -525,9 +481,7 @@ Otherwise run projectile-find-file."
                     projectile-enable-caching  nil))
             (projectile-global-mode))
   :bind (("C-S-p" . projectile-switch-project)))
-;; ========================================================================
-
-;; ========================================================================
+
 (use-package company
   :pin gnu
   :diminish company-mode
@@ -542,9 +496,7 @@ Otherwise run projectile-find-file."
                   company-dabbrev-ignore-case t)
             (define-key company-active-map (kbd "ESC") 'company-abort)
             (add-hook 'after-init-hook 'global-company-mode)))
-;; ========================================================================
-
-;; ========================================================================
+
 (use-package org
   :defer t
   :config (progn
@@ -577,9 +529,7 @@ Otherwise run projectile-find-file."
          ("\C-ca" . org-agenda)
          ("\C-cb" . org-iswitchb)
          ("<f12>" . org-agenda)))
-;; ========================================================================
-
-;; ========================================================================
+
 (use-package magit
   :defer t
   :pin melpa-stable
@@ -595,9 +545,7 @@ Otherwise run projectile-find-file."
             (bind-keys :map magit-mode-map ("<tab>"     . magit-section-cycle)
                                            ("<backtab>" . magit-section-cycle-global)))
   :bind (("C-x g" . magit-status)))
-;; ========================================================================
-
-;; ========================================================================
+
 (use-package ediff
   :defer t
   :config (progn
@@ -611,33 +559,25 @@ Otherwise run projectile-find-file."
                 (ediff-toggle-wide-display)))
             (add-hook 'ediff-cleanup-hook 'my-toggle-ediff-wide-display)
             (add-hook 'ediff-quit-hook    'winner-undo)))
-;; ========================================================================
-
-;; =========================================================================
+
 (use-package eshell
   :defer t
   :config (setq eshell-save-history-on-exit t
                 eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'"))
-;; =========================================================================
-
-;; ========================================================================
+
 (use-package web-mode
   :defer t
   :pin melpa-stable
   :config (progn (add-to-list 'auto-mode-alist '("\\.html?\\'"   . web-mode))
                  (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))))
-;; ========================================================================
-
-;; ========================================================================
+
 (use-package flycheck
   :defer t
   :config (progn
             (use-package flycheck-pos-tip
               :config (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
             (add-hook 'after-init-hook #'global-flycheck-mode)))
-;; ========================================================================
-
-;; ========================================================================
+
 (use-package undo-tree
   :diminish undo-tree-mode
   :config (progn
@@ -645,9 +585,9 @@ Otherwise run projectile-find-file."
             (setq undo-tree-visualizer-timestamps t
                   undo-tree-visualizer-diff       t)
             (define-key undo-tree-map (kbd "C-/") nil)))
-;; ========================================================================
-
-;; ========================================================================
+
+(use-package form-feed :config (add-hook 'emacs-lisp-mode-hook 'form-feed-mode))
+
 (use-package eyebrowse
   :pin melpa-stable
   :config (progn
@@ -656,9 +596,7 @@ Otherwise run projectile-find-file."
             (define-key evil-motion-state-map (kbd "gc") nil)
             (setq eyebrowse-new-workspace t
                   eyebrowse-close-window-config-prompt t)))
-;; ========================================================================
-
-;; ========================================================================
+
 (use-package shackle
   :config (progn
             (setq shackle-lighter " |#|"
@@ -671,9 +609,7 @@ Otherwise run projectile-find-file."
                                   (help-mode              :same   t)
                                   (ibuffer-mode           :same   t)))
             (shackle-mode t)))
-;; ========================================================================
-
-;; ========================================================================
+
 (use-package sauron
   :defer t
   :config (progn
@@ -682,9 +618,7 @@ Otherwise run projectile-find-file."
                   sauron-max-line-length 180
                   sauron-watch-nicks '("kovrik" "kovrik`" "kovrik``"))
             (sauron-start)))
-;; ========================================================================
-
-;; ========================================================================
+
 (use-package erc
   :defer t
   :config (progn
@@ -707,9 +641,7 @@ Otherwise run projectile-find-file."
                   erc-server-coding-system '(utf-8 . utf-8)
                   erc-prompt ">"
                   erc-accidental-paste-threshold-seconds 0.5)))
-;; ========================================================================
-
-;; ========================================================================
+
 ;; Misc
 (progn
   (defun my-hsplit-last-buffer (prefix)
@@ -781,7 +713,7 @@ Use Helm otherwise."
   "Repeat alignment with respect to the given regular expression.  Args: START END REGEXP."
   (interactive "r\nsAlign regexp: ")
   (align-regexp start end (concat "\\(\\s-*\\)" regexp) 1 1 t))
-;; ========================================================================
+
 )
 ;; Bring back to default value
 (setq gc-cons-threshold 800000)
