@@ -137,11 +137,13 @@
 (put 'narrow-to-page   'disabled nil)
 (put 'narrow-to-region 'disabled nil)
 
-(bind-keys ([escape] . keyboard-quit)
-           ("RET"    . newline-and-indent)
-           ("C-c r"  . revert-buffer)
-           ("C-c n"  . narrow-to-region)
-           ("C-c w"  . widen))
+(bind-keys ([escape]   . keyboard-quit)
+           ("RET"      . newline-and-indent)
+           ("C-c r"    . revert-buffer)
+           ("C-c n"    . narrow-to-region)
+           ("C-c w"    . widen)
+           ("<M-up>"   . backward-page)
+           ("<M-down>" . forward-page))
 
 (defun my-nlinum-on  () "Turn 'nlinum-mode' on."  (nlinum-mode  1))
 (defun my-nlinum-off () "Turn 'nlinum-mode' off." (nlinum-mode -1))
