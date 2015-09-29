@@ -579,8 +579,7 @@ Otherwise run projectile-find-file."
   :defer t
   :config (progn
             (use-package flycheck-pos-tip
-              :config (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
-            (add-hook 'after-init-hook #'global-flycheck-mode)))
+              :config (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))))
 
 (use-package undo-tree
   :diminish undo-tree-mode
