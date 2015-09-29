@@ -176,6 +176,8 @@
 
 (use-package fixme-mode :config (fixme-mode t))
 
+(use-package syslog-mode)
+
 (use-package tramp
   :defer t
   :config (when  (eq window-system 'w32)
@@ -256,7 +258,7 @@
             (require 'eval-in-repl-ielm)
             (define-key emacs-lisp-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
             (define-key lisp-interaction-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
-            (define-key Info-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
+            (define-key info-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
 
             ;; Clojure
             ;; (require 'cider) ; if not done elsewhere
