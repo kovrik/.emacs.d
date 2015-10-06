@@ -154,8 +154,7 @@
   (and f (member (font-get f :name) (font-family-list))))
 
 (let ((my-font (cl-find-if 'my-font-exists-p
-                           (list (font-spec :name "Roboto Mono"     :size 12)
-                                 (font-spec :name "Meslo LG S"      :size 13)
+                           (list (font-spec :name "Meslo LG S"      :size 13)
                                  (and (eq system-type 'windows-nt)
                                       (font-spec :name "Consolas"   :size 14))
                                  (font-spec :name "Monaco"          :size 13)
