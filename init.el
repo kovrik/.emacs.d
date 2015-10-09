@@ -274,11 +274,11 @@
 
             ;; Geiser support (for Racket and Guile Scheme)
             ;; When using this, turn off racket-mode and scheme supports
-            (require 'geiser) ; if not done elsewhere
-            (require 'eval-in-repl-geiser)
-            (add-hook 'geiser-mode-hook
-                      '(lambda ()
-                         (local-set-key (kbd "<C-return>") 'eir-eval-in-geiser)))
+            ;; (require 'geiser) ; if not done elsewhere
+            ;; (require 'eval-in-repl-geiser)
+            ;; (add-hook 'geiser-mode-hook
+                      ;; '(lambda ()
+                         ;; (local-set-key (kbd "<C-return>") 'eir-eval-in-geiser)))
             ;; racket-mode support (for Racket; if not using Geiser)
             (require 'racket-mode) ; if not done elsewhere
             (require 'eval-in-repl-racket)
@@ -539,11 +539,12 @@ Otherwise run projectile-find-file."
   :pin melpa-stable
   :init   (setq magit-last-seen-setup-instructions "1.4.0")
   :config (progn
+            (use-package magit-popup)
             (setenv "GIT_ASKPASS" "git-gui--askpass")
             (setq magit-status-buffer-switch-function 'switch-to-buffer
                   magit-diff-options '("-w")
                   magit-diff-refine-hunk t
-                  magit-log-arguments '("--decorate" "--graph")
+                  magit-log-arguments '("--decorate" "--graph" "-n80")
                   magit-log-cutoff-length 80)
             ;; FIX Don't know why some of these become unbound sometimes
             (bind-keys :map magit-mode-map ("<tab>"     . magit-section-cycle)
