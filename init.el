@@ -544,7 +544,7 @@ Otherwise run projectile-find-file."
             (setq magit-status-buffer-switch-function 'switch-to-buffer
                   magit-diff-options '("-w")
                   magit-diff-refine-hunk t
-                  magit-log-arguments '("--decorate" "--graph" "-n80")
+                  magit-log-arguments '("--decorate" "--graph" "--color" "-n80")
                   magit-log-cutoff-length 80)
             ;; FIX Don't know why some of these become unbound sometimes
             (bind-keys :map magit-mode-map ("<tab>"     . magit-section-cycle)
