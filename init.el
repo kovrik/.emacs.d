@@ -604,7 +604,7 @@ Otherwise run projectile-find-file."
 (use-package shackle
   :config (progn
             (setq shackle-lighter " |#|"
-                  shackle-rules '(("\\`\\*magit.*?\\*\\'" :regexp t :same t)
+                  shackle-rules '(("\\`\\*magit.*?\\'"    :regexp t :same t)
                                   ("\\`\\*helm.*?\\*\\'"  :regexp t :align t :ratio 0.4)
                                   (compilation-mode       :ignore t)
                                   (sauron-mode            :ignore t)
