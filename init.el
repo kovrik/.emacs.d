@@ -541,6 +541,9 @@ Otherwise run projectile-find-file."
   :config (progn
             (use-package magit-popup)
             (setenv "GIT_ASKPASS" "git-gui--askpass")
+
+            ;; Don't want to show changes every time before commit
+            (setq magit-diff-auto-show (delete 'commit magit-diff-auto-show))
             (setq magit-status-buffer-switch-function 'switch-to-buffer
                   magit-diff-options '("-w")
                   magit-diff-refine-hunk t
