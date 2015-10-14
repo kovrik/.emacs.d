@@ -408,6 +408,8 @@
           (require 'helm-config)
           (require 'helm-misc)
           (require 'helm-locate)
+          (use-package flx)
+          (use-package helm-flx :config (helm-flx-mode +1))
           (use-package helm-swoop :defer t)
 
           (setq helm-split-window-in-side-p           t
@@ -542,7 +544,7 @@ Otherwise run projectile-find-file."
             (use-package magit-popup)
             (setenv "GIT_ASKPASS" "git-gui--askpass")
 
-            ;; Don't want to show changes every time before commit
+            ;; Don't want to view changes every time before commit
             (setq magit-diff-auto-show (delete 'commit magit-diff-auto-show))
             (setq magit-status-buffer-switch-function 'switch-to-buffer
                   magit-diff-options '("-w")
