@@ -13,6 +13,7 @@
                          ("org"          . "http://orgmode.org/elpa/")
                          ("melpa"        . "http://melpa.org/packages/")
                          ("melpa-stable" . "http://stable.melpa.org/packages/")))
+(setq package-enable-at-startup nil)
 (package-initialize)
 (add-to-list 'package-pinned-packages '(queue . "gnu") t)
 
