@@ -172,6 +172,7 @@
 (use-package restclient :defer t)
 (use-package iedit :defer t)
 (use-package rainbow-mode :defer t)
+(use-package focus :defer t)
 
 (use-package color-theme :defer t :config (color-theme-initialize))
 
