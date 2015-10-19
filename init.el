@@ -246,7 +246,6 @@
             (bind-keys :map clojure-mode-map ((kbd "C-h")   . cider-find-var-no-prompt)
                                              ((kbd "C-M-x") . cider-eval-defun-at-point))))
 
-;; FIXME
 (use-package geiser :defer t)
 
 (use-package racket-mode
@@ -502,7 +501,8 @@ Otherwise run projectile-find-file."
                   company-require-match 'never
                   company-dabbrev-downcase nil
                   company-dabbrev-ignore-case t)
-            (define-key company-active-map (kbd "ESC") 'company-abort)
+            ;; FIXME This breaks geiser
+            ;; (define-key company-active-map (kbd "ESC") 'company-abort)
             (add-hook 'after-init-hook 'global-company-mode)))
 
 (use-package org
