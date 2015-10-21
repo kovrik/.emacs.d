@@ -604,7 +604,8 @@ Otherwise run projectile-find-file."
   :config (progn
             (eyebrowse-mode t)
             (eyebrowse-setup-evil-keys)
-            (define-key evil-motion-state-map (kbd "gc") nil)
+            (require 'evil-commentary)
+            (define-key evil-motion-state-map (kbd "gc") 'evil-commentary)
             (setq eyebrowse-new-workspace t
                   eyebrowse-close-window-config-prompt t)))
 
