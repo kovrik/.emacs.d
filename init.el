@@ -64,7 +64,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:weight normal :background "white" :foreground "black"))))
+ '(default ((t (:weight normal :background "#fefefe" :foreground "black"))))
  '(cursor ((t (:background "purple"))))
  '(diff-added ((t (:foreground "#ffffff" :background "#43a047"))))
  '(diff-changed ((t (:foreground "#000000" :background "#ffc107"))))
@@ -77,8 +77,9 @@
  '(flycheck-fringe-error ((t (:background "#e53935" :foreground "#e53935"))))
  '(flycheck-fringe-info ((t (:background "#43a047" :foreground "#43a047"))))
  '(flycheck-fringe-warning ((t (:background "#ffc107" :foreground "#ffc107"))))
+ '(font-lock-constant-face ((t (:foreground "#0000df"))))
  '(font-lock-keyword-face ((t (:foreground "#8B008B"))))
- '(font-lock-string-face ((t (:foreground "dark green"))))
+ '(font-lock-string-face ((t (:foreground "#125510"))))
  '(helm-selection ((t (:background "#bdeebd" :foreground "#000000"))))
  '(helm-source-header ((t (:background "#607d8b" :foreground "#ffffff" :height 100))))
  '(hl-line ((t (:background "#ccddee"))))
@@ -158,7 +159,7 @@
                            (list
                                  (font-spec :name "Meslo LG S"      :size 12)
                                  (font-spec :name "Consolas"        :size 13)
-                                 (font-spec :name "Monaco"          :size 13)
+                                 (font-spec :name "Monaco"          :size 12)
                                  (font-spec :name "Source Code Pro" :size 13)))))
   (when my-font
     (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
