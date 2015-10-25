@@ -122,7 +122,8 @@
       use-dialog-box nil
       visible-bell nil
       uniquify-buffer-name-style 'forward
-      show-trailing-whitespace t)
+      show-trailing-whitespace t
+      ns-use-srgb-colorspace nil)
 
 (fringe-mode '(4 . 0))
 (autopair-global-mode)
@@ -196,9 +197,16 @@
                        ("C-h v" . find-variable)
                        ("C-h l" . find-library))))
 
-(use-package smart-mode-line
-  :config (progn (setq sml/theme 'light)
-                 (sml/setup)))
+;; (use-package smart-mode-line :config (progn (setq sml/theme 'light) (sml/setup)))
+(use-package spaceline
+  :config (progn
+            (require 'spaceline-config)
+            (setq powerline-height 17
+                  powerline-default-separator 'wave
+                  spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
+            (set-face-attribute 'powerline-active1 nil   :foreground "white")
+            (set-face-attribute 'powerline-inactive1 nil :foreground "white")
+            (spaceline-spacemacs-theme)))
 
 (use-package expand-region
   :defer t
