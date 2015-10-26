@@ -129,7 +129,7 @@
       ns-use-srgb-colorspace nil)
 
 (fringe-mode '(4 . 0))
-(electric-pair-mode)
+;; (electric-pair-mode)
 (show-paren-mode)
 (column-number-mode)
 (desktop-save-mode)
@@ -184,7 +184,7 @@
          ("C-h f" . find-function)
          ("C-h k" . find-function-on-key)
          ("C-h v" . find-variable)
-         ("C-h l" . find-library))))
+         ("C-h l" . find-library)))
 
 ;; (use-package smart-mode-line :config (progn (setq sml/theme 'light) (sml/setup)))
 (use-package spaceline
@@ -196,6 +196,12 @@
             (set-face-attribute 'powerline-active1 nil   :foreground "white")
             (set-face-attribute 'powerline-inactive1 nil :foreground "white")
             (spaceline-spacemacs-theme)))
+
+(use-package smartparens-config
+  :ensure smartparens
+  :config (progn
+            (show-smartparens-global-mode t)
+            (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)))
 
 (use-package clojure-mode
   :defer  t
