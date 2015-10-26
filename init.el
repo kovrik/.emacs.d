@@ -42,10 +42,10 @@
                (y-or-n-p (format "Package %s is missing.  Install it? " p)))
       (package-install p))))
 
-(my-ensure-packages-installed '(queue async autopair browse-kill-ring dash epl f fold-dwim fringe-helper goto-chg highlight highlight-escape-sequences highlight-parentheses idle-highlight-mode markdown-mode pkg-info s))
+(my-ensure-packages-installed '(queue async browse-kill-ring dash epl f fold-dwim fringe-helper goto-chg highlight highlight-escape-sequences highlight-parentheses idle-highlight-mode markdown-mode pkg-info s))
 
 ;; Themes
-(my-ensure-packages-installed '(ample-theme flatland-theme darcula-theme leuven-theme material-theme minimal-theme noctilux-theme soft-stone-theme solarized-theme sublime-themes twilight-bright-theme zenburn-theme))
+(my-ensure-packages-installed '(flatland-theme darcula-theme leuven-theme material-theme minimal-theme noctilux-theme soft-stone-theme solarized-theme sublime-themes twilight-bright-theme zenburn-theme))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -57,7 +57,7 @@
     ("baec1c1685293d66ec4c623683ed87bbf7fc3ce4ccbaeca878c9b8ac8c3ab7b3" "3d5ef3d7ed58c9ad321f05360ad8a6b24585b9c49abcee67bdcbb0fe583a6950" "3cd28471e80be3bd2657ca3f03fbb2884ab669662271794360866ab60b6cb6e6" "7bde52fdac7ac54d00f3d4c559f2f7aa899311655e7eb20ec5491f3b5c533fe8" "52706f54fd3e769a0895d1786796450081b994378901d9c3fb032d3094788337" "8f2e60e25bd33a29f45867d99c49afd9d7f3f3ed8a60926d32d5a23c790de240" "118717ce0a2645a0cf240b044999f964577ee10137b1f992b09a317d5073c02d" "26614652a4b3515b4bbbb9828d71e206cc249b67c9142c06239ed3418eff95e2" "a2e7b508533d46b701ad3b055e7c708323fb110b6676a8be458a758dd8f24e27" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
  '(package-selected-packages
    (quote
-    (corral ample-theme auto-compile autopair browse-kill-ring cider clojure-mode-extra-font-locking color-theme-solarized company company-quickhelp darcula-theme dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode leuven-theme magit markdown-mode material-theme noctilux-theme racket-mode rainbow-delimiters smart-mode-line soft-stone-theme solarized-theme sublime-themes use-package zenburn-theme))))
+    (auto-compile browse-kill-ring cider clojure-mode-extra-font-locking color-theme-solarized company company-quickhelp darcula-theme dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode leuven-theme magit markdown-mode material-theme noctilux-theme racket-mode rainbow-delimiters smart-mode-line soft-stone-theme solarized-theme sublime-themes use-package zenburn-theme))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -67,8 +67,11 @@
  '(default ((t (:weight normal :background "#fefefe" :foreground "black"))))
  '(cursor ((t (:background "purple"))))
  '(diff-added ((t (:foreground "#ffffff" :background "#43a047"))))
+ '(diff-hl-insert ((t (:foreground "#ffffff" :background "#43a047"))))
  '(diff-changed ((t (:foreground "#000000" :background "#ffc107"))))
+ '(diff-hl-change ((t (:foreground "#000000" :background "#ffc107"))))
  '(diff-removed ((t (:foreground "#ffffff" :background "#e53935"))))
+ '(diff-hl-delete ((t (:foreground "#ffffff" :background "#e53935"))))
  '(erc-direct-msg-face ((t (:foreground "#e53935"))))
  '(erc-input-face ((t (:foreground "dark green"))))
  '(erc-timestamp-face ((t (:foreground "#9966ca"))))
@@ -126,8 +129,7 @@
       ns-use-srgb-colorspace nil)
 
 (fringe-mode '(4 . 0))
-(autopair-global-mode)
-(diminish 'autopair-mode)
+(electric-pair-mode)
 (show-paren-mode)
 (column-number-mode)
 (desktop-save-mode)
@@ -152,22 +154,18 @@
 (defun my-nlinum-off () "Turn 'nlinum-mode' off." (nlinum-mode -1))
 
 ;; Fonts
-(defun my-font-exists-p (f)
-  "Return t if font F (font-spec with :name key) exists."
-  (and f (member (font-get f :name) (font-family-list))))
-
-(let ((my-font (cl-find-if 'my-font-exists-p
+(let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name)
+                                                      (font-family-list))))
                            (list
-                                 (font-spec :name "Meslo LG S"      :size 12)
-                                 (font-spec :name "Consolas"        :size 13)
-                                 (font-spec :name "Monaco"          :size 12)
-                                 (font-spec :name "Source Code Pro" :size 13)))))
+                            (font-spec :name "Meslo LG S" :size 12)
+                            (font-spec :name "Consolas"   :size 13)
+                            (font-spec :name "Monaco"     :size 12)))))
   (when my-font
     (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
     (set-face-attribute 'default nil :font my-font)
     (set-frame-font      my-font  nil t)))
 
-;; Packages without config
+;; One-line packages
 (use-package nlinum :defer t)
 (use-package bug-hunter :defer t)
 (use-package command-log-mode :defer t)
@@ -175,27 +173,18 @@
 (use-package iedit :defer t)
 (use-package rainbow-mode :defer t)
 (use-package focus :defer t)
-
+(use-package syslog-mode :defer t)
 (use-package color-theme :defer t :config (color-theme-initialize))
-
 (use-package fixme-mode :config (fixme-mode t))
-
-(use-package syslog-mode)
-
-(use-package tramp
-  :defer t
-  :config (when  (eq window-system 'w32)
-            (setq tramp-default-method "scpx")))
-
 (use-package ranger :defer t :init (require 'dired))
+(use-package diff-hl :config (diff-hl-mode))
 
 (use-package find-func
-  :config (progn
-            (bind-keys ("C-S-h" . find-function-at-point)
-                       ("C-h f" . find-function)
-                       ("C-h k" . find-function-on-key)
-                       ("C-h v" . find-variable)
-                       ("C-h l" . find-library))))
+  :bind (("C-S-h" . find-function-at-point)
+         ("C-h f" . find-function)
+         ("C-h k" . find-function-on-key)
+         ("C-h v" . find-variable)
+         ("C-h l" . find-library))))
 
 ;; (use-package smart-mode-line :config (progn (setq sml/theme 'light) (sml/setup)))
 (use-package spaceline
@@ -207,22 +196,6 @@
             (set-face-attribute 'powerline-active1 nil   :foreground "white")
             (set-face-attribute 'powerline-inactive1 nil :foreground "white")
             (spaceline-spacemacs-theme)))
-
-(use-package expand-region
-  :defer t
-  :bind (("C-=" . er/expand-region)
-         ("C--" . er/contract-region)))
-
-(use-package corral
-  :config (progn
-            (setq corral-preserve-point t)
-            (bind-keys ("M-\"" . corral-double-quotes-backward)
-                       ("M-9"  . corral-parentheses-backward)
-                       ("M-0"  . corral-parentheses-forward)
-                       ("M-["  . corral-brackets-backward)
-                       ("M-]"  . corral-brackets-forward)
-                       ("M-{"  . corral-braces-backward)
-                       ("M-}"  . corral-braces-forward))))
 
 (use-package clojure-mode
   :defer  t
@@ -274,13 +247,6 @@
             ;; (require 'cider) ; if not done elsewhere
             (require 'eval-in-repl-cider)
             (define-key clojure-mode-map (kbd "<C-return>") 'eir-eval-in-cider)
-
-            ;; Common Lisp
-            ;; (require 'slime) ; if not done elsewhere
-            ;; (require 'eval-in-repl-slime)
-            ;; (add-hook 'lisp-mode-hook
-            ;;           '(lambda ()
-            ;;              (local-set-key (kbd "<C-return>") 'eir-eval-in-slime)))
 
             ;; Geiser support (for Racket and Guile Scheme)
             ;; When using this, turn off racket-mode and scheme supports
@@ -472,7 +438,6 @@
   :diminish projectile-mode
   :config (progn
             (use-package helm-projectile :config (helm-projectile-on))
-
             (defun my-projectile-switch-to-project ()
               "My switch-to-project action for projectile.
 If project is a git-project, then run magit-status.
@@ -505,13 +470,14 @@ Otherwise run projectile-find-file."
             (use-package company-quickhelp
               :config (progn (setq company-quickhelp-delay 0.7)
                              (company-quickhelp-mode 1)))
+            (use-package company-flx
+              :config (with-eval-after-load 'company
+                        (company-flx-mode +1)))
             (setq company-show-numbers t
                   company-minimum-prefix-length 2
                   company-require-match 'never
                   company-dabbrev-downcase nil
                   company-dabbrev-ignore-case t)
-            ;; FIXME This breaks geiser
-            ;; (define-key company-active-map (kbd "ESC") 'company-abort)
             (add-hook 'after-init-hook 'global-company-mode)))
 
 (use-package org
@@ -521,7 +487,6 @@ Otherwise run projectile-find-file."
               :config (progn
                         (defun my-org-bullets-on () (org-bullets-mode 1))
                         (add-hook 'org-mode-hook #'my-org-bullets-on)))
-
             (add-hook 'org-mode-hook #'my-nlinum-off)
             ;; FIXME indentation in SRC blocks
             (setq org-edit-src-content-indentation 0
@@ -554,7 +519,6 @@ Otherwise run projectile-find-file."
   :config (progn
             (use-package magit-popup)
             (setenv "GIT_ASKPASS" "git-gui--askpass")
-
             ;; Don't want to view changes every time before commit
             (setq magit-diff-auto-show (delete 'commit magit-diff-auto-show))
             (setq magit-status-buffer-switch-function 'switch-to-buffer
@@ -606,6 +570,7 @@ Otherwise run projectile-find-file."
                   undo-tree-visualizer-diff       t)
             (define-key undo-tree-map (kbd "C-/") nil)))
 
+;; TODO Replace
 (use-package form-feed :config (add-hook 'emacs-lisp-mode-hook 'form-feed-mode))
 
 (use-package eyebrowse
@@ -621,14 +586,14 @@ Otherwise run projectile-find-file."
 (use-package shackle
   :config (progn
             (setq shackle-lighter " |#|"
-                  shackle-rules '(("\\`\\*magit.*?\\'"    :regexp t :same t)
-                                  ("\\`\\*helm.*?\\*\\'"  :regexp t :align t :ratio 0.4)
-                                  (compilation-mode       :ignore t)
-                                  (sauron-mode            :ignore t)
-                                  (erc-mode               :same   t)
-                                  (proced-mode            :same   t)
-                                  (help-mode              :same   t)
-                                  (ibuffer-mode           :same   t)))
+                  shackle-rules '(("\\`\\*magit.*?\\'"   :regexp t :same t)
+                                  ("\\`\\*helm.*?\\*\\'" :regexp t :align t :ratio 0.4)
+                                  (compilation-mode      :ignore t)
+                                  (sauron-mode           :ignore t)
+                                  (erc-mode              :same   t)
+                                  (proced-mode           :same   t)
+                                  (help-mode             :same   t)
+                                  (ibuffer-mode          :same   t)))
             (shackle-mode t)))
 
 (use-package sauron
@@ -647,7 +612,6 @@ Otherwise run projectile-find-file."
             (erc-autojoin-mode t)
             (erc-scrolltobottom-enable)
             (erc-scrolltobottom-mode t)
-
             (setq erc-autojoin-channels-alist '((".*\\.freenode.net" "#emacs"))
                   erc-hide-list '("JOIN" "PART" "QUIT" "NICK" "MODE")
                   erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
