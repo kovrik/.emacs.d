@@ -188,7 +188,7 @@
 (use-package spaceline
   :config (progn
             (require 'spaceline-config)
-            (setq powerline-height 17
+            (setq powerline-height 14
                   powerline-default-separator 'wave
                   spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
             (set-face-attribute 'powerline-active1   nil :foreground "white")
@@ -290,6 +290,7 @@
             (use-package evil-numbers)
             (use-package evil-anzu)
             (use-package evil-surround :config (global-evil-surround-mode 1))
+            (use-package evil-visualstar :config (global-evil-visualstar-mode))
             (use-package evil-search-highlight-persist
               :config (global-evil-search-highlight-persist t))
             (use-package evil-matchit
