@@ -44,14 +44,16 @@
 
 (my-ensure-packages-installed '(queue async browse-kill-ring dash epl f fold-dwim fringe-helper goto-chg highlight highlight-escape-sequences highlight-parentheses idle-highlight-mode markdown-mode pkg-info s))
 
+(defun my-add-hooks (hooks function)
+  (dolist (hook hooks)
+    (add-hook hook function)))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   (quote
-    (default)))
+ '(custom-safe-themes '(default))
  '(package-selected-packages
    (quote
     (auto-compile browse-kill-ring cider clojure-mode-extra-font-locking company company-quickhelp dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode magit markdown-mode racket-mode rainbow-delimiters smart-mode-line use-package))))
@@ -189,9 +191,14 @@
             (setq powerline-height 17
                   powerline-default-separator 'wave
                   spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
-            (set-face-attribute 'powerline-active1 nil   :foreground "white")
+            (set-face-attribute 'powerline-active1   nil :foreground "white")
             (set-face-attribute 'powerline-inactive1 nil :foreground "white")
             (spaceline-spacemacs-theme)))
+
+;; TODO Configure and try
+;; (use-package lispy)
+;; TODO Configure and try
+;; (use-package hydra)
 
 (use-package clojure-mode
   :defer  t
@@ -205,18 +212,15 @@
                         (flycheck-clojure-setup)
                         (setq flycheck-checkers (delete 'clojure-cider-typed flycheck-checkers))))
 
-            (add-hook 'clojure-mode-hook    'flycheck-mode)
-            (add-hook 'clojure-mode-hook    'turn-on-eldoc-mode)
-            (add-hook 'cider-mode-hook      'cider-turn-on-eldoc-mode)
-            (add-hook 'cider-mode-hook      'company-mode)
-            (add-hook 'cider-repl-mode-hook 'company-mode)
+            (add-hook 'clojure-mode-hook 'flycheck-mode)
+            (add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
+            (add-hook 'cider-mode-hook   'cider-turn-on-eldoc-mode)
 
             (setq nrepl-log-messages           t
                   nrepl-hide-special-buffers   t
                   cider-prefer-local-resources t
                   cider-repl-popup-stacktraces t
                   cider-popup-stacktraces      nil)
-
             (defun cider-find-var-no-prompt ()
               "cider-find-var at point without prompt"
               (interactive)
@@ -226,18 +230,16 @@
 
 (use-package geiser :defer t)
 
-(use-package racket-mode
-  :defer t
-  :config (add-hook 'racket-mode-hook #'company-quickhelp--disable))
+(use-package racket-mode :defer t :config (add-hook 'racket-mode-hook #'company-quickhelp--disable))
 
 (use-package eval-in-repl
   :defer t
   :config (progn
             ;; Elisp
             (require 'eval-in-repl-ielm)
-            (define-key emacs-lisp-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
+            (define-key emacs-lisp-mode-map       (kbd "<C-return>") 'eir-eval-in-ielm)
             (define-key lisp-interaction-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
-            (define-key info-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
+            (define-key info-mode-map             (kbd "<C-return>") 'eir-eval-in-ielm)
 
             ;; Clojure
             ;; (require 'cider) ; if not done elsewhere
@@ -246,34 +248,29 @@
 
             ;; Geiser support (for Racket and Guile Scheme)
             ;; When using this, turn off racket-mode and scheme supports
-            ;; (require 'geiser) ; if not done elsewhere
             ;; (require 'eval-in-repl-geiser)
             ;; (add-hook 'geiser-mode-hook
-                      ;; '(lambda ()
-                         ;; (local-set-key (kbd "<C-return>") 'eir-eval-in-geiser)))
-            ;; racket-mode support (for Racket; if not using Geiser)
-            (require 'racket-mode) ; if not done elsewhere
+                      ;; '(lambda () (local-set-key (kbd "<C-return>") 'eir-eval-in-geiser)))
+            (require 'racket-mode)
             (require 'eval-in-repl-racket)
             (define-key racket-mode-map (kbd "<C-return>") 'eir-eval-in-racket)
 
             ;; Scheme support (if not using Geiser))
-            ;; (require 'scheme)    ; if not done elsewhere
-            ;; (require 'cmuscheme) ; if not done elsewhere
             ;; (require 'eval-in-repl-scheme)
             ;; (add-hook 'scheme-mode-hook
-            ;;    '(lambda ()
-;;       (local-set-key (kbd "<C-return>") 'eir-eval-in-scheme)))
+            ;;           '(lambda () (local-set-key (kbd "<C-return>") 'eir-eval-in-scheme)))
 ))
 
 (use-package rainbow-delimiters
   :config (progn
             (setq rainbow-delimiters-max-face-count 9
                   rainbow-delimiters-outermost-only-face-count 8)
-            (add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
-            (add-hook 'clojure-mode-hook    #'rainbow-delimiters-mode)
-            (add-hook 'lisp-mode-hook       #'rainbow-delimiters-mode)
-            (add-hook 'scheme-mode-hook     #'rainbow-delimiters-mode)
-            (add-hook 'racket-mode-hook     #'rainbow-delimiters-mode)))
+            (my-add-hooks '(emacs-lisp-mode-hook
+                            clojure-mode-hook
+                            lisp-mode-hook
+                            scheme-mode-hook
+                            racket-mode-hook)
+                          #'rainbow-delimiters-mode)))
 
 (use-package evil
   :init (progn
@@ -296,10 +293,9 @@
             (use-package evil-search-highlight-persist
               :config (global-evil-search-highlight-persist t))
             (use-package evil-matchit
-              :config (progn
-                        (add-hook 'nxml-mode-hook 'evil-matchit-mode)
-                        (add-hook 'html-mode-hook 'evil-matchit-mode)
-                        (add-hook 'web-mode-hook  'evil-matchit-mode)))
+              :config (my-add-hooks '(nxml-mode-hook
+                                      html-mode-hook
+                                      web-mode-hook) #'evil-matchit-mode))
             (use-package evil-commentary
               :config (progn
                         (defun my-comment-line-and-go-to-next ()
@@ -346,13 +342,12 @@
                                                   ([escape] . keyboard-quit)
                                                   ("j"      . evil-next-visual-line)
                                                   ("k"      . evil-previous-visual-line))
-            (bind-keys :map evil-motion-state-map ("C-w m" . maximize-window)
+            (bind-keys :map evil-motion-state-map
+                       ("C-w m" . maximize-window)
                        ("C-w u" . winner-undo))
-
-            (add-hook 'help-mode-hook #'evil-local-mode)
-            (add-hook 'prog-mode-hook #'evil-local-mode)
-            (add-hook 'text-mode-hook #'evil-local-mode)
-
+            (my-add-hooks '(help-mode-hook
+                            prog-mode-hook
+                            text-mode-hook) #'evil-local-mode)
             (defun my-evil-off ()
               "Turn 'evil-mode' off and change cursor type to bar."
               (interactive)
@@ -360,19 +355,19 @@
               (setq cursor-type 'bar))
 
             ;; Disable evil-mode in some major modes
-            (dolist (mode-hook '(shell-mode-hook  term-mode-hook
-                                 magit-mode-hook  erc-mode-hook
-                                 eshell-mode-hook comint-mode-hook
-                                 proced-mode-hook nrepl-connected-hook))
-              (add-hook mode-hook 'my-evil-off))))
+            (my-add-hooks '(shell-mode-hook  term-mode-hook
+                            magit-mode-hook  erc-mode-hook
+                            eshell-mode-hook comint-mode-hook
+                            proced-mode-hook nrepl-connected-hook)
+                          #'my-evil-off)))
 
 (use-package eldoc
   :diminish eldoc-mode
   :commands turn-on-eldoc-mode
-  :init (progn
-          (add-hook 'emacs-lisp-mode-hook       'turn-on-eldoc-mode)
-          (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
-          (add-hook 'ielm-mode-hook             'turn-on-eldoc-mode)))
+  :init (my-add-hooks '(emacs-lisp-mode-hook
+                        lisp-interaction-mode-hook
+                        ielm-mode-hook)
+                      #'turn-on-eldoc-mode))
 
 (use-package helm
   :diminish helm-mode
@@ -691,8 +686,7 @@ Use Helm otherwise."
   "Repeat alignment with respect to the given regular expression.  Args: START END REGEXP."
   (interactive "r\nsAlign regexp: ")
   (align-regexp start end (concat "\\(\\s-*\\)" regexp) 1 1 t))
-
-)
+)
 ;; Bring back to default value
 (setq gc-cons-threshold 800000)
 (setq debug-on-error nil)
