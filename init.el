@@ -128,8 +128,8 @@
       ns-use-srgb-colorspace nil)
 
 (fringe-mode '(4 . 0))
-(electric-pair-mode)
-(show-paren-mode)
+;; (electric-pair-mode)
+;; (show-paren-mode)
 (column-number-mode)
 (desktop-save-mode)
 (global-font-lock-mode)
