@@ -184,12 +184,11 @@
          ("C-h v" . find-variable)
          ("C-h l" . find-library)))
 
-;; (use-package smart-mode-line :config (progn (setq sml/theme 'light) (sml/setup)))
 (use-package spaceline
   :config (progn
             (require 'spaceline-config)
             (setq powerline-height 14
-                  powerline-default-separator 'wave
+                  powerline-default-separator 'bar
                   spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
             (set-face-attribute 'powerline-active1   nil :foreground "white")
             (set-face-attribute 'powerline-inactive1 nil :foreground "white")
