@@ -195,9 +195,15 @@
             (spaceline-spacemacs-theme)))
 
 ;; TODO Configure and try
-;; (use-package lispy)
-;; TODO Configure and try
 ;; (use-package hydra)
+;; TODO Configure and try
+(use-package smartparens
+  :config (progn
+            (require 'smartparens-config)
+            (use-package evil-smartparens :config (evil-smartparens-mode))
+            (show-smartparens-global-mode t)
+            (smartparens-strict-mode)
+            (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)))
 
 (use-package clojure-mode
   :defer  t
