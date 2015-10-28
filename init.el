@@ -53,45 +53,50 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes '(default))
+ '(custom-safe-themes '("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" default))
  '(package-selected-packages
    (quote
     (auto-compile browse-kill-ring cider clojure-mode-extra-font-locking company company-quickhelp dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode magit markdown-mode racket-mode rainbow-delimiters smart-mode-line use-package))))
 
-(custom-set-faces
+;; (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:weight normal :background "#fefefe" :foreground "black"))))
- '(cursor ((t (:background "purple"))))
- '(diff-added ((t (:foreground "#ffffff" :background "#43a047"))))
- '(diff-hl-insert ((t (:foreground "#ffffff" :background "#43a047"))))
- '(diff-changed ((t (:foreground "#000000" :background "#ffc107"))))
- '(diff-hl-change ((t (:foreground "#000000" :background "#ffc107"))))
- '(diff-removed ((t (:foreground "#ffffff" :background "#e53935"))))
- '(diff-hl-delete ((t (:foreground "#ffffff" :background "#e53935"))))
- '(erc-direct-msg-face ((t (:foreground "#e53935"))))
- '(erc-input-face ((t (:foreground "dark green"))))
- '(erc-timestamp-face ((t (:foreground "#9966ca"))))
- '(evil-search-highlight-persist-highlight-face ((t (:background "#ffdd00" :foreground "#000000"))))
- '(eyebrowse-mode-line-active ((t (:foreground "#e53935" :weight bold))))
- '(flycheck-fringe-error ((t (:background "#e53935" :foreground "#e53935"))))
- '(flycheck-fringe-info ((t (:background "#43a047" :foreground "#43a047"))))
- '(flycheck-fringe-warning ((t (:background "#ffc107" :foreground "#ffc107"))))
- '(font-lock-constant-face ((t (:foreground "#0000df"))))
- '(font-lock-keyword-face ((t (:foreground "#8b008b"))))
- '(font-lock-string-face ((t (:foreground "#007442"))))
- '(helm-selection ((t (:background "#bdeebd" :foreground "#000000"))))
- '(helm-source-header ((t (:background "#607d8b" :foreground "#ffffff" :height 100))))
- '(hl-line ((t (:background "#ccddee"))))
- '(link ((t (:foreground "#bb00f8"))))
- '(rainbow-delimiters-depth-1-face ((t (:foreground "#000000"))))
- '(rainbow-delimiters-depth-2-face ((t (:foreground "#ff0000"))))
- '(rainbow-delimiters-depth-3-face ((t (:foreground "#0000b8"))))
- '(rainbow-delimiters-depth-4-face ((t (:foreground "#ff8c00"))))
- '(rainbow-delimiters-depth-5-face ((t (:foreground "#009800"))))
- '(rainbow-delimiters-depth-6-face ((t (:foreground "#ff00ff")))))
+ ;; '(default ((t (:weight normal :background "#fefefe" :foreground "black"))))
+ ;; '(cursor ((t (:background "purple"))))
+ ;; '(diff-added ((t (:foreground "#ffffff" :background "#43a047"))))
+ ;; '(diff-hl-insert ((t (:foreground "#ffffff" :background "#43a047"))))
+ ;; '(diff-changed ((t (:foreground "#000000" :background "#ffc107"))))
+ ;; '(diff-hl-change ((t (:foreground "#000000" :background "#ffc107"))))
+ ;; '(diff-removed ((t (:foreground "#ffffff" :background "#e53935"))))
+ ;; '(diff-hl-delete ((t (:foreground "#ffffff" :background "#e53935"))))
+ ;; '(erc-direct-msg-face ((t (:foreground "#e53935"))))
+ ;; '(erc-input-face ((t (:foreground "dark green"))))
+ ;; '(erc-timestamp-face ((t (:foreground "#9966ca"))))
+ ;; '(evil-search-highlight-persist-highlight-face ((t (:background "#ffdd00" :foreground "#000000"))))
+ ;; '(eyebrowse-mode-line-active ((t (:foreground "#e53935" :weight bold))))
+ ;; '(flycheck-fringe-error ((t (:background "#e53935" :foreground "#e53935"))))
+ ;; '(flycheck-fringe-info ((t (:background "#43a047" :foreground "#43a047"))))
+ ;; '(flycheck-fringe-warning ((t (:background "#ffc107" :foreground "#ffc107"))))
+ ;; '(font-lock-constant-face ((t (:foreground "#0000df"))))
+ ;; '(font-lock-keyword-face ((t (:foreground "#8b008b"))))
+ ;; '(font-lock-string-face ((t (:foreground "#007442"))))
+ ;; '(helm-selection ((t (:background "#bdeebd" :foreground "#000000"))))
+ ;; '(helm-source-header ((t (:background "#607d8b" :foreground "#ffffff" :height 100))))
+ ;; '(hl-line ((t (:background "#ccddee"))))
+ ;; '(link ((t (:foreground "#bb00f8"))))
+ ;; '(rainbow-delimiters-depth-1-face ((t (:foreground "#000000"))))
+ ;; '(rainbow-delimiters-depth-2-face ((t (:foreground "#ff0000"))))
+ ;; '(rainbow-delimiters-depth-3-face ((t (:foreground "#0000b8"))))
+ ;; '(rainbow-delimiters-depth-4-face ((t (:foreground "#ff8c00"))))
+ ;; '(rainbow-delimiters-depth-5-face ((t (:foreground "#009800"))))
+ ;; '(rainbow-delimiters-depth-6-face ((t (:foreground "#ff00ff"))))
+ ;; )
+;; TODO try
+(use-package color-theme-sanityinc-tomorrow :config (load-theme 'sanityinc-tomorrow-night))
+(custom-set-faces
+ '(helm-selection ((t (:background "#c0a6c4" :foreground "#000000")))))
 
 ;; PATH
 (use-package exec-path-from-shell
