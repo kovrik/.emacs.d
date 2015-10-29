@@ -95,18 +95,21 @@
 
 (use-package zenburn-theme)
 (custom-set-faces
+ '(cursor                 ((t (:background "#9090ff"))))
+ '(default                ((t (:background "grey25"))))
  '(diff-added             ((t (:foreground "#ffffff" :background "#c6efce"))))
  '(diff-changed           ((t (:foreground "#000000" :background "#ffeb9c"))))
  '(diff-removed           ((t (:foreground "#ffffff" :background "#ffc7ce"))))
- '(diff-hl-insert         ((t (:foreground "#c6efce" :background "#c6efce"))))
- '(diff-hl-change         ((t (:foreground "#ffeb9c" :background "#ffeb9c"))))
- '(diff-hl-delete         ((t (:foreground "#ffc7ce" :background "#ffc7ce"))))
+ '(diff-hl-insert         ((t (:foreground "#86ff86" :background "#86ff86"))))
+ '(diff-hl-change         ((t (:foreground "#ffeb6c" :background "#ffeb6c"))))
+ '(diff-hl-delete         ((t (:foreground "#ff9090" :background "#ff9090"))))
+ '(evil-search-highlight-persist-highlight-face ((t (:foreground "black" :background "#ffdd00"))))
  '(font-lock-string-face  ((t (:foreground "#ffb7b7"))))
  '(font-lock-warning-face ((t (:foreground "#ff9090"))))
- '(magit-hash             ((t (:foreground "#ffe0a0"))))
+ '(magit-hash             ((t (:foreground "#d0ffd0"))))
  '(magit-popup-key        ((t (:foreground "#c6efce"))))
  '(org-done               ((t (:foreground "#c6efce"))))
- '(org-link               ((t (:foreground "#ffe0a0" :underline nil))))
+ '(org-link               ((t (:foreground "#ffeb6c" :underline nil))))
  '(org-todo               ((t (:foreground "#ffb7b7"))))
  '(region                 ((t (:background "#ffe5b0" :foreground "black")))))
 
@@ -205,8 +208,10 @@
             (setq powerline-height 14
                   powerline-default-separator 'bar
                   spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
-            (set-face-attribute 'powerline-active1   nil :foreground "white")
-            (set-face-attribute 'powerline-inactive1 nil :foreground "white")
+            (set-face-attribute 'mode-line           nil :foreground "#ffeb9c")
+            (set-face-attribute 'mode-line-inactive  nil :foreground "#ffeb9c")
+            (set-face-attribute 'powerline-active1   nil :foreground "grey95")
+            (set-face-attribute 'powerline-inactive1 nil :foreground "grey20")
             (spaceline-spacemacs-theme)))
 
 ;; TODO Configure and try
