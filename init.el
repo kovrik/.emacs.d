@@ -103,6 +103,8 @@
  '(diff-hl-delete         ((t (:foreground "#ffc7ce" :background "#ffc7ce"))))
  '(font-lock-string-face  ((t (:foreground "#ffb7b7"))))
  '(font-lock-warning-face ((t (:foreground "#ff9090"))))
+ '(magit-hash             ((t (:foreground "#ffe0a0"))))
+ '(magit-popup-key        ((t (:foreground "#c6efce"))))
  '(org-done               ((t (:foreground "#c6efce"))))
  '(org-link               ((t (:foreground "#ffe0a0" :underline nil))))
  '(org-todo               ((t (:foreground "#ffb7b7"))))
