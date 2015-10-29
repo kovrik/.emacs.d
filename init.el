@@ -58,40 +58,55 @@
    (quote
     (auto-compile browse-kill-ring cider clojure-mode-extra-font-locking company company-quickhelp dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode magit markdown-mode racket-mode rainbow-delimiters smart-mode-line use-package))))
 
+;; (custom-set-faces
+;;  ;; custom-set-faces was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;; '(default ((t (:weight normal :background "#fefefe" :foreground "black"))))
+;; '(cursor  ((t (:background "purple"))))
+;; '(diff-added     ((t (:foreground "#ffffff" :background "#c6efce"))))
+;; '(diff-hl-insert ((t (:foreground "#c6efce" :background "#c6efce"))))
+;; '(diff-changed   ((t (:foreground "#000000" :background "#ffeb9c"))))
+;; '(diff-hl-change ((t (:foreground "#ffeb9c" :background "#ffeb9c"))))
+;; '(diff-removed   ((t (:foreground "#ffffff" :background "#ffc7ce"))))
+;; '(diff-hl-delete ((t (:foreground "#ffc7ce" :background "#ffc7ce"))))
+;; '(erc-direct-msg-face ((t (:foreground "#e53935"))))
+;; '(erc-input-face ((t (:foreground "dark green"))))
+;; '(erc-timestamp-face  ((t (:foreground "#9966ca"))))
+;; '(evil-search-highlight-persist-highlight-face ((t (:background "#ffdd00" :foreground "#000000"))))
+;; '(eyebrowse-mode-line-active ((t (:foreground "#e53935" :weight bold))))
+;; '(flycheck-fringe-error   ((t (:background "#e53935" :foreground "#e53935"))))
+;; '(flycheck-fringe-info    ((t (:background "#43a047" :foreground "#43a047"))))
+;; '(flycheck-fringe-warning ((t (:background "#ffc107" :foreground "#ffc107"))))
+;; '(font-lock-constant-face ((t (:foreground "#0000df"))))
+;; '(font-lock-keyword-face  ((t (:foreground "#8b008b"))))
+;; '(font-lock-string-face   ((t (:foreground "#007442"))))
+;; '(helm-selection ((t (:background "#bdeebd" :foreground "#000000"))))
+;; '(helm-source-header ((t (:background "#607d8b" :foreground "#ffffff" :height 100))))
+;; '(hl-line ((t (:background "#ccddee"))))
+;; '(link ((t (:foreground "#bb00f8"))))
+;; '(rainbow-delimiters-depth-1-face ((t (:foreground "#000000"))))
+;; '(rainbow-delimiters-depth-2-face ((t (:foreground "#ff0000"))))
+;; '(rainbow-delimiters-depth-3-face ((t (:foreground "#0000b8"))))
+;; '(rainbow-delimiters-depth-4-face ((t (:foreground "#ff8c00"))))
+;; '(rainbow-delimiters-depth-5-face ((t (:foreground "#009800"))))
+;; '(rainbow-delimiters-depth-6-face ((t (:foreground "#ff00ff")))))
+
+(use-package zenburn-theme)
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-'(default ((t (:weight normal :background "#fefefe" :foreground "black"))))
-'(cursor  ((t (:background "purple"))))
-'(diff-added     ((t (:foreground "#ffffff" :background "#c6efce"))))
-'(diff-hl-insert ((t (:foreground "#c6efce" :background "#c6efce"))))
-'(diff-changed   ((t (:foreground "#000000" :background "#ffeb9c"))))
-'(diff-hl-change ((t (:foreground "#ffeb9c" :background "#ffeb9c"))))
-'(diff-removed   ((t (:foreground "#ffffff" :background "#ffc7ce"))))
-'(diff-hl-delete ((t (:foreground "#ffc7ce" :background "#ffc7ce"))))
-'(erc-direct-msg-face ((t (:foreground "#e53935"))))
-'(erc-input-face ((t (:foreground "dark green"))))
-'(erc-timestamp-face  ((t (:foreground "#9966ca"))))
-'(evil-search-highlight-persist-highlight-face ((t (:background "#ffdd00" :foreground "#000000"))))
-'(eyebrowse-mode-line-active ((t (:foreground "#e53935" :weight bold))))
-'(flycheck-fringe-error   ((t (:background "#e53935" :foreground "#e53935"))))
-'(flycheck-fringe-info    ((t (:background "#43a047" :foreground "#43a047"))))
-'(flycheck-fringe-warning ((t (:background "#ffc107" :foreground "#ffc107"))))
-'(font-lock-constant-face ((t (:foreground "#0000df"))))
-'(font-lock-keyword-face  ((t (:foreground "#8b008b"))))
-'(font-lock-string-face   ((t (:foreground "#007442"))))
-'(helm-selection ((t (:background "#bdeebd" :foreground "#000000"))))
-'(helm-source-header ((t (:background "#607d8b" :foreground "#ffffff" :height 100))))
-'(hl-line ((t (:background "#ccddee"))))
-'(link ((t (:foreground "#bb00f8"))))
-'(rainbow-delimiters-depth-1-face ((t (:foreground "#000000"))))
-'(rainbow-delimiters-depth-2-face ((t (:foreground "#ff0000"))))
-'(rainbow-delimiters-depth-3-face ((t (:foreground "#0000b8"))))
-'(rainbow-delimiters-depth-4-face ((t (:foreground "#ff8c00"))))
-'(rainbow-delimiters-depth-5-face ((t (:foreground "#009800"))))
-'(rainbow-delimiters-depth-6-face ((t (:foreground "#ff00ff")))))
+ '(diff-added             ((t (:foreground "#ffffff" :background "#c6efce"))))
+ '(diff-changed           ((t (:foreground "#000000" :background "#ffeb9c"))))
+ '(diff-removed           ((t (:foreground "#ffffff" :background "#ffc7ce"))))
+ '(diff-hl-insert         ((t (:foreground "#c6efce" :background "#c6efce"))))
+ '(diff-hl-change         ((t (:foreground "#ffeb9c" :background "#ffeb9c"))))
+ '(diff-hl-delete         ((t (:foreground "#ffc7ce" :background "#ffc7ce"))))
+ '(font-lock-string-face  ((t (:foreground "#ffb7b7"))))
+ '(font-lock-warning-face ((t (:foreground "#ff9090"))))
+ '(org-done               ((t (:foreground "#c6efce"))))
+ '(org-link               ((t (:foreground "#ffe0a0" :underline nil))))
+ '(org-todo               ((t (:foreground "#ffb7b7"))))
+ '(region                 ((t (:background "#ffe5b0" :foreground "black")))))
 
 ;; PATH
 (use-package exec-path-from-shell
@@ -429,7 +444,6 @@
          ("C-x C-f" . helm-find-files)))
 
 (use-package projectile
-  :defer t
   :diminish projectile-mode
   :config (progn
             (use-package helm-projectile :config (helm-projectile-on))
