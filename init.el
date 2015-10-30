@@ -45,6 +45,7 @@
 (my-ensure-packages-installed '(queue async browse-kill-ring dash epl f fold-dwim fringe-helper goto-chg highlight highlight-escape-sequences highlight-parentheses idle-highlight-mode markdown-mode pkg-info s))
 
 (defun my-add-hooks (hooks function)
+  "Bind FUNCTION for each hook in HOOKS list."
   (dolist (hook hooks)
     (add-hook hook function)))
 
@@ -58,6 +59,7 @@
    (quote
     (auto-compile browse-kill-ring cider clojure-mode-extra-font-locking company company-quickhelp dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode magit markdown-mode racket-mode rainbow-delimiters smart-mode-line use-package))))
 
+;; My Default theme adjustments
 ;; (custom-set-faces
 ;;  ;; custom-set-faces was added by Custom.
 ;;  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -103,24 +105,25 @@
  '(diff-hl-insert         ((t (:foreground "#86ff86" :background "#86ff86"))))
  '(diff-hl-change         ((t (:foreground "#ffeb6c" :background "#ffeb6c"))))
  '(diff-hl-delete         ((t (:foreground "#ff9090" :background "#ff9090"))))
- '(evil-search-highlight-persist-highlight-face ((t (:foreground "black" :background "#ffdd00"))))
+ '(evil-search-highlight-persist-highlight-face ((t (:foreground "#000000" :background "#9090ff"))))
  '(font-lock-string-face  ((t (:foreground "#ffb7b7"))))
  '(font-lock-warning-face ((t (:foreground "#ff9090"))))
+ '(lazy-highlight         ((t (:foreground "#000000" :background "#9090ff"))))
  '(magit-hash             ((t (:foreground "#d0ffd0"))))
  '(magit-popup-key        ((t (:foreground "#c6efce"))))
  '(org-done               ((t (:foreground "#c6efce"))))
  '(org-link               ((t (:foreground "#ffeb6c" :underline nil))))
  '(org-todo               ((t (:foreground "#ffb7b7"))))
- '(region                 ((t (:background "#ffe5b0" :foreground "black")))))
+ '(region                 ((t (:background "#ffe5b0" :foreground "#000000")))))
 
 ;; PATH
 (use-package exec-path-from-shell
-  :config (when (memq window-system '(mac ns))
-            (exec-path-from-shell-initialize)))
-
-(when (eq 'windows-nt system-type)
-  (setq exec-path (append (parse-colon-path (getenv "PATH"))
-                          (parse-colon-path (getenv "USERPROFILE")) exec-path)))
+  :config (progn
+            (when (memq window-system '(mac ns))
+              (exec-path-from-shell-initialize))
+            (when (eq 'windows-nt system-type)
+              (setq exec-path (append (parse-colon-path (getenv "PATH"))
+                                      (parse-colon-path (getenv "USERPROFILE")) exec-path)))))
 
 ;; Globals
 (prefer-coding-system 'utf-8)
@@ -216,14 +219,15 @@
 
 ;; TODO Configure and try
 ;; (use-package hydra)
-;; TODO Configure and try
+
 (use-package smartparens
   :config (progn
             (require 'smartparens-config)
-            (use-package evil-smartparens :config (evil-smartparens-mode))
+            (use-package evil-smartparens)
             (show-smartparens-global-mode t)
             (smartparens-strict-mode)
-            (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)))
+            (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
+            (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)))
 
 (use-package clojure-mode
   :defer  t
@@ -432,7 +436,6 @@
 
           ;; Do not auto-expand '~/', '//', './', '../' in helm-find-files
           (remove-hook 'helm-after-update-hook 'helm-ff-auto-expand-to-home-or-root)
-
           (bind-keys :map helm-map ("<tab>"  . helm-execute-persistent-action)
                                    ("C-i"    . helm-execute-persistent-action)
                                    ("C-z"    . helm-select-action)
