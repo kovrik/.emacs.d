@@ -108,10 +108,14 @@
  '(evil-search-highlight-persist-highlight-face ((t (:foreground "#000000" :background "#9090ff"))))
  '(font-lock-string-face  ((t (:foreground "#ffb7b7"))))
  '(font-lock-warning-face ((t (:foreground "#ff9090"))))
- '(helm-selection         ((t (:background "#ffe5b0" :foreground "#000000"))))
+ '(helm-selection         ((t (:background "#eee5b0" :foreground "#000000"))))
  '(lazy-highlight         ((t (:foreground "#000000" :background "#9090ff"))))
  '(magit-hash             ((t (:foreground "#d0ffd0"))))
  '(magit-popup-key        ((t (:foreground "#c6efce"))))
+ '(mode-line              ((t (:foreground "#ffeb9c" :box nil))))
+ '(mode-line-inactive     ((t (:foreground "#ffeb9c" :box nil))))
+ '(powerline-active1      ((t (:foreground "grey95" ))))
+ '(powerline-inactive1    ((t (:foreground "grey20" ))))
  '(org-done               ((t (:foreground "#c6efce"))))
  '(org-link               ((t (:foreground "#ffeb6c" :underline nil))))
  '(org-todo               ((t (:foreground "#ffb7b7"))))
@@ -151,7 +155,7 @@
       show-trailing-whitespace t
       ns-use-srgb-colorspace nil)
 
-(fringe-mode '(4 . 0))
+(fringe-mode '(5 . 0))
 (column-number-mode)
 (desktop-save-mode)
 (global-font-lock-mode)
@@ -197,7 +201,7 @@
 (use-package color-theme :defer t :config (color-theme-initialize))
 (use-package fixme-mode :config (fixme-mode t))
 (use-package diff-hl :config (global-diff-hl-mode t))
-(use-package page-break-lines :config (global-page-break-lines-mode))
+;; (use-package page-break-lines :config (global-page-break-lines-mode))
 
 (use-package find-func
   :bind (("C-S-h" . find-function-at-point)
@@ -210,12 +214,8 @@
   :config (progn
             (require 'spaceline-config)
             (setq powerline-height 14
-                  powerline-default-separator 'bar
+                  powerline-default-separator 'arrow
                   spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
-            (set-face-attribute 'mode-line           nil :foreground "#ffeb9c")
-            (set-face-attribute 'mode-line-inactive  nil :foreground "#ffeb9c")
-            (set-face-attribute 'powerline-active1   nil :foreground "grey95")
-            (set-face-attribute 'powerline-inactive1 nil :foreground "grey20")
             (spaceline-spacemacs-theme)))
 
 ;; TODO Configure and try
@@ -262,6 +262,7 @@
 
 (use-package racket-mode :defer t :config (add-hook 'racket-mode-hook #'company-quickhelp--disable))
 
+;; TODO Remove?
 (use-package eval-in-repl
   :defer t
   :config (progn
@@ -272,7 +273,6 @@
             (define-key info-mode-map             (kbd "<C-return>") 'eir-eval-in-ielm)
 
             ;; Clojure
-            ;; (require 'cider) ; if not done elsewhere
             (require 'eval-in-repl-cider)
             (define-key clojure-mode-map (kbd "<C-return>") 'eir-eval-in-cider)
 
@@ -281,7 +281,6 @@
             ;; (require 'eval-in-repl-geiser)
             ;; (add-hook 'geiser-mode-hook
                       ;; '(lambda () (local-set-key (kbd "<C-return>") 'eir-eval-in-geiser)))
-            (require 'racket-mode)
             (require 'eval-in-repl-racket)
             (define-key racket-mode-map (kbd "<C-return>") 'eir-eval-in-racket)
 
@@ -319,7 +318,7 @@
             (use-package evil-org :defer t)
             (use-package evil-numbers)
             (use-package evil-anzu)
-            (use-package evil-surround :config (global-evil-surround-mode 1))
+            (use-package evil-surround   :config (global-evil-surround-mode 1))
             (use-package evil-visualstar :config (global-evil-visualstar-mode))
             (use-package evil-search-highlight-persist
               :config (global-evil-search-highlight-persist t))
