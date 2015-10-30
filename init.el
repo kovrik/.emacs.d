@@ -108,6 +108,7 @@
  '(evil-search-highlight-persist-highlight-face ((t (:foreground "#000000" :background "#9090ff"))))
  '(font-lock-string-face  ((t (:foreground "#ffb7b7"))))
  '(font-lock-warning-face ((t (:foreground "#ff9090"))))
+ '(helm-selection         ((t (:background "#ffe5b0" :foreground "#000000"))))
  '(lazy-highlight         ((t (:foreground "#000000" :background "#9090ff"))))
  '(magit-hash             ((t (:foreground "#d0ffd0"))))
  '(magit-popup-key        ((t (:foreground "#c6efce"))))
@@ -600,8 +601,9 @@ Otherwise run projectile-find-file."
                   eyebrowse-close-window-config-prompt t)))
 
 (use-package shackle
+  :diminish shackle-mode
   :config (progn
-            (setq shackle-lighter " |#|"
+            (setq shackle-lighter ""
                   shackle-rules '(("\\`\\*magit.*?\\'"   :regexp t :same t)
                                   ("\\`\\*helm.*?\\*\\'" :regexp t :align t :ratio 0.4)
                                   (compilation-mode      :ignore t)
