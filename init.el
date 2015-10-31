@@ -97,7 +97,7 @@
 
 (use-package zenburn-theme)
 (custom-set-faces
- '(cursor                 ((t (:background "#9090ff"))))
+ '(cursor                 ((t (:background "white"))))
  '(default                ((t (:background "grey25"))))
  '(diff-added             ((t (:foreground "#ffffff" :background "#c6efce"))))
  '(diff-changed           ((t (:foreground "#000000" :background "#ffeb9c"))))
@@ -109,6 +109,7 @@
  '(font-lock-string-face  ((t (:foreground "#ffb7b7"))))
  '(font-lock-warning-face ((t (:foreground "#ff9090"))))
  '(helm-selection         ((t (:background "#eee5b0" :foreground "#000000"))))
+ '(hl-line                ((t (:background "grey34"))))
  '(lazy-highlight         ((t (:foreground "#000000" :background "#9090ff"))))
  '(magit-hash             ((t (:foreground "#d0ffd0"))))
  '(magit-popup-key        ((t (:foreground "#c6efce"))))
@@ -715,6 +716,15 @@ Use Helm otherwise."
   "Repeat alignment with respect to the given regular expression.  Args: START END REGEXP."
   (interactive "r\nsAlign regexp: ")
   (align-regexp start end (concat "\\(\\s-*\\)" regexp) 1 1 t))
+
+(defun my-self-insert-or-quit (count)
+  "Quit if in a read-only buffer; otherwise, call self-insert-command."
+  (interactive "p")
+  (if buffer-read-only
+      (kill-buffer)
+    (self-insert-command count)))
+
+(global-set-key (kbd "q") 'my-self-insert-or-quit)
 )
 ;; Bring back to default value
 (setq gc-cons-threshold 800000)
