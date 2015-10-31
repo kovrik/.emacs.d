@@ -108,6 +108,7 @@
  '(evil-search-highlight-persist-highlight-face ((t (:foreground "#000000" :background "#9090ff"))))
  '(font-lock-string-face  ((t (:foreground "#ffb7b7"))))
  '(font-lock-warning-face ((t (:foreground "#ff9090"))))
+ '(git-commit-summary     ((t (:foreground "#ffeb9c"))))
  '(helm-selection         ((t (:background "#eee5b0" :foreground "#000000"))))
  '(hl-line                ((t (:background "grey34"))))
  '(lazy-highlight         ((t (:foreground "#000000" :background "#9090ff"))))
