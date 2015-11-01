@@ -95,33 +95,71 @@
 ;; '(rainbow-delimiters-depth-5-face ((t (:foreground "#009800"))))
 ;; '(rainbow-delimiters-depth-6-face ((t (:foreground "#ff00ff")))))
 
-(use-package zenburn-theme)
+;; Trying Zenburn
+;; (use-package zenburn-theme)
+;; (custom-set-faces
+;;  '(cursor                 ((t (:background "white"))))
+;;  '(default                ((t (:background "grey25"))))
+;;  '(diff-added             ((t (:foreground "#ffffff" :background "#c6efce"))))
+;;  '(diff-changed           ((t (:foreground "#000000" :background "#ffeb9c"))))
+;;  '(diff-removed           ((t (:foreground "#ffffff" :background "#ffc7ce"))))
+;;  '(diff-hl-insert         ((t (:foreground "#86ff86" :background "#86ff86"))))
+;;  '(diff-hl-change         ((t (:foreground "#ffeb6c" :background "#ffeb6c"))))
+;;  '(diff-hl-delete         ((t (:foreground "#ff9090" :background "#ff9090"))))
+;;  '(evil-search-highlight-persist-highlight-face ((t (:foreground "#000000" :background "#9090ff"))))
+;;  '(font-lock-string-face  ((t (:foreground "#ffb7b7"))))
+;;  '(font-lock-warning-face ((t (:foreground "#ff9090"))))
+;;  '(git-commit-summary     ((t (:foreground "#ffeb9c"))))
+;;  '(helm-selection         ((t (:background "#eee5b0" :foreground "#000000"))))
+;;  '(hl-line                ((t (:background "grey34"))))
+;;  '(lazy-highlight         ((t (:foreground "#000000" :background "#9090ff"))))
+;;  '(magit-hash             ((t (:foreground "#d0ffd0"))))
+;;  '(magit-popup-key        ((t (:foreground "#c6efce"))))
+;;  '(mode-line              ((t (:foreground "#ffeb9c" :box nil))))
+;;  '(mode-line-inactive     ((t (:foreground "#ffeb9c" :box nil))))
+;;  '(powerline-active1      ((t (:foreground "grey95" ))))
+;;  '(powerline-inactive1    ((t (:foreground "grey20" ))))
+;;  '(org-done               ((t (:foreground "#c6efce"))))
+;;  '(org-link               ((t (:foreground "#ffeb6c" :underline nil))))
+;;  '(org-todo               ((t (:foreground "#ffb7b7"))))
+;;  '(region                 ((t (:background "#ffe5b0" :foreground "#000000")))))
+
+;; Trying solarized
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" default)))
+ '(package-selected-packages
+   (quote
+    (auto-compile browse-kill-ring cider clojure-mode-extra-font-locking company company-quickhelp dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode magit markdown-mode racket-mode rainbow-delimiters smart-mode-line use-package))))
 (custom-set-faces
- '(cursor                 ((t (:background "white"))))
- '(default                ((t (:background "grey25"))))
- '(diff-added             ((t (:foreground "#ffffff" :background "#c6efce"))))
- '(diff-changed           ((t (:foreground "#000000" :background "#ffeb9c"))))
- '(diff-removed           ((t (:foreground "#ffffff" :background "#ffc7ce"))))
- '(diff-hl-insert         ((t (:foreground "#86ff86" :background "#86ff86"))))
- '(diff-hl-change         ((t (:foreground "#ffeb6c" :background "#ffeb6c"))))
- '(diff-hl-delete         ((t (:foreground "#ff9090" :background "#ff9090"))))
- '(evil-search-highlight-persist-highlight-face ((t (:foreground "#000000" :background "#9090ff"))))
- '(font-lock-string-face  ((t (:foreground "#ffb7b7"))))
- '(font-lock-warning-face ((t (:foreground "#ff9090"))))
- '(git-commit-summary     ((t (:foreground "#ffeb9c"))))
- '(helm-selection         ((t (:background "#eee5b0" :foreground "#000000"))))
- '(hl-line                ((t (:background "grey34"))))
- '(lazy-highlight         ((t (:foreground "#000000" :background "#9090ff"))))
- '(magit-hash             ((t (:foreground "#d0ffd0"))))
- '(magit-popup-key        ((t (:foreground "#c6efce"))))
- '(mode-line              ((t (:foreground "#ffeb9c" :box nil))))
- '(mode-line-inactive     ((t (:foreground "#ffeb9c" :box nil))))
- '(powerline-active1      ((t (:foreground "grey95" ))))
- '(powerline-inactive1    ((t (:foreground "grey20" ))))
- '(org-done               ((t (:foreground "#c6efce"))))
- '(org-link               ((t (:foreground "#ffeb6c" :underline nil))))
- '(org-todo               ((t (:foreground "#ffb7b7"))))
- '(region                 ((t (:background "#ffe5b0" :foreground "#000000")))))
+ '(default                ((t (:background "#faf4e9" :foreground "#354b53"))))
+ '(hl-line                ((t (:background "#efecda"))))
+ '(helm-selection         ((t (:background "#f5e900" :underline nil))))
+ '(font-lock-keyword-face ((t (:foreground "#758900"))))
+ '(font-lock-string-face  ((t (:foreground "#1a9188"))))
+ '(org-table              ((t (:foreground "#758900"))))
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+(use-package solarized-theme
+  :config (progn
+            (setq solarized-use-variable-pitch nil
+                  solarized-high-contrast-mode-line t
+                  solarized-scale-org-headlines nil
+                  solarized-height-minus-1 1
+                  solarized-height-plus-1  1
+                  solarized-height-plus-2  1
+                  solarized-height-plus-3  1
+                  solarized-height-plus-4  1
+                  x-underline-at-descent-line t) 
+            (load-theme 'solarized-light)))
 
 ;; PATH
 (use-package exec-path-from-shell
