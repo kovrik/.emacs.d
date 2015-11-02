@@ -763,6 +763,7 @@ Use Helm otherwise."
     (self-insert-command count)))
 
 (global-set-key (kbd "q") 'my-self-insert-or-quit)
+(require 'help-mode)
 (define-key help-mode-map (kbd "q") 'my-self-insert-or-quit)
 )
 ;; Bring back to default value
