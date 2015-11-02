@@ -143,7 +143,8 @@
  '(font-lock-string-face  ((t (:foreground "#1a9188"))))
  '(git-commit-summary     ((t (:foreground "#354b53"))))
  '(hl-line                ((t (:background "#efecda"))))
- '(helm-selection         ((t (:background "#f5e900" :underline nil))))
+ '(helm-source-header     ((t (:background "#1a9188"))))
+ '(helm-selection         ((t (:background "#ffffa0" :underline nil))))
  '(org-table              ((t (:foreground "#758900"))))
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -221,8 +222,7 @@
 (defun my-nlinum-off () "Turn 'nlinum-mode' off." (nlinum-mode -1))
 
 ;; Fonts
-(let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name)
-                                                      (font-family-list))))
+(let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name) (font-family-list))))
                            (list
                             (font-spec :name "Meslo LG S" :size 12)
                             (font-spec :name "Consolas"   :size 13)
@@ -259,9 +259,6 @@
                   powerline-default-separator 'arrow
                   spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
             (spaceline-spacemacs-theme)))
-
-;; TODO Configure and try
-;; (use-package hydra)
 
 (use-package smartparens
   :config (progn
