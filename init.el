@@ -759,7 +759,7 @@ Use Helm otherwise."
   "Quit if in a read-only buffer; otherwise, call self-insert-command."
   (interactive "p")
   (if buffer-read-only
-      (kill-buffer)
+      (kill-this-buffer)
     (self-insert-command count)))
 
 (global-set-key (kbd "q") 'my-self-insert-or-quit)
