@@ -763,6 +763,7 @@ Use Helm otherwise."
     (self-insert-command count)))
 
 (global-set-key (kbd "q") 'my-self-insert-or-quit)
+(define-key help-mode-map (kbd "q") 'my-self-insert-or-quit)
 )
 ;; Bring back to default value
 (setq gc-cons-threshold 800000)
