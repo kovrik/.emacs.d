@@ -266,6 +266,10 @@
             (use-package evil-smartparens)
             (show-smartparens-global-mode t)
             (smartparens-strict-mode)
+            (bind-keys :map smartparens-mode-map ((kbd "C-<right>") . sp-forward-slurp-sexp)
+                       ((kbd "C-<left>")  . sp-forward-barf-sexp)
+                       ((kbd "C-M-<right>")  . sp-backward-slurp-sexp)
+                       ((kbd "C-M-<left>")  . sp-backward-barf-sexp))
             (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
             (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)))
 
@@ -446,7 +450,9 @@
           (require 'helm-locate)
           (use-package flx)
           (use-package helm-flx :config (helm-flx-mode +1))
-          (use-package helm-swoop :defer t)
+          (use-package helm-swoop
+            :defer t
+            :config (setq helm-swoop-split-with-multiple-windows t))
 
           (setq helm-split-window-in-side-p           t
                 helm-move-to-line-cycle-in-source     t
