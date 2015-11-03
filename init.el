@@ -95,35 +95,6 @@
 ;; '(rainbow-delimiters-depth-5-face ((t (:foreground "#009800"))))
 ;; '(rainbow-delimiters-depth-6-face ((t (:foreground "#ff00ff")))))
 
-;; Trying Zenburn
-;; (use-package zenburn-theme)
-;; (custom-set-faces
-;;  '(cursor                 ((t (:background "white"))))
-;;  '(default                ((t (:background "grey25"))))
-;;  '(diff-added             ((t (:foreground "#ffffff" :background "#c6efce"))))
-;;  '(diff-changed           ((t (:foreground "#000000" :background "#ffeb9c"))))
-;;  '(diff-removed           ((t (:foreground "#ffffff" :background "#ffc7ce"))))
-;;  '(diff-hl-insert         ((t (:foreground "#86ff86" :background "#86ff86"))))
-;;  '(diff-hl-change         ((t (:foreground "#ffeb6c" :background "#ffeb6c"))))
-;;  '(diff-hl-delete         ((t (:foreground "#ff9090" :background "#ff9090"))))
-;;  '(evil-search-highlight-persist-highlight-face ((t (:foreground "#000000" :background "#9090ff"))))
-;;  '(font-lock-string-face  ((t (:foreground "#ffb7b7"))))
-;;  '(font-lock-warning-face ((t (:foreground "#ff9090"))))
-;;  '(git-commit-summary     ((t (:foreground "#ffeb9c"))))
-;;  '(helm-selection         ((t (:background "#eee5b0" :foreground "#000000"))))
-;;  '(hl-line                ((t (:background "grey34"))))
-;;  '(lazy-highlight         ((t (:foreground "#000000" :background "#9090ff"))))
-;;  '(magit-hash             ((t (:foreground "#d0ffd0"))))
-;;  '(magit-popup-key        ((t (:foreground "#c6efce"))))
-;;  '(mode-line              ((t (:foreground "#ffeb9c" :box nil))))
-;;  '(mode-line-inactive     ((t (:foreground "#ffeb9c" :box nil))))
-;;  '(powerline-active1      ((t (:foreground "grey95" ))))
-;;  '(powerline-inactive1    ((t (:foreground "grey20" ))))
-;;  '(org-done               ((t (:foreground "#c6efce"))))
-;;  '(org-link               ((t (:foreground "#ffeb6c" :underline nil))))
-;;  '(org-todo               ((t (:foreground "#ffb7b7"))))
-;;  '(region                 ((t (:background "#ffe5b0" :foreground "#000000")))))
-
 ;; Trying solarized
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
