@@ -240,9 +240,10 @@
             (use-package evil-smartparens)
             (show-smartparens-global-mode t)
             (smartparens-strict-mode)
-            (bind-keys :map smartparens-mode-map ((kbd "C-<right>") . sp-forward-slurp-sexp)
-                       ((kbd "C-<left>")  . sp-forward-barf-sexp)
-                       ((kbd "C-M-<right>")  . sp-backward-slurp-sexp)
+            (bind-keys :map smartparens-mode-map
+                       ((kbd "C-<right>")   . sp-forward-slurp-sexp)
+                       ((kbd "C-<left>")    . sp-forward-barf-sexp)
+                       ((kbd "C-M-<right>") . sp-backward-slurp-sexp)
                        ((kbd "C-M-<left>")  . sp-backward-barf-sexp))
             (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
             (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)))
@@ -596,9 +597,8 @@ Otherwise run projectile-find-file."
 
 (use-package flycheck
   :defer t
-  :config (progn
-            (use-package flycheck-pos-tip
-              :config (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))))
+  :config (use-package flycheck-pos-tip
+            :config (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
 
 (use-package undo-tree
   :diminish undo-tree-mode
@@ -735,17 +735,20 @@ Use Helm otherwise."
   (interactive "r\nsAlign regexp: ")
   (align-regexp start end (concat "\\(\\s-*\\)" regexp) 1 1 t))
 
-(defun my-self-insert-or-quit (count)
-  "Quit if in a read-only buffer; otherwise, call self-insert-command."
-  (interactive "p")
-  (if buffer-read-only
-      (kill-this-buffer)
-    (self-insert-command count)))
+(progn
+  ;; Make 'q' key more predictable and less annoying
+  (defun my-self-insert-or-quit (count)
+    "Quit if in a read-only buffer; otherwise, call self-insert-command."
+    (interactive "p")
+    (if buffer-read-only
+        (kill-this-buffer)
+      (self-insert-command count)))
 
-(global-set-key (kbd "q") 'my-self-insert-or-quit)
-(require 'help-mode)
-(define-key help-mode-map (kbd "q") 'my-self-insert-or-quit)
-)
+  (global-set-key (kbd "q") 'my-self-insert-or-quit)
+  (require 'help-mode)
+  (define-key help-mode-map (kbd "q") 'my-self-insert-or-quit))
+)
+
 ;; Bring back to default value
 (setq gc-cons-threshold 800000)
 (setq debug-on-error nil)
