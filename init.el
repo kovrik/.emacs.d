@@ -116,6 +116,7 @@
  '(erc-default-face       ((t (:foreground "#354b53"))))
  '(erc-input-face         ((t (:foreground "#8f508a"))))
  '(font-lock-doc-face     ((t (:foreground "#8f508a"))))
+ '(font-lock-function-name-face ((t (:weight bold))))
  '(font-lock-keyword-face ((t (:foreground "#758900"))))
  '(font-lock-string-face  ((t (:foreground "#8f508a"))))
  '(git-commit-summary     ((t (:foreground "#354b53"))))
