@@ -108,20 +108,21 @@
    (quote
     (auto-compile browse-kill-ring cider clojure-mode-extra-font-locking company company-quickhelp dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode magit markdown-mode racket-mode rainbow-delimiters smart-mode-line use-package))))
 (custom-set-faces
- '(default                ((t (:background "#faf4e9" :foreground "#354b53"))))
- '(erc-default-face       ((t (:foreground "#354b53"))))
- '(font-lock-keyword-face ((t (:foreground "#758900"))))
- '(font-lock-string-face  ((t (:foreground "#1a9188"))))
- '(git-commit-summary     ((t (:foreground "#354b53"))))
- '(hl-line                ((t (:background "#efecda"))))
- '(helm-source-header     ((t (:background "#1a9188"))))
- '(helm-selection         ((t (:background "#ffffa0" :underline nil))))
- '(org-table              ((t (:foreground "#758900"))))
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default                ((t (:background "#faf4e9" :foreground "#354b53"))))
+ '(erc-default-face       ((t (:foreground "#354b53"))))
+ '(erc-input-face         ((t (:foreground "#563ee1"))))
+ '(font-lock-keyword-face ((t (:foreground "#758900"))))
+ '(font-lock-string-face  ((t (:foreground "#563ee1"))))
+ '(git-commit-summary     ((t (:foreground "#354b53"))))
+ '(hl-line                ((t (:background "#efecda"))))
+ '(helm-source-header     ((t (:background "#1a9188"))))
+ '(helm-selection         ((t (:background "#ffffa0" :underline nil))))
+ '(org-table              ((t (:foreground "#758900")))))
+
 (use-package solarized-theme
   :config (progn
             (setq solarized-use-variable-pitch nil
