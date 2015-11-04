@@ -114,9 +114,10 @@
  ;; If there is more than one, they won't work right.
  '(default                ((t (:background "#faf4e9" :foreground "#354b53"))))
  '(erc-default-face       ((t (:foreground "#354b53"))))
- '(erc-input-face         ((t (:foreground "#563ee1"))))
+ '(erc-input-face         ((t (:foreground "#8f508a"))))
+ '(font-lock-doc-face     ((t (:foreground "#8f508a"))))
  '(font-lock-keyword-face ((t (:foreground "#758900"))))
- '(font-lock-string-face  ((t (:foreground "#563ee1"))))
+ '(font-lock-string-face  ((t (:foreground "#8f508a"))))
  '(git-commit-summary     ((t (:foreground "#354b53"))))
  '(hl-line                ((t (:background "#efecda"))))
  '(helm-source-header     ((t (:background "#1a9188"))))
