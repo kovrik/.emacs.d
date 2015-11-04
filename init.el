@@ -49,16 +49,16 @@
   (dolist (hook hooks)
     (add-hook hook function)))
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes '("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" default))
- '(package-selected-packages
-   (quote
-    (auto-compile browse-kill-ring cider clojure-mode-extra-font-locking company company-quickhelp dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode magit markdown-mode racket-mode rainbow-delimiters smart-mode-line use-package))))
-
+;; (custom-set-variables
+;;  ;; custom-set-variables was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;;  '(custom-safe-themes '("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" default))
+;;  '(package-selected-packages
+;;    (quote
+;;     (auto-compile browse-kill-ring cider clojure-mode-extra-font-locking company company-quickhelp dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode magit markdown-mode racket-mode rainbow-delimiters smart-mode-line use-package))))
+;;
 ;; My Default theme adjustments
 ;; (custom-set-faces
 ;;  ;; custom-set-faces was added by Custom.
@@ -114,11 +114,11 @@
  ;; If there is more than one, they won't work right.
  '(default                ((t (:background "#faf4e9" :foreground "#354b53"))))
  '(erc-default-face       ((t (:foreground "#354b53"))))
- '(erc-input-face         ((t (:foreground "#8f508a"))))
+ '(erc-input-face         ((t (:foreground "#e06361"))))
  '(font-lock-doc-face     ((t (:foreground "#8f508a"))))
  '(font-lock-function-name-face ((t (:weight bold))))
  '(font-lock-keyword-face ((t (:foreground "#758900"))))
- '(font-lock-string-face  ((t (:foreground "#8f508a"))))
+ '(font-lock-string-face  ((t (:foreground "#e06361"))))
  '(git-commit-summary     ((t (:foreground "#354b53"))))
  '(hl-line                ((t (:background "#efecda"))))
  '(helm-source-header     ((t (:background "#1a9188"))))
