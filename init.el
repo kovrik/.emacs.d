@@ -45,7 +45,7 @@
 (my-ensure-packages-installed '(queue async browse-kill-ring dash epl f fold-dwim fringe-helper goto-chg highlight highlight-escape-sequences highlight-parentheses idle-highlight-mode markdown-mode pkg-info s))
 
 (defun my-add-hooks (hooks function)
-  "Bind FUNCTION for each hook in HOOKS list."
+  "For each hook in HOOKS list bind FUNCTION."
   (dolist (hook hooks)
     (add-hook hook function)))
 
@@ -112,18 +112,21 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default                ((t (:background "#faf4e9" :foreground "#354b53"))))
- '(erc-default-face       ((t (:foreground "#354b53"))))
- '(erc-input-face         ((t (:foreground "#e06361"))))
- '(font-lock-doc-face     ((t (:foreground "#8f508a"))))
+ '(default                 ((t (:background "#faf4e9" :foreground "#354b53"))))
+ '(erc-default-face        ((t (:foreground "#354b53"))))
+ '(erc-input-face          ((t (:foreground "#e06361"))))
+ '(flycheck-fringe-error   ((t (:background "#e53935"))))
+ '(flycheck-fringe-info    ((t (:background "#43a047"))))
+ '(flycheck-fringe-warning ((t (:background "#ffc107"))))
+ '(font-lock-doc-face      ((t (:foreground "#8f508a"))))
  '(font-lock-function-name-face ((t (:weight bold))))
- '(font-lock-keyword-face ((t (:foreground "#758900"))))
- '(font-lock-string-face  ((t (:foreground "#e06361"))))
- '(git-commit-summary     ((t (:foreground "#354b53"))))
- '(hl-line                ((t (:background "#efecda"))))
- '(helm-source-header     ((t (:background "#1a9188"))))
- '(helm-selection         ((t (:background "#ffffa0" :underline nil))))
- '(org-table              ((t (:foreground "#758900")))))
+ '(font-lock-keyword-face  ((t (:foreground "#758900"))))
+ '(font-lock-string-face   ((t (:foreground "#e06361"))))
+ '(git-commit-summary      ((t (:foreground "#354b53"))))
+ '(hl-line                 ((t (:background "#efecda"))))
+ '(helm-source-header      ((t (:background "#1a9188"))))
+ '(helm-selection          ((t (:background "#ffffa0" :underline nil))))
+ '(org-table               ((t (:foreground "#758900")))))
 
 (use-package solarized-theme
   :config (progn
