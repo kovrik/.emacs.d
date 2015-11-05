@@ -114,7 +114,7 @@
  ;; If there is more than one, they won't work right.
  '(default                 ((t (:background "#faf4e9" :foreground "#354b53"))))
  '(erc-default-face        ((t (:foreground "#354b53"))))
- '(erc-input-face          ((t (:foreground "#e06361"))))
+ '(erc-input-face          ((t (:foreground "#d5512d"))))
  '(flycheck-fringe-error   ((t (:background "#e53935"))))
  '(flycheck-fringe-info    ((t (:background "#43a047"))))
  '(flycheck-fringe-warning ((t (:background "#ffc107"))))
@@ -125,7 +125,7 @@
  '(font-lock-string-face   ((t (:foreground "#d5512d"))))
  '(git-commit-summary      ((t (:foreground "#354b53"))))
  '(hl-line                 ((t (:background "#efecda"))))
- '(helm-source-header      ((t (:background "#1a9188"))))
+ '(helm-source-header      ((t (:background "#109080" :weight bold))))
  '(helm-selection          ((t (:background "#ffffa0" :underline nil))))
  '(org-table               ((t (:foreground "#758900")))))
 
