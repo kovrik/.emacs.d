@@ -292,17 +292,16 @@
             (require 'eval-in-repl-ielm)
             (define-key emacs-lisp-mode-map       (kbd "<C-return>") 'eir-eval-in-ielm)
             (define-key lisp-interaction-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
-            (define-key info-mode-map             (kbd "<C-return>") 'eir-eval-in-ielm)
-
+            
             ;; Clojure
             (require 'eval-in-repl-cider)
             (define-key clojure-mode-map (kbd "<C-return>") 'eir-eval-in-cider)
 
             ;; Geiser support (for Racket and Guile Scheme)
             ;; When using this, turn off racket-mode and scheme supports
-            ;; (require 'eval-in-repl-geiser)
-            ;; (add-hook 'geiser-mode-hook
-                      ;; '(lambda () (local-set-key (kbd "<C-return>") 'eir-eval-in-geiser)))
+            (require 'eval-in-repl-geiser)
+            (add-hook 'geiser-mode-hook
+                      '(lambda () (local-set-key (kbd "<C-return>") 'eir-eval-in-geiser)))
             (require 'eval-in-repl-racket)
             (define-key racket-mode-map (kbd "<C-return>") 'eir-eval-in-racket)
 
