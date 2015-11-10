@@ -332,6 +332,7 @@
                       (evil-leader/set-key "SPC" 'lazy-highlight-cleanup)
                       (evil-leader/set-key "SPC" 'evil-search-highlight-persist-remove-all)
                       (evil-leader/set-key "f"   'find-file-at-point)
+                      (evil-leader/set-key "g"   'helm-ag)
                       (evil-leader/set-key "a"   'align-regexp)
                       (evil-leader/set-key "s"   'delete-trailing-whitespace)
                       (evil-leader-mode t))))
@@ -427,6 +428,7 @@
           (require 'helm-misc)
           (require 'helm-locate)
           (use-package flx)
+          (use-package helm-ag)
           (use-package helm-flx :config (helm-flx-mode +1))
           (use-package helm-swoop
             :defer t
