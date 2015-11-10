@@ -564,12 +564,13 @@ Otherwise run projectile-find-file."
             (use-package magit-popup)
             (setenv "GIT_ASKPASS" "git-gui--askpass")
             ;; Don't want to view changes every time before commit
-            (setq magit-diff-auto-show (delete 'commit magit-diff-auto-show))
-            (setq magit-status-buffer-switch-function 'switch-to-buffer
+            (setq magit-diff-auto-show (delete 'commit magit-diff-auto-show)
+                  magit-status-buffer-switch-function 'switch-to-buffer
                   magit-diff-options '("-w")
                   magit-diff-refine-hunk t
                   magit-log-arguments '("--decorate" "--graph" "--color" "-n80")
-                  magit-log-cutoff-length 80)
+                  magit-log-cutoff-length 80
+                  git-commit-check-style-conventions nil)
             ;; FIX Don't know why some of these become unbound sometimes
             (bind-keys :map magit-mode-map ("<tab>"     . magit-section-cycle)
                                            ("<backtab>" . magit-section-cycle-global)))
