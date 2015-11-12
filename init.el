@@ -621,7 +621,8 @@ Otherwise run projectile-find-file."
                   erc-header-line-face-method nil
                   erc-server-coding-system '(utf-8 . utf-8)
                   erc-prompt ">"
-                  erc-accidental-paste-threshold-seconds 0.5)))
+                  erc-accidental-paste-threshold-seconds 0.5
+                  erc-join-buffer 'bury)))
 
 ;; Misc
 (progn
