@@ -204,7 +204,8 @@
                        ((kbd "C-<left>")    . sp-forward-barf-sexp)
                        ((kbd "C-M-<right>") . sp-backward-slurp-sexp)
                        ((kbd "C-M-<left>")  . sp-backward-barf-sexp)
-                       ((kbd "M-<delete>")  . sp-unwrap-sexp))
+                       ((kbd "M-<delete>")  . sp-unwrap-sexp)
+                       ((kbd "C-M-t")       . sp-transpose-sexp))
             (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
             (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)))
 
