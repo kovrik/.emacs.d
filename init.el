@@ -192,6 +192,7 @@
                   spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
             (spaceline-spacemacs-theme)))
 
+;; TODO Configure
 (use-package smartparens
   :config (progn
             (require 'smartparens-config)
@@ -202,7 +203,8 @@
                        ((kbd "C-<right>")   . sp-forward-slurp-sexp)
                        ((kbd "C-<left>")    . sp-forward-barf-sexp)
                        ((kbd "C-M-<right>") . sp-backward-slurp-sexp)
-                       ((kbd "C-M-<left>")  . sp-backward-barf-sexp))
+                       ((kbd "C-M-<left>")  . sp-backward-barf-sexp)
+                       ((kbd "M-<delete>")  . sp-unwrap-sexp))
             (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
             (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)))
 
