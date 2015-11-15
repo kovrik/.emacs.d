@@ -352,9 +352,6 @@
                                                   ([escape] . keyboard-quit)
                                                   ("j"      . evil-next-visual-line)
                                                   ("k"      . evil-previous-visual-line))
-            (bind-keys :map evil-motion-state-map
-                       ("C-w m" . maximize-window)
-                       ("C-w u" . winner-undo))
             (my-add-hooks '(help-mode-hook
                             prog-mode-hook
                             text-mode-hook) #'evil-local-mode)
