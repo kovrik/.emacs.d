@@ -93,7 +93,7 @@
                   solarized-height-plus-2  1
                   solarized-height-plus-3  1
                   solarized-height-plus-4  1
-                  x-underline-at-descent-line t) 
+                  x-underline-at-descent-line t)
             (load-theme 'solarized-light)))
 
 ;; PATH
@@ -249,7 +249,7 @@
             (require 'eval-in-repl-ielm)
             (define-key emacs-lisp-mode-map       (kbd "<C-return>") 'eir-eval-in-ielm)
             (define-key lisp-interaction-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
-            
+
             ;; Clojure
             (require 'eval-in-repl-cider)
             (define-key clojure-mode-map (kbd "<C-return>") 'eir-eval-in-cider)
