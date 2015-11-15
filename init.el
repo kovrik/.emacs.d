@@ -141,7 +141,6 @@
 (put 'narrow-to-defun  'disabled nil)
 (put 'narrow-to-page   'disabled nil)
 (put 'narrow-to-region 'disabled nil)
-
 (bind-keys ([escape]   . keyboard-quit)
            ("RET"      . newline-and-indent)
            ("C-c r"    . revert-buffer)
@@ -149,9 +148,6 @@
            ("C-c w"    . widen)
            ("<M-up>"   . backward-page)
            ("<M-down>" . forward-page))
-
-(defun my-nlinum-on  () "Turn 'nlinum-mode' on."  (nlinum-mode  1))
-(defun my-nlinum-off () "Turn 'nlinum-mode' off." (nlinum-mode -1))
 
 ;; Fonts
 (let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name) (font-family-list))))
@@ -220,11 +216,9 @@
               :config (progn
                         (flycheck-clojure-setup)
                         (setq flycheck-checkers (delete 'clojure-cider-typed flycheck-checkers))))
-
             (add-hook 'clojure-mode-hook 'flycheck-mode)
             (add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
             (add-hook 'cider-mode-hook   'cider-turn-on-eldoc-mode)
-
             (setq nrepl-log-messages           t
                   nrepl-hide-special-buffers   t
                   cider-prefer-local-resources t
@@ -249,24 +243,16 @@
             (require 'eval-in-repl-ielm)
             (define-key emacs-lisp-mode-map       (kbd "<C-return>") 'eir-eval-in-ielm)
             (define-key lisp-interaction-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
-
             ;; Clojure
             (require 'eval-in-repl-cider)
             (define-key clojure-mode-map (kbd "<C-return>") 'eir-eval-in-cider)
-
             ;; Geiser support (for Racket and Guile Scheme)
             ;; When using this, turn off racket-mode and scheme supports
             (require 'eval-in-repl-geiser)
             (add-hook 'geiser-mode-hook
                       '(lambda () (local-set-key (kbd "<C-return>") 'eir-eval-in-geiser)))
             (require 'eval-in-repl-racket)
-            (define-key racket-mode-map (kbd "<C-return>") 'eir-eval-in-racket)
-
-            ;; Scheme support (if not using Geiser))
-            ;; (require 'eval-in-repl-scheme)
-            ;; (add-hook 'scheme-mode-hook
-            ;;           '(lambda () (local-set-key (kbd "<C-return>") 'eir-eval-in-scheme)))
-))
+            (define-key racket-mode-map (kbd "<C-return>") 'eir-eval-in-racket)))
 
 (use-package rainbow-delimiters
   :config (progn
@@ -316,16 +302,13 @@
                           (evil-next-line))
                         (evil-commentary-mode))
               :bind (("C-/" . my-comment-line-and-go-to-next)))
-
             ;; Emacs keys in INSERT mode
             (setcdr evil-insert-state-map nil)
             (setq evil-move-cursor-back t
                   evil-default-cursor   t)
-
             ;; kill buffer, but don't close window
             (evil-ex-define-cmd "q[uit]" 'kill-this-buffer)
             (evil-ex-define-cmd "ls"     'ibuffer-list-buffers)
-
             ;; ESC quits
             (defun minibuffer-keyboard-quit ()
               "Abort recursive edit.
@@ -337,7 +320,6 @@
                 (when (get-buffer "*Completions*")
                   (delete-windows-on "*Completions*"))
                 (abort-recursive-edit)))
-
             (global-set-key                             [escape] 'evil-exit-emacs-state)
             (define-key evil-visual-state-map           [escape] 'keyboard-quit)
             (define-key minibuffer-local-map            [escape] 'minibuffer-keyboard-quit)
@@ -351,15 +333,12 @@
                                                   ([escape] . keyboard-quit)
                                                   ("j"      . evil-next-visual-line)
                                                   ("k"      . evil-previous-visual-line))
-            (my-add-hooks '(help-mode-hook
-                            prog-mode-hook
-                            text-mode-hook) #'evil-local-mode)
+            (my-add-hooks '(help-mode-hook prog-mode-hook text-mode-hook) #'evil-local-mode)
             (defun my-evil-off ()
               "Turn 'evil-mode' off and change cursor type to bar."
               (interactive)
               (turn-off-evil-mode)
               (setq cursor-type 'bar))
-
             ;; Disable evil-mode in some major modes
             (my-add-hooks '(shell-mode-hook  term-mode-hook
                             magit-mode-hook  erc-mode-hook
@@ -412,7 +391,6 @@
           (autoload 'helm-esh-pcomplete  "helm-eshell"    t)
           (helm-mode t)
           (helm-adaptive-mode t)
-
           ;; Do not auto-expand '~/', '//', './', '../' in helm-find-files
           (remove-hook 'helm-after-update-hook 'helm-ff-auto-expand-to-home-or-root)
           (bind-keys :map helm-map ("<tab>"  . helm-execute-persistent-action)
@@ -485,8 +463,6 @@ Otherwise run projectile-find-file."
               :config (progn
                         (defun my-org-bullets-on () (org-bullets-mode 1))
                         (add-hook 'org-mode-hook #'my-org-bullets-on)))
-            (add-hook 'org-mode-hook #'my-nlinum-off)
-            ;; FIXME indentation in SRC blocks
             (setq org-edit-src-content-indentation 0
                   org-src-preserve-indentation nil
                   org-src-tab-acts-natively t
