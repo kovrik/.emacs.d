@@ -169,13 +169,12 @@
 (use-package bug-hunter :defer t)
 (use-package command-log-mode :defer t)
 (use-package restclient :defer t)
-(use-package iedit :defer t)
+(use-package iedit :defer t :config (iedit-mode t))
 (use-package rainbow-mode :defer t :diminish rainbow-mode)
 (use-package focus :defer t)
 (use-package color-theme :defer t :config (color-theme-initialize))
 (use-package fixme-mode :config (fixme-mode t))
 (use-package diff-hl :config (global-diff-hl-mode t))
-;; (use-package page-break-lines :config (global-page-break-lines-mode))
 
 (use-package find-func
   :bind (("C-S-h" . find-function-at-point)
