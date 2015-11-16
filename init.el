@@ -130,7 +130,7 @@
       show-trailing-whitespace t
       ns-use-srgb-colorspace nil)
 
-(fringe-mode '(5 . 0))
+(fringe-mode '(7 . 0))
 (column-number-mode)
 (desktop-save-mode)
 (global-font-lock-mode)
@@ -300,8 +300,8 @@
                                                 (line-end-position)
                                                 'line)
                           (evil-next-line))
-                        (evil-commentary-mode))
-              :bind (("C-/" . my-comment-line-and-go-to-next)))
+                        (bind-key "C-/" 'my-comment-line-and-go-to-next)
+                        (evil-commentary-mode)))
             ;; Emacs keys in INSERT mode
             (setcdr evil-insert-state-map nil)
             (setq evil-move-cursor-back t
