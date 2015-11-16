@@ -115,7 +115,7 @@
 
 (setq-default indent-tabs-mode nil
               tab-width 2)
-(setq backup-directory-alist '(("." . "~/.emacs.d/backups"))
+(setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
       inhibit-startup-message t
       inhibit-startup-echo-area-message t
       initial-scratch-message nil
@@ -533,8 +533,23 @@ Otherwise run projectile-find-file."
 
 (use-package flycheck
   :defer t
-  :config (use-package flycheck-pos-tip
-            :config (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages)))
+  :config (progn
+            (use-package flycheck-pos-tip
+              :config (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
+
+            (setq-default flycheck-emacs-lisp-load-path 'inherit)
+            (global-unset-key (kbd "<f2>"))
+            (global-unset-key (kbd "<f3>"))
+            (defun my-flycheck-next-error-cycle ()
+              "Go to next flycheck error if exists.
+Start from the beginning of buffer otherwise."
+              (interactive)
+              (let ((pos (flycheck-next-error-pos 1 nil)))
+                (if pos
+                    (goto-char pos)
+                  (flycheck-next-error-function 1 t))))
+            (define-key flycheck-mode-map (kbd "<f2>") #'my-flycheck-next-error-cycle)
+            (define-key flycheck-mode-map (kbd "<f3>") #'flycheck-list-errors)))
 
 (use-package undo-tree
   :diminish undo-tree-mode
@@ -645,7 +660,7 @@ Use Helm otherwise."
 (bind-key "C-S-n" 'my-find-file)
 
 (defun my-kill-buffers (&rest args)
-  "Kill buffers."
+  "Kill buffers ARGS."
   (defun my-kill-buffer-by-p (pred)
     (let ((matched-buffers (cl-remove-if-not pred (buffer-list))))
       (when (y-or-n-p (format "Kill %s buffers?" (length matched-buffers)))
