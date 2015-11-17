@@ -1,5 +1,10 @@
 ;;; init.el --- kovrik's Emacs config
 ;;; Commentary:
+;;; 
+;;; TODO Sane fuzzy find (files and text)
+;;; TODO Helm/Ido/Ivy?
+;;; TODO IDE features
+;;; 
 ;;; Code:
 (setq debug-on-error t)
 ;; Prevent frequent GCs during init
@@ -275,7 +280,7 @@
                       (evil-leader/set-key "SPC" 'lazy-highlight-cleanup)
                       (evil-leader/set-key "SPC" 'evil-search-highlight-persist-remove-all)
                       (evil-leader/set-key "f"   'find-file-at-point)
-                      (evil-leader/set-key "g"   'helm-do-grep-ag)
+                      (evil-leader/set-key "g"   'helm-do-ag)
                       (evil-leader/set-key "a"   'align-regexp)
                       (evil-leader/set-key "s"   'delete-trailing-whitespace)
                       (evil-leader-mode t))))
@@ -354,6 +359,12 @@
                         ielm-mode-hook)
                       #'turn-on-eldoc-mode))
 
+;; TODO Replace with ido/ivy?
+;; (use-package ido
+;;   :config (progn
+;;             (use-package ido-ubiquitous :config (ido-ubiquitous-mode t))
+;;             (use-package flx-ido :config (flx-ido-mode t))
+;;             (use-package ido-vertical-mode :config (ido-vertical-mode t))))
 (use-package helm
   :diminish helm-mode
   :init (progn
