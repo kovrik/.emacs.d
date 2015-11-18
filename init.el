@@ -372,6 +372,7 @@
          ("M-x"     . counsel-M-x)
          ("M-s o"   . swiper-multi)
          ("C-x C-f" . counsel-find-file)
+         ("C-x C-b" . ivy-switch-buffer)
          ("<f1> f"  . counsel-describe-function)
          ("<f1> v"  . counsel-describe-variable)
          ("<f1> l"  . counsel-load-library)
