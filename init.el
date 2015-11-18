@@ -2,7 +2,6 @@
 ;;; Commentary:
 ;;; 
 ;;; TODO Sane fuzzy find (files and text)
-;;; TODO Helm/Ido/Ivy?
 ;;; TODO IDE features
 ;;; 
 ;;; Code:
@@ -65,7 +64,7 @@
     ("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" default)))
  '(package-selected-packages
    (quote
-    (auto-compile browse-kill-ring cider clojure-mode-extra-font-locking company company-quickhelp dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim helm-projectile helm-swoop highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode magit markdown-mode racket-mode rainbow-delimiters smart-mode-line use-package))))
+    (auto-compile browse-kill-ring cider clojure-mode-extra-font-locking company company-quickhelp dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode magit markdown-mode racket-mode rainbow-delimiters smart-mode-line use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -84,8 +83,6 @@
  '(font-lock-string-face   ((t (:foreground "#d5512d"))))
  '(git-commit-summary      ((t (:foreground "#354b53"))))
  '(hl-line                 ((t (:background "#efecda"))))
- '(helm-source-header      ((t (:background "#109080" :weight bold))))
- '(helm-selection          ((t (:background "#ffffa0" :underline nil))))
  '(org-table               ((t (:foreground "#758900")))))
 
 (use-package solarized-theme
@@ -280,7 +277,7 @@
                       (evil-leader/set-key "SPC" 'lazy-highlight-cleanup)
                       (evil-leader/set-key "SPC" 'evil-search-highlight-persist-remove-all)
                       (evil-leader/set-key "f"   'find-file-at-point)
-                      (evil-leader/set-key "g"   'helm-do-ag)
+                      ;; FIXME (evil-leader/set-key "g"   'helm-do-ag)
                       (evil-leader/set-key "a"   'align-regexp)
                       (evil-leader/set-key "s"   'delete-trailing-whitespace)
                       (evil-leader-mode t))))
@@ -359,72 +356,34 @@
                         ielm-mode-hook)
                       #'turn-on-eldoc-mode))
 
-;; TODO Replace with ido/ivy?
-;; (use-package ido
-;;   :config (progn
-;;             (use-package ido-ubiquitous :config (ido-ubiquitous-mode t))
-;;             (use-package flx-ido :config (flx-ido-mode t))
-;;             (use-package ido-vertical-mode :config (ido-vertical-mode t))))
-(use-package helm
-  :diminish helm-mode
-  :init (progn
-          (require 'helm-config)
-          (require 'helm-misc)
-          (require 'helm-locate)
-          (use-package flx)
-          (use-package helm-ag)
-          (use-package helm-flx :config (helm-flx-mode +1))
-          (use-package helm-swoop
-            :defer t
-            :config (setq helm-swoop-split-with-multiple-windows t))
-
-          (setq helm-split-window-in-side-p           t
-                helm-move-to-line-cycle-in-source     t
-                helm-ff-search-library-in-sexp        t
-                helm-ff-file-name-history-use-recentf t
-                helm-ff-auto-update-initial-value     nil
-                helm-quick-update                     t
-                helm-yank-symbol-first                t
-                helm-bookmark-show-location           t
-                helm-recentf-fuzzy-match              t
-                helm-buffers-fuzzy-matching           t
-                helm-locate-fuzzy-match               t
-                helm-M-x-fuzzy-match                  t
-                helm-semantic-fuzzy-match             t
-                helm-imenu-fuzzy-match                t
-                helm-apropos-fuzzy-match              t
-                helm-lisp-fuzzy-completion            t
-                helm-scroll-amount                    8
-                helm-echo-input-in-header-line        t)
-
-          (autoload 'helm-descbinds      "helm-descbinds" t)
-          (autoload 'helm-eshell-history "helm-eshell"    t)
-          (autoload 'helm-esh-pcomplete  "helm-eshell"    t)
-          (helm-mode t)
-          (helm-adaptive-mode t)
-          ;; Do not auto-expand '~/', '//', './', '../' in helm-find-files
-          (remove-hook 'helm-after-update-hook 'helm-ff-auto-expand-to-home-or-root)
-          (bind-keys :map helm-map ("<tab>"  . helm-execute-persistent-action)
-                                   ("C-i"    . helm-execute-persistent-action)
-                                   ("C-z"    . helm-select-action)
-                                   ([escape] . helm-keyboard-quit)))
-  :bind (("M-x"     . helm-M-x)
-         ("M-y"     . helm-show-kill-ring)
-         ("M-s o"   . helm-swoop)
-         ("M-s /"   . helm-multi-swoop)
-         ("C-c h"   . helm-command-prefix)
-         ("C-x b"   . helm-mini)
-         ("C-x f"   . helm-find-files)
-         ("C-x C-r" . helm-recentf)
-         ("C-x c!"  . helm-calcul-expression)
-         ("C-x c:"  . helm-eval-expression-with-eldoc)
-         ("C-x C-b" . helm-buffers-list)
-         ("C-x C-f" . helm-find-files)))
+;; TODO Ivy completion for Eval
+;; TODO Fix initial regex for counsel-M-x
+;; TODO swoop
+(use-package swiper
+  :demand t
+  :config (progn
+            (use-package counsel)
+            (setq ivy-use-virtual-buffers t
+                  ivy-display-style 'plain
+                  ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
+            (add-to-list 'ivy-initial-inputs-alist '(counsel-M-x . ""))
+            (ivy-mode 1))
+  :bind (("\C-s"    . swiper)
+         ("C-c C-r" . ivy-resume)
+         ("M-x"     . counsel-M-x)
+         ("M-s o"   . swiper-multi)
+         ("C-x C-f" . counsel-find-file)
+         ("<f1> f"  . counsel-describe-function)
+         ("<f1> v"  . counsel-describe-variable)
+         ("<f1> l"  . counsel-load-library)
+         ("C-c g"   . counsel-git)
+         ("C-c j"   . counsel-git-grep)
+         ;; FIXME ("C-c k"   . counsel-ag)
+         ("C-x l"   . counsel-locate)))
 
 (use-package projectile
   :diminish projectile-mode
   :config (progn
-            (use-package helm-projectile :config (helm-projectile-on))
             (defun my-projectile-switch-to-project ()
               "My switch-to-project action for projectile.
 If project is a git-project, then run magit-status.
@@ -440,7 +399,7 @@ Otherwise run projectile-find-file."
                   (projectile-find-file))))
 
             (setq projectile-keymap-prefix (kbd "C-c p")
-                  projectile-completion-system 'helm
+                  projectile-completion-system 'ivy
                   projectile-enable-caching t
                   projectile-switch-project-action 'my-projectile-switch-to-project)
 
@@ -663,11 +622,11 @@ by using nxml's indentation rules.  Args: BEGIN END"
 
 (defun my-find-file ()
   "If currently in a project, then use Projectile to fuzzy find a file.
-Use Helm otherwise."
+Use Swiper otherwise."
   (interactive)
   (if (projectile-project-p)
-      (helm-projectile-find-file)
-    (helm-find-files-1 (expand-file-name "./"))))
+      (projectile-find-file)
+    (counsel-find-file)))
 (bind-key "C-S-n" 'my-find-file)
 
 (defun my-kill-buffers (&rest args)
