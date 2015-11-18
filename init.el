@@ -356,9 +356,8 @@
                         ielm-mode-hook)
                       #'turn-on-eldoc-mode))
 
-;; TODO Ivy completion for Eval
-;; TODO Fix initial regex for counsel-M-x
-;; TODO swoop
+;; TODO Ivy completion for Eval?
+;; TODO swoop?
 (use-package swiper
   :demand t
   :config (progn
