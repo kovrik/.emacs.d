@@ -46,7 +46,7 @@
                (y-or-n-p (format "Package %s is missing.  Install it? " p)))
       (package-install p))))
 
-(my-ensure-packages-installed '(queue async browse-kill-ring dash epl f fold-dwim fringe-helper goto-chg highlight highlight-escape-sequences highlight-parentheses idle-highlight-mode markdown-mode pkg-info s))
+(my-ensure-packages-installed '(queue async browse-kill-ring dash epl f fold-dwim fringe-helper goto-chg highlight highlight-escape-sequences idle-highlight-mode markdown-mode pkg-info s))
 
 (defun my-add-hooks (hooks function)
   "For each hook in HOOKS list bind FUNCTION."
@@ -172,7 +172,17 @@
 (use-package focus :defer t)
 (use-package color-theme :defer t :config (color-theme-initialize))
 (use-package fixme-mode :config (fixme-mode t))
-(use-package diff-hl :config (global-diff-hl-mode t))
+
+(use-package diff-hl
+  :config (progn
+            
+            (bind-keys :map diff-hl-mode-map
+                       ("C-x v n" . diff-hl-next-hunk)
+                       ("C-x v j" . diff-hl-next-hunk)
+                       ("C-x v p" . diff-hl-previous-hunk)
+                       ("C-x v k" . diff-hl-previous-hunk)
+                       ("C-x v r" . diff-hl-revert-hunk))
+            (global-diff-hl-mode t)))
 
 (use-package find-func
   :bind (("C-S-h" . find-function-at-point)
@@ -487,8 +497,14 @@ Otherwise run projectile-find-file."
               "Turn off wide-display mode (if was enabled) before quitting ediff."
               (when ediff-wide-display-p
                 (ediff-toggle-wide-display)))
+            (defun my-kill-ediff-buffers ()
+              "Kill ediff buffers on ediff-quit."
+              (kill-buffer ediff-buffer-A)
+              (kill-buffer ediff-buffer-B)
+              (kill-buffer ediff-buffer-C))
             (add-hook 'ediff-cleanup-hook 'my-toggle-ediff-wide-display)
-            (add-hook 'ediff-quit-hook    'winner-undo)))
+            (add-hook 'ediff-quit-hook    'winner-undo)
+            (add-hook 'ediff-quit-hook    'my-kill-ediff-buffers)))
 
 (use-package eshell
   :defer t
@@ -543,14 +559,22 @@ Start from the beginning of buffer otherwise."
   :diminish shackle-mode
   :config (progn
             (setq shackle-lighter ""
-                  shackle-rules '(("\\`\\*magit.*?\\'"   :regexp t :same t)
-                                  ("\\`\\*helm.*?\\*\\'" :regexp t :align t :ratio 0.4)
-                                  (compilation-mode      :ignore t)
-                                  (sauron-mode           :ignore t)
-                                  (erc-mode              :same   t)
-                                  (proced-mode           :same   t)
-                                  (help-mode             :same   t)
-                                  (ibuffer-mode          :same   t)))
+                  shackle-rules '(("\\`\\*magit.*?\\'"      :regexp t :same t)
+                                  ("\\`\\*helm.*?\\*\\'"    :regexp t :align t :ratio 0.4)
+                                  (compilation-mode         :ignore t)
+                                  (sauron-mode              :ignore t)
+                                  (erc-mode                 :same   t)
+                                  (proced-mode              :same   t)
+                                  (help-mode                :same   t)
+                                  (ibuffer-mode             :same   t)
+                                  (flycheck-error-list-mode :popup  t
+                                                            :align 'below
+                                                            :ratio 0.4
+                                                            :select t)
+                                  ("\\`\\*diff-hl\\*.*?\\'" :regexp t
+                                                            :popup  t
+                                                            :align 'below
+                                                            :ratio 0.4)))
             (shackle-mode t)))
 
 (use-package sauron
