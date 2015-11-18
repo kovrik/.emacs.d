@@ -277,7 +277,7 @@
                       (evil-leader/set-key "SPC" 'lazy-highlight-cleanup)
                       (evil-leader/set-key "SPC" 'evil-search-highlight-persist-remove-all)
                       (evil-leader/set-key "f"   'find-file-at-point)
-                      ;; FIXME (evil-leader/set-key "g"   'helm-do-ag)
+                      (evil-leader/set-key "g"   'counsel-ag)
                       (evil-leader/set-key "a"   'align-regexp)
                       (evil-leader/set-key "s"   'delete-trailing-whitespace)
                       (evil-leader-mode t))))
@@ -378,7 +378,7 @@
          ("<f1> l"  . counsel-load-library)
          ("C-c g"   . counsel-git)
          ("C-c j"   . counsel-git-grep)
-         ;; FIXME ("C-c k"   . counsel-ag)
+         ("C-c k"   . counsel-ag)
          ("C-x l"   . counsel-locate)))
 
 (use-package projectile
