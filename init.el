@@ -5,7 +5,6 @@
 ;;; TODO IDE features
 ;;; TODO Magit - accept theirs/yours
 ;;; TODO find-funcion-at-point (and similar) - use same buffer/popup below
-;;; TODO diff-hl-revert-hunk - kill buffer on quit
 ;;; TODO diff-hl-next/previous hunk - make it cycle
 ;;; 
 ;;; Code:
@@ -179,6 +178,7 @@
 
 (use-package diff-hl
   :config (progn
+            (setq diff-hl-kill-revert-buffer-on-quit t)
             (bind-keys :map diff-hl-mode-map
                        ("C-x v n" . diff-hl-next-hunk)
                        ("C-x v j" . diff-hl-next-hunk)
