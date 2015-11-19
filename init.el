@@ -175,7 +175,6 @@
 
 (use-package diff-hl
   :config (progn
-            
             (bind-keys :map diff-hl-mode-map
                        ("C-x v n" . diff-hl-next-hunk)
                        ("C-x v j" . diff-hl-next-hunk)
@@ -376,11 +375,13 @@
                   ivy-display-style 'plain
                   ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
             (add-to-list 'ivy-initial-inputs-alist '(counsel-M-x . ""))
+            (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit)
             (ivy-mode 1))
   :bind (("\C-s"    . swiper)
          ("C-c C-r" . ivy-resume)
          ("M-x"     . counsel-M-x)
          ("M-s o"   . swiper-multi)
+         ("C-x f"   . counsel-find-file)
          ("C-x C-f" . counsel-find-file)
          ("C-x C-b" . ivy-switch-buffer)
          ("<f1> f"  . counsel-describe-function)
