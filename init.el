@@ -3,6 +3,10 @@
 ;;; 
 ;;; TODO Sane fuzzy find (files and text)
 ;;; TODO IDE features
+;;; TODO Magit - accept theirs/yours
+;;; TODO find-funcion-at-point (and similar) - use same buffer/popup below
+;;; TODO diff-hl-revert-hunk - kill buffer on quit
+;;; TODO diff-hl-next/previous hunk - make it cycle
 ;;; 
 ;;; Code:
 (setq debug-on-error t)
