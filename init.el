@@ -366,7 +366,6 @@
                       #'turn-on-eldoc-mode))
 
 ;; TODO Ivy completion for Eval?
-;; TODO swoop?
 (use-package swiper
   :demand t
   :config (progn
