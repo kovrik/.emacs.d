@@ -1,14 +1,15 @@
 ;;; init.el --- kovrik's Emacs config
 ;;; Commentary:
-;;; 
+;;;
 ;;; TODO Sane fuzzy find (files and text)
 ;;; TODO IDE features
 ;;; TODO Magit - accept theirs/yours
 ;;; TODO find-funcion-at-point (and similar) - use same buffer/popup below
 ;;; TODO diff-hl-next/previous hunk - make it cycle
-;;; 
+;;;
 ;;; Code:
 (setq debug-on-error t)
+(setq debug-on-quit t)
 ;; Prevent frequent GCs during init
 (setq gc-cons-threshold 100000000)
 
@@ -119,7 +120,8 @@
   (scroll-bar-mode -1))
 
 (setq-default indent-tabs-mode nil
-              tab-width 2)
+              tab-width 2
+              find-file-visit-truename t)
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
       inhibit-startup-message t
       inhibit-startup-echo-area-message t
@@ -133,7 +135,8 @@
       visible-bell nil
       uniquify-buffer-name-style 'forward
       show-trailing-whitespace t
-      ns-use-srgb-colorspace nil)
+      ns-use-srgb-colorspace nil
+      gnutls-min-prime-bits 4096)
 
 (fringe-mode '(7 . 0))
 (column-number-mode)
@@ -163,7 +166,9 @@
   (when my-font
     (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
     (set-face-attribute 'default nil :font my-font)
-    (set-frame-font      my-font  nil t)))
+    (set-frame-font      my-font  nil t)
+    (when (eq system-type 'darwin)
+      (setq mac-allow-anti-aliasing t))))
 
 ;; One-line packages
 (use-package nlinum :defer t)
@@ -202,6 +207,10 @@
                   spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
             (spaceline-spacemacs-theme)))
 
+(use-package smartscan
+  :init (add-hook #'prog-mode-hook #'smartscan-mode)
+  :config (bind-key "M-'" #'other-window smartscan-map))
+
 ;; TODO Configure
 (use-package smartparens
   :config (progn
@@ -219,6 +228,7 @@
                        ((kbd "C-M-t")         . sp-transpose-sexp))
             (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
             (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)))
+
 
 (use-package clojure-mode
   :defer  t
@@ -434,10 +444,12 @@ Otherwise run projectile-find-file."
               :config (with-eval-after-load 'company
                         (company-flx-mode +1)))
             (setq company-show-numbers t
-                  company-minimum-prefix-length 2
+                  company-minimum-prefix-length 3
                   company-require-match 'never
                   company-dabbrev-downcase nil
-                  company-dabbrev-ignore-case t)
+                  company-dabbrev-ignore-case t
+                  company-selection-wrap-around t
+                  company-transformers '(company-sort-by-occurrence))
             (add-hook 'after-init-hook 'global-company-mode)))
 
 (use-package org
@@ -699,8 +711,13 @@ Use Swiper otherwise."
   (define-key help-mode-map (kbd "q") 'my-self-insert-or-quit))
 )
 
-;; Bring back to default value
-(setq gc-cons-threshold 800000)
+;; 100 mb
+(setq gc-cons-threshold (* 100 1024 1024))
+;; Allow font-lock-mode to do background parsing
+(setq jit-lock-stealth-time 1
+      jit-lock-chunk-size 1000
+      jit-lock-defer-time 0.05)
 (setq debug-on-error nil)
+(setq debug-on-quit nil)
 (provide 'init)
 ;;; init.el ends here
