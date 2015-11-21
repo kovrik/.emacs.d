@@ -183,7 +183,6 @@
 
 (use-package diff-hl
   :config (progn
-            (setq diff-hl-kill-revert-buffer-on-quit t)
             (bind-keys :map diff-hl-mode-map
                        ("C-x v n" . diff-hl-next-hunk)
                        ("C-x v j" . diff-hl-next-hunk)
