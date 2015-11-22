@@ -228,7 +228,6 @@
             (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
             (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)))
 
-
 (use-package clojure-mode
   :defer  t
   :pin melpa-stable
@@ -258,25 +257,6 @@
 (use-package geiser :defer t)
 
 (use-package racket-mode :defer t :config (add-hook 'racket-mode-hook #'company-quickhelp--disable))
-
-;; TODO Remove?
-(use-package eval-in-repl
-  :defer t
-  :config (progn
-            ;; Elisp
-            (require 'eval-in-repl-ielm)
-            (define-key emacs-lisp-mode-map       (kbd "<C-return>") 'eir-eval-in-ielm)
-            (define-key lisp-interaction-mode-map (kbd "<C-return>") 'eir-eval-in-ielm)
-            ;; Clojure
-            (require 'eval-in-repl-cider)
-            (define-key clojure-mode-map (kbd "<C-return>") 'eir-eval-in-cider)
-            ;; Geiser support (for Racket and Guile Scheme)
-            ;; When using this, turn off racket-mode and scheme supports
-            (require 'eval-in-repl-geiser)
-            (add-hook 'geiser-mode-hook
-                      '(lambda () (local-set-key (kbd "<C-return>") 'eir-eval-in-geiser)))
-            (require 'eval-in-repl-racket)
-            (define-key racket-mode-map (kbd "<C-return>") 'eir-eval-in-racket)))
 
 (use-package rainbow-delimiters
   :config (progn
@@ -489,8 +469,7 @@ Otherwise run projectile-find-file."
             (use-package magit-popup)
             (setenv "GIT_ASKPASS" "git-gui--askpass")
             ;; Don't want to view changes every time before commit
-            (setq magit-diff-auto-show (delete 'commit magit-diff-auto-show)
-                  magit-status-buffer-switch-function 'switch-to-buffer
+            (setq magit-status-buffer-switch-function 'switch-to-buffer
                   magit-diff-options '("-w")
                   magit-diff-refine-hunk t
                   magit-log-arguments '("--decorate" "--graph" "--color" "-n80")
