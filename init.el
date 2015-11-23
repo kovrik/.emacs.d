@@ -5,7 +5,7 @@
 ;;; TODO IDE features
 ;;; TODO Magit - accept theirs/yours
 ;;; TODO find-funcion-at-point (and similar) - use same buffer/popup below
-;;; TODO diff-hl-next/previous hunk - make it cycle
+;;; TODO Ivy completion for eval-expression
 ;;;
 ;;; Code:
 (setq debug-on-error t)
@@ -358,7 +358,6 @@
                         ielm-mode-hook)
                       #'turn-on-eldoc-mode))
 
-;; TODO Ivy completion for Eval?
 (use-package swiper
   :demand t
   :config (progn
