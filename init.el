@@ -3,7 +3,6 @@
 ;;;
 ;;; TODO Sane fuzzy find (files and text)
 ;;; TODO IDE features
-;;; TODO Magit - accept theirs/yours
 ;;; TODO find-funcion-at-point (and similar) - use same buffer/popup below
 ;;; TODO Ivy completion for eval-expression
 ;;;
@@ -475,6 +474,21 @@ Otherwise run projectile-find-file."
                   magit-log-arguments '("--decorate" "--graph" "--color" "-n80")
                   magit-log-cutoff-length 80
                   git-commit-check-style-conventions nil)
+
+            (defun my-magit-checkout-current-file (arg)
+              (let ((f (magit-current-file)))
+                (if f
+                    (magit-run-git-async "checkout" arg f)
+                  (error "No file selected!"))))
+
+            (defun my-magit-checkout-ours ()
+              (interactive)
+              (my-magit-checkout-current-file "--ours"))
+
+            (defun my-magit-checkout-theirs ()
+              (interactive)
+              (my-magit-checkout-current-file "--theirs"))
+
             ;; FIX Don't know why some of these become unbound sometimes
             (bind-keys :map magit-mode-map ("<tab>"     . magit-section-cycle)
                                            ("<backtab>" . magit-section-cycle-global)))
