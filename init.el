@@ -5,6 +5,7 @@
 ;;; TODO IDE features
 ;;; TODO find-funcion-at-point (and similar) - use same buffer/popup below
 ;;; TODO Ivy completion for eval-expression
+;;; TODO Solarized-dark?
 ;;;
 ;;; Code:
 (setq debug-on-error t)
