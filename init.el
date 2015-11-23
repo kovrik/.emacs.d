@@ -487,11 +487,7 @@ Otherwise run projectile-find-file."
 
             (defun my-magit-checkout-theirs ()
               (interactive)
-              (my-magit-checkout-current-file "--theirs"))
-
-            ;; FIX Don't know why some of these become unbound sometimes
-            (bind-keys :map magit-mode-map ("<tab>"     . magit-section-cycle)
-                                           ("<backtab>" . magit-section-cycle-global)))
+              (my-magit-checkout-current-file "--theirs")))
   :bind (("C-x g" . magit-status)))
 
 (use-package ediff
