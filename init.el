@@ -485,7 +485,7 @@ Otherwise run projectile-find-file."
                   magit-diff-refine-hunk t
                   magit-log-arguments '("--decorate" "--graph" "--color" "-n80")
                   magit-log-cutoff-length 80
-                  git-commit-check-style-conventions nil)
+                  git-commit-finish-query-functions '())
 
             (defun my-magit-checkout-current-file (arg)
               (let ((f (magit-current-file)))
