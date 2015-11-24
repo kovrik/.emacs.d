@@ -1,9 +1,9 @@
 ;;; init.el --- kovrik's Emacs config
 ;;; Commentary:
-;;;
 ;;; TODO IDE features
 ;;; TODO Ivy completion for eval-expression
-;;; TODO Solarized-dark?
+;;; TODO Fix `customize-theme'
+;;; TODO Cyclic `diff-hl-next-hunk'
 ;;;
 ;;; Code:
 (setq debug-on-error t)
@@ -67,26 +67,25 @@
  '(package-selected-packages
    (quote
     (auto-compile browse-kill-ring cider clojure-mode-extra-font-locking company company-quickhelp dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode magit markdown-mode racket-mode rainbow-delimiters smart-mode-line use-package))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default                 ((t (:background "#faf4e9" :foreground "#354b53"))))
- '(erc-default-face        ((t (:foreground "#354b53"))))
- '(erc-input-face          ((t (:foreground "#d5512d"))))
- '(eval-sexp-fu-flash      ((t (:background "#b0e0f0"))))
- '(flycheck-fringe-error   ((t (:background "#e53935"))))
- '(flycheck-fringe-info    ((t (:background "#43a047"))))
- '(flycheck-fringe-warning ((t (:background "#ffc107"))))
- '(font-lock-constant-face ((t (:foreground "#2d51d5" :weight bold))))
- '(font-lock-doc-face      ((t (:foreground "#8f508a"))))
- '(font-lock-function-name-face ((t (:foreground "#2d51d5" :weight bold))))
- '(font-lock-keyword-face  ((t (:foreground "#758900"))))
- '(font-lock-string-face   ((t (:foreground "#d5512d"))))
- '(git-commit-summary      ((t (:foreground "#354b53"))))
- '(hl-line                 ((t (:background "#efecda"))))
- '(org-table               ((t (:foreground "#758900")))))
+;; (custom-set-faces
+;;  ;; custom-set-faces was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;;  '(default                 ((t (:background "#faf4e9" :foreground "#354b53"))))
+;;  '(erc-default-face        ((t (:foreground "#354b53"))))
+;;  '(erc-input-face          ((t (:foreground "#d5512d"))))
+;;  '(flycheck-fringe-error   ((t (:background "#e53935"))))
+;;  '(flycheck-fringe-info    ((t (:background "#43a047"))))
+;;  '(flycheck-fringe-warning ((t (:background "#ffc107"))))
+;;  '(font-lock-constant-face ((t (:foreground "#2d51d5" :weight bold))))
+;;  '(font-lock-doc-face      ((t (:foreground "#8f508a"))))
+;;  '(font-lock-function-name-face ((t (:foreground "#2d51d5" :weight bold))))
+;;  '(font-lock-keyword-face  ((t (:foreground "#758900"))))
+;;  '(font-lock-string-face   ((t (:foreground "#d5512d"))))
+;;  '(git-commit-summary      ((t (:foreground "#354b53"))))
+;;  '(hl-line                 ((t (:background "#efecda"))))
+;;  '(org-table               ((t (:foreground "#758900")))))
 
 (use-package solarized-theme
   :config (progn
@@ -99,7 +98,7 @@
                   solarized-height-plus-3  1
                   solarized-height-plus-4  1
                   x-underline-at-descent-line t)
-            (load-theme 'solarized-light)))
+            (load-theme 'solarized-dark)))
 
 ;; PATH
 (use-package exec-path-from-shell
@@ -148,6 +147,8 @@
 (put 'narrow-to-defun  'disabled nil)
 (put 'narrow-to-page   'disabled nil)
 (put 'narrow-to-region 'disabled nil)
+(global-unset-key (kbd "<f2>"))
+(global-unset-key (kbd "<f3>"))
 (bind-keys ([escape]   . keyboard-quit)
            ("RET"      . newline-and-indent)
            ("C-c r"    . revert-buffer)
@@ -179,7 +180,6 @@
 (use-package focus :defer t)
 (use-package color-theme :defer t :config (color-theme-initialize))
 (use-package fixme-mode :config (fixme-mode t))
-(use-package eval-sexp-fu :config (eval-sexp-fu-flash-mode t))
 
 (use-package diff-hl
   :config (progn
@@ -194,7 +194,7 @@
 (use-package find-func
   :config (progn
             (defun my-find-thing-at-point ()
-              "Find directly the thing at point in current window."
+              "Find directly thing (var or func) at point in current window."
               (interactive)
               (cond
                ((function-called-at-point)       (find-function (function-called-at-point)))
@@ -218,7 +218,6 @@
   :init (add-hook #'prog-mode-hook #'smartscan-mode)
   :config (bind-key "M-'" #'other-window smartscan-map))
 
-;; TODO Configure
 (use-package smartparens
   :config (progn
             (require 'smartparens-config)
@@ -333,6 +332,8 @@
                 (when (get-buffer "*Completions*")
                   (delete-windows-on "*Completions*"))
                 (abort-recursive-edit)))
+            (global-set-key                             (kbd "C-x x")   'evil-ex)
+            (global-set-key                             (kbd "C-x C-x") 'evil-ex)
             (global-set-key                             [escape] 'evil-exit-emacs-state)
             (define-key evil-visual-state-map           [escape] 'keyboard-quit)
             (define-key minibuffer-local-map            [escape] 'minibuffer-keyboard-quit)
@@ -538,8 +539,6 @@ Otherwise run projectile-find-file."
               :config (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
 
             (setq-default flycheck-emacs-lisp-load-path 'inherit)
-            (global-unset-key (kbd "<f2>"))
-            (global-unset-key (kbd "<f3>"))
             (defun my-flycheck-next-error-cycle ()
               "Go to next flycheck error if exists.
 Start from the beginning of buffer otherwise."
