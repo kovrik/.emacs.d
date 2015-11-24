@@ -75,7 +75,7 @@
  '(default                 ((t (:background "#faf4e9" :foreground "#354b53"))))
  '(erc-default-face        ((t (:foreground "#354b53"))))
  '(erc-input-face          ((t (:foreground "#d5512d"))))
- '(eval-sexp-fu-flash      ((t (:background "#bbe7c1"))))
+ '(eval-sexp-fu-flash      ((t (:background "#b0e0f0"))))
  '(flycheck-fringe-error   ((t (:background "#e53935"))))
  '(flycheck-fringe-info    ((t (:background "#43a047"))))
  '(flycheck-fringe-warning ((t (:background "#ffc107"))))
