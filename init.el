@@ -1,11 +1,10 @@
 ;;; init.el --- kovrik's Emacs config
 ;;; Commentary:
 ;;;
-;;; TODO Sane fuzzy find (files and text)
 ;;; TODO IDE features
-;;; TODO find-funcion-at-point (and similar) - use same buffer/popup below
 ;;; TODO Ivy completion for eval-expression
 ;;; TODO Solarized-dark?
+;;; TODO find/describe-thing-at-point
 ;;;
 ;;; Code:
 (setq debug-on-error t)
@@ -192,7 +191,29 @@
             (global-diff-hl-mode t)))
 
 (use-package find-func
-  :bind (("C-S-h" . find-function-at-point)
+  :config (progn
+            (defun my-find-thing-at-point ()
+              "Find directly the thing at point in current window."
+              (interactive)
+              (cond
+               ((not (eq 0 (variable-at-point)))        (my-find-variable-at-point))
+               ((not (eq 0 (function-called-at-point))) (my-find-function-at-point))))
+
+            (defun my-find-function-at-point ()
+              "Find directly the function at point in the other window."
+              (interactive)
+              (let ((symb (function-called-at-point)))
+                (when symb
+                  (find-function symb))))
+
+            (defun my-find-variable-at-point ()
+              "Find directly the variable at point in the other window."
+              (interactive)
+              (let ((symb (variable-at-point)))
+                (when (and symb (not (equal symb 0)))
+                  (find-variable symb)))))
+
+  :bind (("C-S-h" . my-find-thing-at-point)
          ("C-h f" . find-function)
          ("C-h k" . find-function-on-key)
          ("C-h v" . find-variable)
