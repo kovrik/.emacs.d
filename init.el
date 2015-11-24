@@ -486,11 +486,10 @@ Otherwise run projectile-find-file."
                   magit-log-arguments '("--decorate" "--graph" "--color" "-n80")
                   magit-log-cutoff-length 80
                   git-commit-check-style-conventions nil)
-            
+
             (defun my-magit-checkout-current-file (arg)
               (let ((f (magit-current-file)))
-                (if f
-                    (magit-run-git-async "checkout" arg f)
+                (if f (magit-run-git-async "checkout" arg f)
                   (error "No file selected!"))))
 
             (defun my-magit-checkout-ours ()
