@@ -134,7 +134,8 @@
       uniquify-buffer-name-style 'forward
       show-trailing-whitespace t
       ns-use-srgb-colorspace nil
-      gnutls-min-prime-bits 4096)
+      gnutls-min-prime-bits 4096
+      mode-require-final-newline nil)
 
 (fringe-mode '(7 . 0))
 (column-number-mode)
@@ -485,7 +486,7 @@ Otherwise run projectile-find-file."
                   magit-log-arguments '("--decorate" "--graph" "--color" "-n80")
                   magit-log-cutoff-length 80
                   git-commit-check-style-conventions nil)
-
+            
             (defun my-magit-checkout-current-file (arg)
               (let ((f (magit-current-file)))
                 (if f
