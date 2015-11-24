@@ -2,7 +2,6 @@
 ;;; Commentary:
 ;;; TODO IDE features
 ;;; TODO Ivy completion for eval-expression
-;;; TODO Fix `customize-theme'
 ;;; TODO Cyclic `diff-hl-next-hunk'
 ;;;
 ;;; Code:
