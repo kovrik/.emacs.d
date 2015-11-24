@@ -4,7 +4,6 @@
 ;;; TODO IDE features
 ;;; TODO Ivy completion for eval-expression
 ;;; TODO Solarized-dark?
-;;; TODO find/describe-thing-at-point
 ;;;
 ;;; Code:
 (setq debug-on-error t)
@@ -76,6 +75,7 @@
  '(default                 ((t (:background "#faf4e9" :foreground "#354b53"))))
  '(erc-default-face        ((t (:foreground "#354b53"))))
  '(erc-input-face          ((t (:foreground "#d5512d"))))
+ '(eval-sexp-fu-flash      ((t (:background "#bbe7c1"))))
  '(flycheck-fringe-error   ((t (:background "#e53935"))))
  '(flycheck-fringe-info    ((t (:background "#43a047"))))
  '(flycheck-fringe-warning ((t (:background "#ffc107"))))
@@ -179,6 +179,7 @@
 (use-package focus :defer t)
 (use-package color-theme :defer t :config (color-theme-initialize))
 (use-package fixme-mode :config (fixme-mode t))
+(use-package eval-sexp-fu :config (eval-sexp-fu-flash-mode t))
 
 (use-package diff-hl
   :config (progn
