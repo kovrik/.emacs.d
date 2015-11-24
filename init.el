@@ -119,7 +119,8 @@
 
 (setq-default indent-tabs-mode nil
               tab-width 2
-              find-file-visit-truename t)
+              find-file-visit-truename t
+              mode-require-final-newline nil)
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
       inhibit-startup-message t
       inhibit-startup-echo-area-message t
@@ -134,8 +135,7 @@
       uniquify-buffer-name-style 'forward
       show-trailing-whitespace t
       ns-use-srgb-colorspace nil
-      gnutls-min-prime-bits 4096
-      mode-require-final-newline nil)
+      gnutls-min-prime-bits 4096)
 
 (fringe-mode '(7 . 0))
 (column-number-mode)
@@ -702,7 +702,6 @@ Use Swiper otherwise."
     (if buffer-read-only
         (kill-this-buffer)
       (self-insert-command count)))
-
   (global-set-key (kbd "q") 'my-self-insert-or-quit)
   (require 'help-mode)
   (define-key help-mode-map (kbd "q") 'my-self-insert-or-quit))
