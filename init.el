@@ -196,23 +196,9 @@
               "Find directly the thing at point in current window."
               (interactive)
               (cond
-               ((not (eq 0 (variable-at-point)))        (my-find-variable-at-point))
-               ((not (eq 0 (function-called-at-point))) (my-find-function-at-point))))
-
-            (defun my-find-function-at-point ()
-              "Find directly the function at point in the other window."
-              (interactive)
-              (let ((symb (function-called-at-point)))
-                (when symb
-                  (find-function symb))))
-
-            (defun my-find-variable-at-point ()
-              "Find directly the variable at point in the other window."
-              (interactive)
-              (let ((symb (variable-at-point)))
-                (when (and symb (not (equal symb 0)))
-                  (find-variable symb)))))
-
+               ((function-called-at-point)       (find-function (function-called-at-point)))
+               ((not (eq 0 (variable-at-point))) (find-variable (variable-at-point)))
+               (t                                (user-error "Unknown thing at point!")))))
   :bind (("C-S-h" . my-find-thing-at-point)
          ("C-h f" . find-function)
          ("C-h k" . find-function-on-key)
@@ -273,6 +259,7 @@
               (interactive)
               (cider-find-var t nil))
             (bind-keys :map clojure-mode-map ((kbd "C-h")   . cider-find-var-no-prompt)
+                                             ((kbd "C-S-h") . cider-find-var-no-prompt)
                                              ((kbd "C-M-x") . cider-eval-defun-at-point))))
 
 (use-package geiser :defer t)
