@@ -695,10 +695,13 @@ Use Swiper otherwise."
 (defun my-kill-buffers (&rest args)
   "Kill buffers ARGS."
   (defun my-kill-buffer-by-p (pred)
-    (let ((matched-buffers (cl-remove-if-not pred (buffer-list))))
-      (when (y-or-n-p (format "Kill %s buffers?" (length matched-buffers)))
-        (mapc 'kill-buffer matched-buffers)
-        (message (format "Killed %s buffer(s)." (length matched-buffers))))))
+    (let* ((matched-buffers (cl-remove-if-not pred (buffer-list)))
+           (buffers-count (length matched-buffers)))
+      (if (zerop buffers-count)
+          (user-error "No buffers to kill!")
+        (when (y-or-n-p (format "Kill %s buffers?" buffers-count))
+          (mapc 'kill-buffer matched-buffers)
+          (message (format "Killed %s buffer(s)." buffers-count))))))
   (let ((regex (plist-get args :regex))
         (mode  (plist-get args :mode)))
     (my-kill-buffer-by-p (cond
