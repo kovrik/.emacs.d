@@ -2,7 +2,6 @@
 ;;; Commentary:
 ;;; TODO IDE features
 ;;; TODO Ivy completion for eval-expression
-;;; TODO Cyclic `diff-hl-next-hunk'
 ;;;
 ;;; Code:
 (setq debug-on-error t)
@@ -183,12 +182,31 @@
 
 (use-package diff-hl
   :config (progn
+            (defun diff-hl-next-hunk-cycle (&optional backward)
+              "Go to the beginning of the next hunk in the current buffer."
+              (interactive)
+              (condition-case err
+                  (diff-hl-next-hunk backward)
+                (error
+                 (beginning-of-buffer)
+                 (diff-hl-next-hunk backward))))
+
+            (defun diff-hl-previous-hunk-cycle (&optional backward)
+              "Go to the beginning of the previous hunk in the current buffer."
+              (interactive)
+              (condition-case err
+                  (diff-hl-previous-hunk)
+                (error
+                 (end-of-buffer)
+                 (diff-hl-previous-hunk))))
+
             (bind-keys :map diff-hl-mode-map
-                       ("C-x v n" . diff-hl-next-hunk)
-                       ("C-x v j" . diff-hl-next-hunk)
-                       ("C-x v p" . diff-hl-previous-hunk)
-                       ("C-x v k" . diff-hl-previous-hunk)
+                       ("C-x v n" . diff-hl-next-hunk-cycle)
+                       ("C-x v j" . diff-hl-next-hunk-cycle)
+                       ("C-x v p" . diff-hl-previous-hunk-cycle)
+                       ("C-x v k" . diff-hl-previous-hunk-cycle)
                        ("C-x v r" . diff-hl-revert-hunk))
+            (evil-leader/set-key "v"   'diff-hl-next-hunk-cycle)
             (global-diff-hl-mode t)))
 
 (use-package find-func
