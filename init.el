@@ -133,7 +133,8 @@
       uniquify-buffer-name-style 'forward
       show-trailing-whitespace t
       ns-use-srgb-colorspace nil
-      gnutls-min-prime-bits 4096)
+      gnutls-min-prime-bits 4096
+      tab-always-indent 'complete)
 
 (fringe-mode '(7 . 0))
 (column-number-mode)
