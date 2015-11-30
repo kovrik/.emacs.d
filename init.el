@@ -195,7 +195,7 @@
                        (diff-hl-next-hunk backward)
                      (error
                       (goto-char pos)
-                      (error "No further hunks found")))))))
+                      (user-error "No further hunks found")))))))
 
             (defun diff-hl-previous-hunk-cycle (&optional backward)
               "Go to the beginning of the previous hunk in the current buffer."
@@ -209,7 +209,7 @@
                        (diff-hl-previous-hunk)
                      (error
                       (goto-char pos)
-                      (error "No further hunks found")))))))
+                      (user-error "No further hunks found")))))))
             (bind-keys :map diff-hl-mode-map
                        ("C-x v n" . diff-hl-next-hunk-cycle)
                        ("C-x v j" . diff-hl-next-hunk-cycle)
@@ -748,7 +748,7 @@ Use Swiper otherwise."
 (setq jit-lock-stealth-time 1
       jit-lock-chunk-size 1000
       jit-lock-defer-time 0.05)
-(setq debug-on-error nil)
+(setq debug-on-error t)
 (setq debug-on-quit nil)
 (provide 'init)
 ;;; init.el ends here
