@@ -398,6 +398,7 @@
 
 (use-package swiper
   :demand t
+  :diminish ivy-mode
   :config (progn
             (use-package counsel)
             (setq ivy-use-virtual-buffers t
