@@ -748,6 +748,7 @@ Use Swiper otherwise."
 (setq jit-lock-stealth-time 1
       jit-lock-chunk-size 1000
       jit-lock-defer-time 0.05)
+(setq debug-on-error nil)
 (setq debug-on-quit nil)
 (provide 'init)
 ;;; init.el ends here
