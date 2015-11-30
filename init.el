@@ -503,7 +503,13 @@ Otherwise run projectile-find-file."
   :pin melpa-stable
   :init   (setq magit-last-seen-setup-instructions "1.4.0")
   :config (progn
-            (use-package magit-popup)
+            (use-package magit-popup
+              :config (progn
+                        ;; FIXME
+                        ;; (defun magit-popup-sequence-mode ())
+                        (set-face-attribute 'magit-popup-argument nil :foreground "#e53935")
+                        (set-face-attribute 'magit-popup-heading  nil :foreground "#b58900")
+                        (set-face-attribute 'magit-popup-key      nil :foreground "#2aa198")))
             (setenv "GIT_ASKPASS" "git-gui--askpass")
             ;; Don't want to view changes every time before commit
             (setq magit-status-buffer-switch-function 'switch-to-buffer
