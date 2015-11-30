@@ -501,13 +501,11 @@ Otherwise run projectile-find-file."
 
 (use-package magit
   :defer t
-  :pin melpa-stable
+  :pin melpa
   :init   (setq magit-last-seen-setup-instructions "1.4.0")
   :config (progn
             (use-package magit-popup
               :config (progn
-                        ;; FIXME
-                        ;; (defun magit-popup-sequence-mode ())
                         (set-face-attribute 'magit-popup-argument nil :foreground "#e53935")
                         (set-face-attribute 'magit-popup-heading  nil :foreground "#b58900")
                         (set-face-attribute 'magit-popup-key      nil :foreground "#2aa198")))
@@ -750,7 +748,6 @@ Use Swiper otherwise."
 (setq jit-lock-stealth-time 1
       jit-lock-chunk-size 1000
       jit-lock-defer-time 0.05)
-(setq debug-on-error nil)
 (setq debug-on-quit nil)
 (provide 'init)
 ;;; init.el ends here
