@@ -65,6 +65,16 @@
  '(package-selected-packages
    (quote
     (auto-compile browse-kill-ring cider clojure-mode-extra-font-locking company company-quickhelp dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode magit markdown-mode racket-mode rainbow-delimiters smart-mode-line use-package))))
+;; Dark
+(custom-set-faces
+ ;;  ;; custom-set-faces was added by Custom.
+ ;;  ;; If you edit it by hand, you could mess it up, so be careful.
+ ;;  ;; Your init file should contain only one such instance.
+ ;;  ;; If there is more than one, they won't work right.
+ '(magit-popup-argument ((t (:foreground "#e53935"))))
+ '(magit-popup-heading  ((t (:foreground "#b58900"))))
+ '(magit-popup-key      ((t (:foreground "#2aa198")))))
+;; Light
 ;; (custom-set-faces
 ;;  ;; custom-set-faces was added by Custom.
 ;;  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -504,11 +514,7 @@ Otherwise run projectile-find-file."
   :pin melpa
   :init   (setq magit-last-seen-setup-instructions "1.4.0")
   :config (progn
-            (use-package magit-popup
-              :config (progn
-                        (set-face-attribute 'magit-popup-argument nil :foreground "#e53935")
-                        (set-face-attribute 'magit-popup-heading  nil :foreground "#b58900")
-                        (set-face-attribute 'magit-popup-key      nil :foreground "#2aa198")))
+            (use-package magit-popup)
             (setenv "GIT_ASKPASS" "git-gui--askpass")
             ;; Don't want to view changes every time before commit
             (setq magit-status-buffer-switch-function 'switch-to-buffer
