@@ -300,7 +300,11 @@
                                              ((kbd "C-S-h") . cider-find-var-no-prompt)
                                              ((kbd "C-M-x") . cider-eval-defun-at-point))))
 
-(use-package geiser :defer t)
+(use-package geiser
+  :defer t
+  :config (progn
+            (setq geiser-debug-show-debug-p nil
+                  geiser-debug-jump-to-debug-p nil)))
 
 (use-package racket-mode :defer t :config (add-hook 'racket-mode-hook #'company-quickhelp--disable))
 
