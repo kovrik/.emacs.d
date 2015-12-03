@@ -756,7 +756,8 @@ Use Swiper otherwise."
 
   (global-set-key (kbd "q") 'my-self-insert-or-quit)
   (require 'help-mode)
-  (define-key help-mode-map (kbd "q") 'my-self-insert-or-quit))
+  (dolist (mode-map (list help-mode-map proced-mode-map))
+    (define-key mode-map (kbd "q") 'my-self-insert-or-quit)))
 )
 
 ;; 100 mb
