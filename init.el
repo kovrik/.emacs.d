@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; TODO IDE features
 ;;; TODO Ivy completion for eval-expression
+;;; TODO Fix focus issue with *Geiser dbg* buffer
 ;;;
 ;;; Code:
 (setq debug-on-error t)
