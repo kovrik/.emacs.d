@@ -532,7 +532,7 @@ Otherwise run projectile-find-file."
             (defun my-magit-checkout-current-file (arg)
               (let ((f (magit-current-file)))
                 (if f (magit-run-git-async "checkout" arg f)
-                  (error "No file selected!"))))
+                  (user-error "No file selected!"))))
 
             (defun my-magit-checkout-ours ()
               (interactive)
