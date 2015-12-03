@@ -516,7 +516,6 @@ Otherwise run projectile-find-file."
 (use-package magit
   :defer t
   :pin melpa
-  :init   (setq magit-last-seen-setup-instructions "1.4.0")
   :config (progn
             (use-package magit-popup)
             (setenv "GIT_ASKPASS" "git-gui--askpass")
