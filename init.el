@@ -705,6 +705,7 @@ by using nxml's indentation rules.  Args: BEGIN END"
   "If currently in a project, then use Projectile to fuzzy find a file.
 Use Swiper otherwise."
   (interactive)
+  (require 'projectile)
   (if (projectile-project-p)
       (projectile-find-file)
     (counsel-find-file)))
