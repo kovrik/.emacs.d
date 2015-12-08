@@ -4,7 +4,6 @@
 ;;; TODO Ivy completion for eval-expression
 ;;; TODO Fix focus issue with *Geiser dbg* buffer
 ;;; TODO Fix window-resizing issue on `magit-popup'
-;;; TODO Fix (require `help-mode') and (require `proced')
 ;;;
 ;;; Code:
 (setq debug-on-error t)
@@ -758,7 +757,6 @@ Use Swiper otherwise."
       (self-insert-command count)))
 
   (global-set-key (kbd "q") 'my-self-insert-or-quit)
-  ;; TODO FIXME
   (require 'help-mode)
   (require 'proced)
   (dolist (mode-map (list help-mode-map proced-mode-map))
