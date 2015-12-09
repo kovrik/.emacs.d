@@ -742,25 +742,22 @@ Use Swiper otherwise."
   (align-regexp start end (concat "\\(\\s-*\\)" regexp) 1 1 t))
 
 (progn
-  ;; Make 'q' key more predictable and less annoying
-  (defun my-kill-buffer-and-window-p (b)
-    "Return `t' if we want `b` buffer to be killed with it's window.'"
-    (member (buffer-local-value 'major-mode b) '(magit-popup-mode)))
-
-  (defun my-self-insert-or-quit (count)
+  (defun my-quit (count)
     "Quit if in a read-only buffer; otherwise, call self-insert-command."
     (interactive "p")
-    (if buffer-read-only
-        (if (my-kill-buffer-and-window-p (current-buffer))
-            (kill-buffer-and-window)
-          (kill-this-buffer))
-      (self-insert-command count)))
-
-  (global-set-key (kbd "q") 'my-self-insert-or-quit)
+    (let* ((b (current-buffer))
+           (m (buffer-local-value 'major-mode b)))
+      (cond
+       ;; special cases
+       ((eq 'magit-popup-mode m) (magit-popup-quit))
+       ((not buffer-read-only)   (self-insert-command count))
+       ;; all other cases
+       (t (kill-this-buffer)))))
+  (global-set-key (kbd "q") 'my-quit)
   (require 'help-mode)
   (require 'proced)
   (dolist (mode-map (list help-mode-map proced-mode-map))
-    (define-key mode-map (kbd "q") 'my-self-insert-or-quit)))
+    (define-key mode-map (kbd "q") 'my-quit)))
 )
 
 ;; 100 mb
