@@ -1,9 +1,7 @@
 ;;; init.el --- kovrik's Emacs config
 ;;; Commentary:
-;;; TODO IDE features
 ;;; TODO Ivy completion for eval-expression
 ;;; TODO Fix focus issue with *Geiser dbg* buffer
-;;; TODO Fix window-resizing issue on `magit-popup'
 ;;;
 ;;; Code:
 (setq debug-on-error t)
