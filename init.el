@@ -610,7 +610,6 @@ Start from the beginning of buffer otherwise."
                   eyebrowse-close-window-config-prompt t)))
 
 (use-package shackle
-  :diminish shackle-mode
   :config (progn
             (setq shackle-lighter ""
                   shackle-rules '(("\\`\\*magit.*?\\'"      :regexp t :same t)
