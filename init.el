@@ -73,7 +73,8 @@
  ;; If there is more than one, they won't work right.
  '(magit-popup-argument ((t (:foreground "#e53935"))))
  '(magit-popup-heading  ((t (:foreground "#b58900"))))
- '(magit-popup-key      ((t (:foreground "#2aa198")))))
+ '(magit-popup-key      ((t (:foreground "#2aa198"))))
+ '(org-level-1          ((t (:foreground "#dd848d")))))
 ;; Light
 ;; (custom-set-faces
 ;;  ;; custom-set-faces was added by Custom.
