@@ -647,7 +647,7 @@ Start from the beginning of buffer otherwise."
             (erc-autojoin-mode t)
             (erc-scrolltobottom-enable)
             (erc-scrolltobottom-mode t)
-            (setq erc-autojoin-channels-alist '((".*\\.freenode.net" "#emacs"))
+            (setq erc-autojoin-channels-alist '((".*\\.freenode.net" "#emacs" "#clojure"))
                   erc-hide-list '("JOIN" "PART" "QUIT" "NICK" "MODE")
                   erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
                                             "324"  "329"  "332"  "333"  "353" "477")
