@@ -19,7 +19,7 @@
                          ("melpa-stable" . "http://stable.melpa.org/packages/")))
 (setq package-enable-at-startup nil)
 (package-initialize)
-(add-to-list 'package-pinned-packages '(queue . "gnu") t)
+(add-to-list 'package-pinned-packages '(queue . "gnu"))
 
 ;; Make sure to have downloaded archive description
 (or (file-directory-p (expand-file-name (concat package-user-dir "/archives")))
