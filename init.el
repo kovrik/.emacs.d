@@ -385,6 +385,7 @@
             (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
             (define-key minibuffer-local-isearch-map    [escape] 'minibuffer-keyboard-quit)
             (define-key evil-insert-state-map           [escape] 'evil-normal-state)
+            (define-key evil-insert-state-map           (kbd "C-n") 'company-complete)
             (bind-keys :map evil-normal-state-map ([next]   . evil-scroll-down)
                                                   ([prior]  . evil-scroll-up)
                                                   ([escape] . keyboard-quit)
