@@ -337,7 +337,6 @@
   :config (progn
             (use-package evil-org :defer t)
             (use-package evil-numbers)
-            (use-package evil-anzu)
             (use-package evil-surround   :config (global-evil-surround-mode 1))
             (use-package evil-visualstar :config (global-evil-visualstar-mode))
             (use-package evil-search-highlight-persist
