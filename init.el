@@ -30,7 +30,8 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-(require 'use-package)
+(eval-when-compile
+  (require 'use-package))
 (require 'diminish)
 (require 'bind-key)
 (require 'uniquify)
