@@ -200,7 +200,9 @@
                   (diff-hl-next-hunk backward)
                 (error
                  (let ((pos (point)))
-                   (beginning-of-buffer)
+                   (if backward
+                       (end-of-buffer)
+                       (beginning-of-buffer))
                    (condition-case err
                        (diff-hl-next-hunk backward)
                      (error
@@ -749,8 +751,7 @@ Use Swiper otherwise."
     (define-key mode-map (kbd "q") 'my-quit)))
 )
 
-;; Allow font-lock-mode to do background parsing
-;; And restore some settings
+;; Allow font-lock-mode to do background parsing and restore some settings
 (setq jit-lock-stealth-time 1
       jit-lock-chunk-size 1000
       jit-lock-defer-time 0.05 
