@@ -196,7 +196,7 @@
 (use-package diff-hl
   :config (progn
             (defun diff-hl-next-hunk-cycle (&optional backward)
-              "Go to the beginning of the next hunk in the current buffer."
+              "Go to the beginning of the next (previous if BACKWARD) hunk in the current buffer."
               (interactive)
               (condition-case err
                   (diff-hl-next-hunk backward)
@@ -207,10 +207,10 @@
                        (diff-hl-next-hunk backward)
                      (error
                       (goto-char pos)
-                      (user-error "No further hunks found")))))))
+                      (user-error "No more hunks found")))))))
 
             (defun diff-hl-previous-hunk-cycle (&optional backward)
-              "Go to the beginning of the previous hunk in the current buffer."
+              "Go to the beginning of the previous (next if BACKWARD) hunk in the current buffer."
               (interactive)
               (diff-hl-next-hunk-cycle t))
 
