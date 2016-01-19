@@ -212,16 +212,8 @@
             (defun diff-hl-previous-hunk-cycle (&optional backward)
               "Go to the beginning of the previous hunk in the current buffer."
               (interactive)
-              (condition-case err
-                  (diff-hl-previous-hunk)
-                (error
-                 (let ((pos (point)))
-                   (end-of-buffer)
-                   (condition-case err
-                       (diff-hl-previous-hunk)
-                     (error
-                      (goto-char pos)
-                      (user-error "No further hunks found")))))))
+              (diff-hl-next-hunk-cycle t))
+
             (bind-keys :map diff-hl-mode-map
                        ("C-x v n" . diff-hl-next-hunk-cycle)
                        ("C-x v j" . diff-hl-next-hunk-cycle)
