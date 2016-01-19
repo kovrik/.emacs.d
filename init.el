@@ -4,14 +4,13 @@
 ;;; TODO Fix focus issue with *Geiser dbg* buffer
 ;;;
 ;;; Code:
-(setq debug-on-error t)
-(setq debug-on-quit t)
-;; Prevent frequent GCs during init
-(setq gc-cons-threshold 100000000)
 
-(let ((file-name-handler-alist nil))
-
-;; Package management
+;; 
+(let ((file-name-handler-alist nil)
+      (gc-cons-threshold (* 100 1024 1024))
+      (debug-on-error t)
+      (debug-on-quit t))
+  ;; Package management
 (require 'package)
 (setq package-archives '(("gnu"          . "http://elpa.gnu.org/packages/")
                          ("org"          . "http://orgmode.org/elpa/")
@@ -751,13 +750,13 @@ Use Swiper otherwise."
     (define-key mode-map (kbd "q") 'my-quit)))
 )
 
-;; 100 mb
-(setq gc-cons-threshold (* 100 1024 1024))
 ;; Allow font-lock-mode to do background parsing
+;; And restore some settings
 (setq jit-lock-stealth-time 1
       jit-lock-chunk-size 1000
-      jit-lock-defer-time 0.05)
-(setq debug-on-error nil)
-(setq debug-on-quit nil)
+      jit-lock-defer-time 0.05 
+      debug-on-error nil 
+      debug-on-quit nil
+      gc-cons-threshold (* 1 1024 1024))
 (provide 'init)
 ;;; init.el ends here
