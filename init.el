@@ -5,12 +5,11 @@
 ;;;
 ;;; Code:
 
-;; 
 (let ((file-name-handler-alist nil)
       (gc-cons-threshold (* 100 1024 1024))
       (debug-on-error t)
-      (debug-on-quit t))
-  ;; Package management
+      (debug-on-quit t)) 
+;; Package management
 (require 'package)
 (setq package-archives '(("gnu"          . "http://elpa.gnu.org/packages/")
                          ("org"          . "http://orgmode.org/elpa/")
