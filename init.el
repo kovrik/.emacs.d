@@ -1,7 +1,7 @@
 ;;; init.el --- kovrik's Emacs config
 ;;; Commentary:
-;;; TODO Ivy completion for eval-expression
 ;;; TODO Fix focus issue with *Geiser dbg* buffer
+;;; TODO IDE features
 ;;;
 ;;; Code:
 
