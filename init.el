@@ -1,7 +1,9 @@
 ;;; init.el --- kovrik's Emacs config
 ;;; Commentary:
 ;;; TODO Fix focus issue with *Geiser dbg* buffer
-;;; TODO IDE features
+;;; TODO IDE features:
+;;; TODO 1. Fast window switching
+;;; TODO 2. Window number in lighter
 ;;;
 ;;; Code:
 
@@ -318,6 +320,9 @@
           (use-package evil-leader
             :init (global-evil-leader-mode)
             :config (progn
+                      (defun my-switch-to-previous-buffer ()
+                        (interactive)
+                        (switch-to-buffer (other-buffer (current-buffer) 1)))
                       (setq evil-leader/in-all-states t)
                       (evil-leader/set-leader ",")
                       (evil-leader/set-key "SPC" 'lazy-highlight-cleanup)
@@ -326,6 +331,7 @@
                       (evil-leader/set-key "g"   'counsel-ag)
                       (evil-leader/set-key "a"   'align-regexp)
                       (evil-leader/set-key "s"   'delete-trailing-whitespace)
+                      (evil-leader/set-key "TAB" 'my-switch-to-previous-buffer)
                       (evil-leader-mode t))))
   :config (progn
             (use-package evil-org :defer t)
