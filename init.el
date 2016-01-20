@@ -693,14 +693,11 @@ Use Swiper otherwise."
   (defun my-quit (count)
     "Quit if in a read-only buffer; otherwise, call self-insert-command."
     (interactive "p")
-    (let* ((b (current-buffer))
-           (m (buffer-local-value 'major-mode b)))
+    (let ((m (buffer-local-value 'major-mode (current-buffer))))
       (cond
-       ;; special cases
        ((eq 'magit-popup-mode m) (magit-popup-quit))
        ((not buffer-read-only)   (self-insert-command count))
-       ;; all other cases
-       (t (kill-this-buffer)))))
+       (t                        (kill-this-buffer)))))
   (global-set-key (kbd "q") 'my-quit)
   (require 'help-mode)
   (require 'proced)
