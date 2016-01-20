@@ -13,7 +13,7 @@
 (let ((file-name-handler-alist nil)
       (gc-cons-threshold (* 100 1024 1024))
       (debug-on-error t)
-      (debug-on-quit t)) 
+      (debug-on-quit t))
 ;; Package management
 (require 'package)
 (setq package-archives '(("gnu"          . "http://elpa.gnu.org/packages/")
@@ -306,14 +306,15 @@
                       (defun my-switch-to-previous-buffer ()
                         (interactive)
                         (switch-to-buffer (other-buffer (current-buffer) 1)))
-                      (setq evil-leader/in-all-states t)
+                      (setq evil-leader/in-all-states t
+                            evil-leader/no-prefix-mode-rx '("magit-.*-mode"))
                       (evil-leader/set-leader ",")
-                      (evil-leader/set-key "SPC" 'lazy-highlight-cleanup 
-                                           "SPC" 'evil-search-highlight-persist-remove-all 
-                                           "f"   'find-file-at-point 
-                                           "g"   'counsel-ag 
-                                           "a"   'align-regexp 
-                                           "s"   'delete-trailing-whitespace 
+                      (evil-leader/set-key "SPC" 'lazy-highlight-cleanup
+                                           "SPC" 'evil-search-highlight-persist-remove-all
+                                           "f"   'find-file-at-point
+                                           "g"   'counsel-ag
+                                           "a"   'align-regexp
+                                           "s"   'delete-trailing-whitespace
                                            "TAB" 'my-switch-to-previous-buffer)
                       (evil-leader-mode t))))
   :config (progn
@@ -402,7 +403,10 @@
                   ivy-display-style 'plain
                   ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
             (add-to-list 'ivy-initial-inputs-alist '(counsel-M-x . ""))
-            (define-key ivy-minibuffer-map [escape] 'minibuffer-keyboard-quit)
+            (bind-keys :map ivy-minibuffer-map
+                       ([escape] . minibuffer-keyboard-quit)
+                       ([next]   . ivy-next-line)
+                       ([prior]  . ivy-previous-line))
             (ivy-mode 1))
   :bind (("\C-s"    . swiper)
          ("C-c C-r" . ivy-resume)
@@ -513,7 +517,8 @@ Otherwise run projectile-find-file."
 
             (defun my-magit-checkout-current-file (arg)
               (let ((f (magit-current-file)))
-                (if f (magit-run-git-async "checkout" arg f)
+                (if f
+                    (magit-run-git-async "checkout" arg f)
                   (user-error "No file selected!"))))
 
             (defun my-magit-checkout-ours ()
@@ -555,7 +560,6 @@ Otherwise run projectile-find-file."
   :config (progn
             (use-package flycheck-pos-tip
               :config (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
-
             (setq-default flycheck-emacs-lisp-load-path 'inherit)
             (defun my-flycheck-next-error-cycle ()
               "Go to next flycheck error if exists.
@@ -707,8 +711,8 @@ Use Counsel otherwise."
 ;; Allow font-lock-mode to do background parsing and restore some settings
 (setq jit-lock-stealth-time 1
       jit-lock-chunk-size 1000
-      jit-lock-defer-time 0.05 
-      debug-on-error nil 
+      jit-lock-defer-time 0.05
+      debug-on-error nil
       debug-on-quit nil
       gc-cons-threshold (* 1 1024 1024))
 (provide 'init)
