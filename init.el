@@ -1,12 +1,9 @@
 ;;; init.el --- kovrik's Emacs config
 ;;; Commentary:
 ;;; TODO Fix focus issue with *Geiser dbg* buffer
-;;; TODO IDE features:
-;;; TODO 1. Fast window switching
-;;; TODO 2. Window number in lighter
-;;; TODO 3. `global-evil-leader-mode' t
-;;; TODO 4. PgUp/PgDown in Ivy
-;;; TODO 5. Make keys work in `magit-mode'
+;;; TODO Fast window switching
+;;; TODO Window number in lighter
+;;; TODO PgUp/PgDown in Ivy
 ;;;
 ;;; Code:
 
@@ -581,6 +578,7 @@ Start from the beginning of buffer otherwise."
             (define-key undo-tree-map (kbd "C-/") nil)))
 
 (use-package eyebrowse
+  :diminish eyebrowse-mode
   :pin melpa-stable
   :config (progn
             (eyebrowse-mode t)
