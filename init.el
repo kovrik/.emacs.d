@@ -4,7 +4,9 @@
 ;;; TODO IDE features:
 ;;; TODO 1. Fast window switching
 ;;; TODO 2. Window number in lighter
-;;; TODO 3. global-evil-leader-mode t
+;;; TODO 3. `global-evil-leader-mode' t
+;;; TODO 4. PgUp/PgDown in Ivy
+;;; TODO 5. Make keys work in `magit-mode'
 ;;;
 ;;; Code:
 
