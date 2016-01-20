@@ -4,6 +4,7 @@
 ;;; TODO IDE features:
 ;;; TODO 1. Fast window switching
 ;;; TODO 2. Window number in lighter
+;;; TODO 3. global-evil-leader-mode t
 ;;;
 ;;; Code:
 
