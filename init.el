@@ -77,26 +77,6 @@
  '(magit-popup-heading  ((t (:foreground "#b58900"))))
  '(magit-popup-key      ((t (:foreground "#2aa198"))))
  '(org-level-1          ((t (:foreground "#dd848d")))))
-;; Light
-;; (custom-set-faces
-;;  ;; custom-set-faces was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  '(default                 ((t (:background "#faf4e9" :foreground "#354b53"))))
-;;  '(erc-default-face        ((t (:foreground "#354b53"))))
-;;  '(erc-input-face          ((t (:foreground "#d5512d"))))
-;;  '(flycheck-fringe-error   ((t (:background "#e53935"))))
-;;  '(flycheck-fringe-info    ((t (:background "#43a047"))))
-;;  '(flycheck-fringe-warning ((t (:background "#ffc107"))))
-;;  '(font-lock-constant-face ((t (:foreground "#2d51d5" :weight bold))))
-;;  '(font-lock-doc-face      ((t (:foreground "#8f508a"))))
-;;  '(font-lock-function-name-face ((t (:foreground "#2d51d5" :weight bold))))
-;;  '(font-lock-keyword-face  ((t (:foreground "#758900"))))
-;;  '(font-lock-string-face   ((t (:foreground "#d5512d"))))
-;;  '(git-commit-summary      ((t (:foreground "#354b53"))))
-;;  '(hl-line                 ((t (:background "#efecda"))))
-;;  '(org-table               ((t (:foreground "#758900")))))
 
 (use-package solarized-theme
   :config (progn
@@ -326,13 +306,13 @@
                         (switch-to-buffer (other-buffer (current-buffer) 1)))
                       (setq evil-leader/in-all-states t)
                       (evil-leader/set-leader ",")
-                      (evil-leader/set-key "SPC" 'lazy-highlight-cleanup)
-                      (evil-leader/set-key "SPC" 'evil-search-highlight-persist-remove-all)
-                      (evil-leader/set-key "f"   'find-file-at-point)
-                      (evil-leader/set-key "g"   'counsel-ag)
-                      (evil-leader/set-key "a"   'align-regexp)
-                      (evil-leader/set-key "s"   'delete-trailing-whitespace)
-                      (evil-leader/set-key "TAB" 'my-switch-to-previous-buffer)
+                      (evil-leader/set-key "SPC" 'lazy-highlight-cleanup 
+                                           "SPC" 'evil-search-highlight-persist-remove-all 
+                                           "f"   'find-file-at-point 
+                                           "g"   'counsel-ag 
+                                           "a"   'align-regexp 
+                                           "s"   'delete-trailing-whitespace 
+                                           "TAB" 'my-switch-to-previous-buffer)
                       (evil-leader-mode t))))
   :config (progn
             (use-package evil-org :defer t)
@@ -554,14 +534,8 @@ Otherwise run projectile-find-file."
               "Turn off wide-display mode (if was enabled) before quitting ediff."
               (when ediff-wide-display-p
                 (ediff-toggle-wide-display)))
-            (defun my-kill-ediff-buffers ()
-              "Kill ediff buffers on ediff-quit."
-              (kill-buffer ediff-buffer-A)
-              (kill-buffer ediff-buffer-B)
-              (kill-buffer ediff-buffer-C))
             (add-hook 'ediff-cleanup-hook 'my-toggle-ediff-wide-display)
-            (add-hook 'ediff-quit-hook    'winner-undo)
-            (add-hook 'ediff-quit-hook    'my-kill-ediff-buffers)))
+            (add-hook 'ediff-quit-hook    'winner-undo)))
 
 (use-package eshell
   :defer t
@@ -707,32 +681,6 @@ Use Swiper otherwise."
       (projectile-find-file)
     (counsel-find-file)))
 (bind-key "C-S-n" 'my-find-file)
-
-(defun my-kill-buffers (&rest args)
-  "Kill buffers ARGS."
-  (defun my-kill-buffer-by-p (pred)
-    (let* ((matched-buffers (cl-remove-if-not pred (buffer-list)))
-           (buffers-count (length matched-buffers)))
-      (if (zerop buffers-count)
-          (user-error "No buffers to kill!")
-        (when (y-or-n-p (format "Kill %s buffers?" buffers-count))
-          (mapc 'kill-buffer matched-buffers)
-          (message (format "Killed %s buffer(s)." buffers-count))))))
-  (let ((regex (plist-get args :regex))
-        (mode  (plist-get args :mode)))
-    (my-kill-buffer-by-p (cond
-                           (regex (lambda (b) (string-match regex (buffer-name b))))
-                           (mode  (lambda (b) (eq mode (buffer-local-value 'major-mode b))))))))
-
-(defun my-kill-all-dired-buffers ()
-  "Kill all dired buffers."
-  (interactive)
-  (my-kill-buffers :mode 'dired-mode))
-
-(defun my-kill-all-ediff-buffers ()
-  "Kill all ediff buffers."
-  (interactive)
-  (my-kill-buffers :regex "^*ediff-.*\\*$"))
 
 (defun my-align-repeat (start end regexp)
   "Repeat alignment with respect to the given regular expression.  Args: START END REGEXP."
