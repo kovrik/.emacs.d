@@ -660,9 +660,8 @@ Start from the beginning of buffer otherwise."
              ("C-x _"  . my-hsplit-last-buffer) ("C-x |"  . my-vsplit-last-buffer)))
 
 (defun bf-pretty-print-xml-region (begin end)
-  "Pretty format XML markup in region.  You need to have `nxml-mode`.
-http://www.emacswiki.org/cgi-bin/wiki/NxmlMode installed to do
-this.  The function inserts linebreaks to separate tags that have
+  "Pretty format XML markup in region.
+The function inserts linebreaks to separate tags that have
 nothing but whitespace between them.  It then indents the markup
 by using nxml's indentation rules.  Args: BEGIN END"
   (interactive "r")
@@ -676,7 +675,7 @@ by using nxml's indentation rules.  Args: BEGIN END"
 
 (defun my-find-file ()
   "If currently in a project, then use Projectile to fuzzy find a file.
-Use Swiper otherwise."
+Use Counsel otherwise."
   (interactive)
   (require 'projectile)
   (if (projectile-project-p)
