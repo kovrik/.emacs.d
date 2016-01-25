@@ -594,7 +594,7 @@ Start from the beginning of buffer otherwise."
             (setq shackle-lighter ""
                   shackle-rules '(("\\`\\*magit.*?\\'"      :regexp t :same t)
                                   ("\\`\\*helm.*?\\*\\'"    :regexp t :align t :ratio 0.4)
-                                  ;; (compilation-mode         :ignore t)
+                                  (compilation-mode         :same   t)
                                   (sauron-mode              :ignore t)
                                   (erc-mode                 :same   t)
                                   (proced-mode              :same   t)
