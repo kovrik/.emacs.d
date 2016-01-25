@@ -703,7 +703,7 @@ Use Counsel otherwise."
   (global-set-key (kbd "q") 'my-quit)
   (require 'help-mode)
   (require 'proced)
-  (dolist (mode-map (list help-mode-map proced-mode-map))
+  (dolist (mode-map (list help-mode-map proced-mode-map compilation-mode-map))
     (define-key mode-map (kbd "q") 'my-quit)))
 )
 
