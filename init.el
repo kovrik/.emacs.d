@@ -313,6 +313,7 @@
                                            "a"   'align-regexp
                                            "s"   'delete-trailing-whitespace
                                            "c"   'compile
+                                           "b"   'bs-show
                                            "TAB" 'my-switch-to-previous-buffer)
                       (evil-leader-mode t))))
   :config (progn
