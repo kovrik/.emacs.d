@@ -335,6 +335,7 @@
                                                 'line)
                           (evil-next-line))
                         (bind-key "C-/" 'my-comment-line-and-go-to-next)
+                        (bind-key "C-/" 'evil-commentary evil-visual-state-map )
                         (evil-commentary-mode)))
             ;; Emacs keys in INSERT mode
             (setcdr evil-insert-state-map nil)
