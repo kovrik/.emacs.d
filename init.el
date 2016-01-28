@@ -72,6 +72,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ivy-current-match    ((t (:foreground "#00f0c0"))))
  '(magit-popup-argument ((t (:foreground "#e53935"))))
  '(magit-popup-heading  ((t (:foreground "#b58900"))))
  '(magit-popup-key      ((t (:foreground "#2aa198"))))
