@@ -3,7 +3,6 @@
 ;;; TODO Fix focus issue with *Geiser dbg* buffer
 ;;; TODO Fast window switching
 ;;; TODO Window number in lighter
-;;; TODO PgUp/PgDown in Ivy
 ;;;
 ;;; Code:
 
@@ -403,10 +402,18 @@
                   ivy-display-style 'plain
                   ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
             (add-to-list 'ivy-initial-inputs-alist '(counsel-M-x . ""))
+            (defun my-ivy-page-up (&optional arg)
+              (interactive "p")
+              (ivy-previous-line ivy-height))
+            (defun my-ivy-page-down (&optional arg)
+              (interactive "p")
+              (ivy-next-line ivy-height))
             (bind-keys :map ivy-minibuffer-map
                        ([escape] . minibuffer-keyboard-quit)
-                       ([next]   . ivy-next-line)
-                       ([prior]  . ivy-previous-line))
+                       ([next]   . my-ivy-page-down)
+                       ("C-f"    . my-ivy-page-down)
+                       ([prior]  . my-ivy-page-up)
+                       ("C-b"    . my-ivy-page-up))
             (ivy-mode 1))
   :bind (("\C-s"    . swiper)
          ("C-c C-r" . ivy-resume)
