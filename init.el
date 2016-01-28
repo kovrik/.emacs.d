@@ -1,8 +1,6 @@
 ;;; init.el --- kovrik's Emacs config
 ;;; Commentary:
 ;;; TODO Fix focus issue with *Geiser dbg* buffer
-;;; TODO Fast window switching
-;;; TODO Window number in lighter
 ;;;
 ;;; Code:
 
