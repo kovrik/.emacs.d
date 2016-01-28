@@ -668,17 +668,15 @@ Start from the beginning of buffer otherwise."
     (split-window-vertically)
     (other-window 1 nil)
     (when (= prefix 1) (switch-to-next-buffer)))
-
   (defun my-vsplit-last-buffer (prefix)
     "Split the window vertically and display the previous buffer.  Args: PREFIX."
     (interactive "p")
     (split-window-horizontally)
     (other-window 1 nil)
     (when (= prefix 1) (switch-to-next-buffer)))
-
-  (bind-keys ("C-x 2"  . my-hsplit-last-buffer) ("C-x 3"  . my-vsplit-last-buffer)
-             ("C-x -"  . my-hsplit-last-buffer) ("C-x \\" . my-vsplit-last-buffer)
-             ("C-x _"  . my-hsplit-last-buffer) ("C-x |"  . my-vsplit-last-buffer)))
+  (bind-keys ("C-x 2" . my-hsplit-last-buffer) ("C-x 3"  . my-vsplit-last-buffer)
+             ("C-x -" . my-hsplit-last-buffer) ("C-x \\" . my-vsplit-last-buffer)
+             ("C-x _" . my-hsplit-last-buffer) ("C-x |"  . my-vsplit-last-buffer)))
 
 (defun bf-pretty-print-xml-region (begin end)
   "Pretty format XML markup in region.
