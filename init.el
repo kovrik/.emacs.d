@@ -103,7 +103,8 @@
   (tooltip-mode    -1)
   (tool-bar-mode   -1)
   (menu-bar-mode   -1)
-  (scroll-bar-mode -1))
+  (scroll-bar-mode -1)
+  (toggle-horizontal-scroll-bar -1))
 
 (setq-default indent-tabs-mode nil
               tab-width 2
@@ -515,7 +516,7 @@ Otherwise run projectile-find-file."
             ;; Don't want to view changes every time before commit
             (setq magit-status-buffer-switch-function 'switch-to-buffer
                   magit-commit-show-diff nil
-                  magit-diff-options '("-w")
+                  magit-diff-options '("--ignore-all-space")
                   magit-diff-refine-hunk t
                   magit-log-arguments '("--decorate" "--graph" "--color" "-n80")
                   magit-log-cutoff-length 80
