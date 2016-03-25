@@ -64,29 +64,8 @@
    (quote
     (auto-compile browse-kill-ring cider clojure-mode-extra-font-locking company company-quickhelp dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode magit markdown-mode racket-mode rainbow-delimiters smart-mode-line use-package))))
 ;; Dark
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ivy-current-match    ((t (:foreground "#00f0c0"))))
- '(magit-popup-argument ((t (:foreground "#e53935"))))
- '(magit-popup-heading  ((t (:foreground "#b58900"))))
- '(magit-popup-key      ((t (:foreground "#2aa198"))))
- '(org-level-1          ((t (:foreground "#dd848d")))))
 
-(use-package solarized-theme
-  :config (progn
-            (setq solarized-use-variable-pitch nil
-                  solarized-high-contrast-mode-line t
-                  solarized-scale-org-headlines nil
-                  solarized-height-minus-1 1
-                  solarized-height-plus-1  1
-                  solarized-height-plus-2  1
-                  solarized-height-plus-3  1
-                  solarized-height-plus-4  1
-                  x-underline-at-descent-line t)
-            (load-theme 'solarized-dark)))
+(use-package zenburn-theme)
 
 ;; PATH
 (use-package exec-path-from-shell
