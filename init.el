@@ -51,7 +51,6 @@
   (dolist (hook hooks)
     (add-hook hook function)))
 
-;; Solarized tweaks
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -59,13 +58,13 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    (quote
-    ("8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" default)))
+    ("40bc0ac47a9bd5b8db7304f8ef628d71e2798135935eb450483db0dbbfff8b11" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" default)))
  '(package-selected-packages
    (quote
     (auto-compile browse-kill-ring cider clojure-mode-extra-font-locking company company-quickhelp dired+ elisp--witness--lisp erc-hl-nicks evil-leader evil-numbers evil-org evil-search-highlight-persist evil-surround expand-region f fixme-mode flycheck flycheck-clojure flycheck-pos-tip fold-dwim highlight-escape-sequences highlight-parentheses idle-highlight-mode ido-ubiquitous ido-vertical-mode magit markdown-mode racket-mode rainbow-delimiters smart-mode-line use-package))))
-;; Dark
 
-(use-package zenburn-theme)
+(use-package tao-theme)
+(load-theme 'tao-yang)
 
 ;; PATH
 (use-package exec-path-from-shell
@@ -125,7 +124,8 @@
            ("C-c n"    . narrow-to-region)
            ("C-c w"    . widen)
            ("<M-up>"   . backward-page)
-           ("<M-down>" . forward-page))
+           ("<M-down>" . forward-page)
+           ("C-M-l"    . indent-region))
 
 ;; Fonts
 (let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name) (font-family-list))))
