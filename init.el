@@ -218,6 +218,16 @@
             (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
             (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)))
 
+(use-package racer
+  :config (progn
+            (setq racer-cmd (expand-file-name "~/.cargo/bin/racer")
+                  racer-rust-src-path (expand-file-name "~/git/rust/src/")
+                  company-tooltip-align-annotations t)
+            (add-hook 'rust-mode-hook #'racer-mode)
+            (add-hook 'racer-mode-hook #'eldoc-mode)
+            (add-hook 'racer-mode-hook #'company-mode)
+            (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)))
+
 (use-package clojure-mode
   :defer  t
   :pin melpa-stable
@@ -455,7 +465,7 @@ Otherwise run projectile-find-file."
                         (defun my-org-bullets-on () (org-bullets-mode 1))
                         (add-hook 'org-mode-hook #'my-org-bullets-on)))
             (setq org-edit-src-content-indentation 0
-                  org-src-preserve-indentation nil
+                  org-src-preserve-indentation t
                   org-src-tab-acts-natively t
                   org-src-fontify-natively t
                   org-src-preserve-indentation t
