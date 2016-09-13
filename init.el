@@ -54,8 +54,15 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file :noerror :nomessage)
 
-(use-package eclipse-theme)
-(load-theme 'eclipse)
+;; (use-package eclipse-theme)
+;; (load-theme 'eclipse)
+(use-package solarized-theme
+  :config (progn
+            (setq solarized-use-variable-pitch nil
+                  solarized-high-contrast-mode-line t
+                  solarized-use-less-bold t
+                  solarized-scale-org-headlines nil)
+            (load-theme 'solarized-light)))
 
 ;; PATH
 (use-package exec-path-from-shell
@@ -140,7 +147,6 @@
 (use-package rainbow-mode :defer t :diminish rainbow-mode)
 (use-package focus :defer t)
 (use-package color-theme :defer t :config (color-theme-initialize))
-(use-package fixme-mode :config (fixme-mode t))
 
 (use-package diff-hl
   :config (progn
