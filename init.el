@@ -85,7 +85,8 @@
 (setq-default indent-tabs-mode nil
               tab-width 2
               find-file-visit-truename t
-              mode-require-final-newline nil)
+              mode-require-final-newline nil
+              major-mode 'text-mode)
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
       inhibit-startup-message t
       inhibit-startup-echo-area-message t
