@@ -102,7 +102,8 @@
       show-trailing-whitespace t
       ns-use-srgb-colorspace nil
       gnutls-min-prime-bits 4096
-      tab-always-indent 'complete)
+      tab-always-indent 'complete
+      search-default-mode #'char-fold-to-regexp)
 
 (fringe-mode '(7 . 0))
 (column-number-mode)
