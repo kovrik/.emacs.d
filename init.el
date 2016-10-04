@@ -368,10 +368,12 @@
               (setq cursor-type 'bar))
             ;; Disable evil-mode in some major modes
             (my-add-hooks '(shell-mode-hook  term-mode-hook
-                            magit-mode-hook  erc-mode-hook
-                            eshell-mode-hook comint-mode-hook
-                            proced-mode-hook nrepl-connected-hook)
-                          #'my-evil-off)))
+                                             magit-mode-hook  erc-mode-hook
+                                             eshell-mode-hook comint-mode-hook
+                                             proced-mode-hook nrepl-connected-hook)
+                          #'my-evil-off)
+            (with-eval-after-load 'term
+              (evil-set-initial-state 'term-mode 'emacs))))
 
 (use-package eldoc
   :diminish eldoc-mode
