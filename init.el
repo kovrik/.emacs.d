@@ -292,7 +292,7 @@
                         (switch-to-buffer (other-buffer (current-buffer) 1)))
                       (setq evil-leader/in-all-states t
                             evil-leader/no-prefix-mode-rx '("magit-.*-mode"))
-                      (evil-leader/set-leader ",")
+                      (evil-leader/set-leader "SPC")
                       (evil-leader/set-key "SPC" 'lazy-highlight-cleanup
                                            "SPC" 'evil-search-highlight-persist-remove-all
                                            "f"   'find-file-at-point
