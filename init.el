@@ -73,6 +73,14 @@
               (setq exec-path (append (parse-colon-path (getenv "PATH"))
                                       (parse-colon-path (getenv "USERPROFILE")) exec-path)))))
 
+(use-package shell
+  :config (progn
+            (when (eq 'windows-nt system-type)
+              (setq shell-file-name "bash"))
+            (setq explicit-bash.exe-args '("--noediting" "--login" "-i"))
+            (setenv "SHELL" shell-file-name)
+            (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)))
+
 ;; Globals
 (prefer-coding-system 'utf-8)
 (when window-system
