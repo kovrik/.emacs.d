@@ -139,8 +139,8 @@
 ;; Fonts
 (let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name) (font-family-list))))
                            (list
-                            (font-spec :name "Meslo LG S" :size 12)
-                            (font-spec :name "Consolas"   :size 13)
+                            (font-spec :name "Meslo LG S" :size 11)
+                            (font-spec :name "Consolas"   :size 12)
                             (font-spec :name "Monaco"     :size 12)))))
   (when my-font
     (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
