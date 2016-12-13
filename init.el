@@ -133,7 +133,8 @@
            ("C-c w"    . widen)
            ("<M-up>"   . backward-page)
            ("<M-down>" . forward-page)
-           ("C-M-l"    . indent-region))
+           ("C-M-l"    . indent-region)
+           ("<f5>"     . (lambda () (interactive) (find-file user-init-file))))
 
 ;; Fonts
 (let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name) (font-family-list))))
@@ -233,16 +234,6 @@
                        ((kbd "C-M-t")         . sp-transpose-sexp))
             (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
             (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)))
-
-(use-package racer
-  :config (progn
-            (setq racer-cmd (expand-file-name "~/.cargo/bin/racer")
-                  racer-rust-src-path (expand-file-name "~/git/rust/src/")
-                  company-tooltip-align-annotations t)
-            (add-hook 'rust-mode-hook #'racer-mode)
-            (add-hook 'racer-mode-hook #'eldoc-mode)
-            (add-hook 'racer-mode-hook #'company-mode)
-            (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)))
 
 (use-package clojure-mode
   :defer  t
