@@ -72,7 +72,7 @@
             (load-theme 'doom-nord t)
             (doom-themes-org-config)))
 
-;; PATH
+;; path
 (use-package exec-path-from-shell
   :config (progn
             (when (memq window-system '(mac ns))
@@ -148,9 +148,9 @@
 ;; Fonts
 (let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name) (font-family-list))))
                            (list
+                            (font-spec :name "Monaco"     :size 10)
                             (font-spec :name "Meslo LG S" :size 11)
-                            (font-spec :name "Consolas"   :size 11)
-                            (font-spec :name "Monaco"     :size 11)))))
+                            (font-spec :name "Consolas"   :size 11)))))
   (when my-font
     (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
     (set-face-attribute 'default nil :font my-font)
@@ -497,6 +497,7 @@ Otherwise run projectile-find-file."
                   org-catch-invisible-edits 'error
                   org-babel-clojure-backend 'cider
                   org-agenda-files (cl-remove-if-not 'file-exists-p '("~/org/todo.org")))
+            (set-face-attribute 'org-level-1 nil :height 1.0)
             (org-babel-do-load-languages 'org-babel-load-languages '((emacs-lisp . t)
                                                                      (java       . t)
                                                                      (clojure    . t)
