@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t; -*-
 ;;; init.el --- kovrik's Emacs config
 ;;; Commentary:
 ;;; TODO Fix focus issue with *Geiser dbg* buffer
@@ -17,6 +18,8 @@
 (setq package-enable-at-startup nil)
 (package-initialize)
 (add-to-list 'package-pinned-packages '(queue . "gnu"))
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+(add-to-list 'default-frame-alist '(ns-appearance . dark))
 
 ;; Make sure to have downloaded archive description
 (or (file-directory-p (expand-file-name (concat package-user-dir "/archives")))
@@ -56,13 +59,18 @@
 
 ;; (use-package eclipse-theme)
 ;; (load-theme 'eclipse)
-(use-package solarized-theme
+;; (use-package solarized-theme
+;;   :config (progn
+;;             (setq solarized-use-variable-pitch nil
+;;                   soarized-high-contrast-mode-line t
+;;                   solarized-use-less-bold t
+;;                   solarized-scale-org-headlines nil)
+;;             (load-theme 'solarized-light)))
+;; (use-package nord-theme :config (load-theme 'nord))
+(use-package doom-themes
   :config (progn
-            (setq solarized-use-variable-pitch nil
-                  solarized-high-contrast-mode-line t
-                  solarized-use-less-bold t
-                  solarized-scale-org-headlines nil)
-            (load-theme 'solarized-light)))
+            (load-theme 'doom-nord t)
+            (doom-themes-org-config)))
 
 ;; PATH
 (use-package exec-path-from-shell
@@ -100,7 +108,7 @@
       inhibit-startup-echo-area-message t
       initial-scratch-message nil
       scroll-margin 5
-      scroll-conservatively 9999
+      scroll-conservatively 30
       scroll-step 1
       sentence-end-double-space nil
       ring-bell-function 'ignore
@@ -134,14 +142,15 @@
            ("<M-up>"   . backward-page)
            ("<M-down>" . forward-page)
            ("C-M-l"    . indent-region)
-           ("<f5>"     . (lambda () (interactive) (find-file user-init-file))))
+           ("<f5>"     . (lambda () (interactive) (find-file user-init-file)))
+           ("<C-tab>"  . other-window)) ;; magit and org-mode?
 
 ;; Fonts
 (let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name) (font-family-list))))
                            (list
                             (font-spec :name "Meslo LG S" :size 11)
-                            (font-spec :name "Consolas"   :size 12)
-                            (font-spec :name "Monaco"     :size 12)))))
+                            (font-spec :name "Consolas"   :size 11)
+                            (font-spec :name "Monaco"     :size 11)))))
   (when my-font
     (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
     (set-face-attribute 'default nil :font my-font)
@@ -264,9 +273,8 @@
 
 (use-package geiser
   :defer t
-  :config (progn
-            (setq geiser-debug-show-debug-p nil
-                  geiser-debug-jump-to-debug-p nil)))
+  :config (setq geiser-debug-show-debug-p nil
+                geiser-debug-jump-to-debug-p nil)) 
 
 (use-package racket-mode :defer t :config (add-hook 'racket-mode-hook #'company-quickhelp--disable))
 
