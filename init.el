@@ -1,10 +1,7 @@
 ;;; -*- lexical-binding: t; -*-
 ;;; init.el --- kovrik's Emacs config
 ;;; Commentary:
-;;; TODO Fix focus issue with *Geiser dbg* buffer
-;;;
 ;;; Code:
-
 (let ((file-name-handler-alist nil)
       (gc-cons-threshold (* 100 1024 1024))
       (debug-on-error t)
@@ -14,8 +11,8 @@
 (setq package-archives '(("gnu"          . "http://elpa.gnu.org/packages/")
                          ("org"          . "http://orgmode.org/elpa/")
                          ("melpa"        . "http://melpa.org/packages/")
-                         ("melpa-stable" . "http://stable.melpa.org/packages/")))
-(setq package-enable-at-startup nil)
+                         ("melpa-stable" . "http://stable.melpa.org/packages/"))
+      package-enable-at-startup nil)
 (package-initialize)
 (add-to-list 'package-pinned-packages '(queue . "gnu"))
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
@@ -24,14 +21,13 @@
 ;; Make sure to have downloaded archive description
 (or (file-directory-p (expand-file-name (concat package-user-dir "/archives")))
     (package-refresh-contents))
-
+
 ;; use-package
 (when (not (package-installed-p 'use-package))
   (package-refresh-contents)
   (package-install 'use-package))
 
-(eval-when-compile
-  (require 'use-package))
+(eval-when-compile (require 'use-package))
 (require 'diminish)
 (require 'bind-key)
 (require 'uniquify)
@@ -39,58 +35,27 @@
       load-prefer-newer t
       use-package-always-ensure t)
 (use-package auto-compile :config (auto-compile-on-load-mode))
-
+
 (defun my-ensure-packages-installed (packages)
-  "Assure every package in PACKAGES is installed, ask for installation if it’s not.  Return a list of installed packages or nil for every skipped package."
+  "Assure every package in PACKAGES is installed, ask for installation if it s not.  Return a list of installed packages or nil for every skipped package."
   (dolist (p packages)
     (when (and (not (package-installed-p p))
                (y-or-n-p (format "Package %s is missing.  Install it? " p)))
       (package-install p))))
 
 (my-ensure-packages-installed '(queue async browse-kill-ring dash epl f fold-dwim fringe-helper goto-chg highlight highlight-escape-sequences idle-highlight-mode markdown-mode pkg-info s))
-
+
 (defun my-add-hooks (hooks function)
   "For each hook in HOOKS list bind FUNCTION."
   (dolist (hook hooks)
     (add-hook hook function)))
-
-(setq custom-file "~/.emacs.d/custom.el")
-(load custom-file :noerror :nomessage)
-
-;; (use-package eclipse-theme)
-;; (load-theme 'eclipse)
-;; (use-package solarized-theme
-;;   :config (progn
-;;             (setq solarized-use-variable-pitch nil
-;;                   soarized-high-contrast-mode-line t
-;;                   solarized-use-less-bold t
-;;                   solarized-scale-org-headlines nil)
-;;             (load-theme 'solarized-light)))
-;; (use-package nord-theme :config (load-theme 'nord))
-(use-package doom-themes
-  :config (progn
-            (load-theme 'doom-nord t)
-            (doom-themes-org-config)))
-
-;; path
-(use-package exec-path-from-shell
-  :config (progn
-            (when (memq window-system '(mac ns))
-              (exec-path-from-shell-initialize))
-            (when (eq 'windows-nt system-type)
-              (setq exec-path (append (parse-colon-path (getenv "PATH"))
-                                      (parse-colon-path (getenv "USERPROFILE")) exec-path)))))
-
-(use-package shell
-  :config (progn
-            (when (eq 'windows-nt system-type)
-              (setq shell-file-name "bash"))
-            (setq explicit-bash.exe-args '("--noediting" "--login" "-i"))
-            (setenv "SHELL" shell-file-name)
-            (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)))
-
+
 ;; Globals
+;; UTF-8 Everywhere
 (prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
 (when window-system
   (tooltip-mode    -1)
   (tool-bar-mode   -1)
@@ -105,6 +70,7 @@
               major-mode 'text-mode)
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
       inhibit-startup-message t
+      inhibit-startup-screen t
       inhibit-startup-echo-area-message t
       initial-scratch-message nil
       scroll-margin 5
@@ -117,10 +83,24 @@
       uniquify-buffer-name-style 'forward
       show-trailing-whitespace t
       ns-use-srgb-colorspace nil
-      gnutls-min-prime-bits 4096
+      gnutls-min-prime-bits 4096             ;; remove the warnings from the GnuTLS library when using HTTPS
       tab-always-indent 'complete
-      search-default-mode #'char-fold-to-regexp)
+      search-default-mode #'char-fold-to-regexp
+      coding-system-for-read 'utf-8
+      coding-system-for-write 'utf-8
+      load-prefer-newer t                    ;; Always load newest byte code
+      large-file-warning-threshold 200000000 ;; warn when opening files bigger than 200MB
+      global-auto-revert-non-file-buffers t  ;; Also auto refresh dired, but be quiet about it
+      auto-revert-verbose nil
+      version-control t                      ;; Version control
+      vc-follow-symlinks t                   ;; don't ask for confirmation when opening symlinked file
+      delete-old-versions t                  ;; delete excess backup versions silently
+      vc-make-backup-files t                 ;; make backups file even when in version controlled dir
+      create-lockfiles nil
+      custom-file "~/.emacs.d/custom.el")
 
+(defalias 'list-buffers 'ibuffer)            ;; make ibuffer the default buffer lister.
+(defalias 'xml-pretty-print 'sgml-pretty-print)
 (fringe-mode '(7 . 0))
 (column-number-mode)
 (desktop-save-mode)
@@ -144,7 +124,40 @@
            ("C-M-l"    . indent-region)
            ("<f5>"     . (lambda () (interactive) (find-file user-init-file)))
            ("<C-tab>"  . other-window)) ;; magit and org-mode?
-
+
+(load custom-file :noerror :nomessage)
+;; (use-package solarized-theme
+;;   :config (progn
+;;             (setq solarized-use-variable-pitch nil
+;;                   soarized-high-contrast-mode-line t
+;;                   solarized-use-less-bold t
+;;                   solarized-scale-org-headlines nil)
+;;             (load-theme 'solarized-light)))
+;; (use-package nord-theme :config (load-theme 'nord))
+(use-package doom-themes
+  :config (progn
+            (load-theme 'doom-nord t)
+            (doom-themes-org-config)
+            (global-hl-line-mode)
+            (set-face-background 'hl-line "#404960")))
+
+;; PATH
+(use-package exec-path-from-shell
+  :config (progn
+            (when (memq window-system '(mac ns))
+              (exec-path-from-shell-initialize))
+            (when (eq 'windows-nt system-type)
+              (setq exec-path (append (parse-colon-path (getenv "PATH"))
+                                      (parse-colon-path (getenv "USERPROFILE")) exec-path)))))
+
+(use-package shell
+  :config (progn
+            (when (eq 'windows-nt system-type)
+              (setq shell-file-name "bash"))
+            (setq explicit-bash.exe-args '("--noediting" "--login" "-i"))
+            (setenv "SHELL" shell-file-name)
+            (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)))
+
 ;; Fonts
 (let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name) (font-family-list))))
                            (list
@@ -157,9 +170,8 @@
     (set-frame-font      my-font  nil t)
     (when (eq system-type 'darwin)
       (setq mac-allow-anti-aliasing t))))
-
+
 ;; One-line packages
-(use-package nlinum :defer t)
 (use-package bug-hunter :defer t)
 (use-package command-log-mode :defer t)
 (use-package restclient :defer t)
@@ -167,7 +179,6 @@
 (use-package rainbow-mode :defer t :diminish rainbow-mode)
 (use-package focus :defer t)
 (use-package color-theme :defer t :config (color-theme-initialize))
-
 (use-package diff-hl
   :config (progn
             (defun diff-hl-next-hunk-cycle (&optional backward)
@@ -199,34 +210,29 @@
                        ("C-x v r" . diff-hl-revert-hunk))
             (evil-leader/set-key "v"   'diff-hl-next-hunk-cycle)
             (global-diff-hl-mode t)))
-
+
 (use-package find-func
-  :config (progn
-            (defun my-find-thing-at-point ()
-              "Find directly thing (var or func) at point in current window."
-              (interactive)
-              (cond
-               ((function-called-at-point)       (find-function (function-called-at-point)))
-               ((not (eq 0 (variable-at-point))) (find-variable (variable-at-point)))
-               (t                                (user-error "Unknown thing at point!")))))
+  :config (defun my-find-thing-at-point ()
+            "Find directly thing (var or func) at point in current window."
+            (interactive)
+            (cond
+             ((function-called-at-point)       (find-function (function-called-at-point)))
+             ((not (eq 0 (variable-at-point))) (find-variable (variable-at-point)))
+             (t                                (user-error "Unknown thing at point!"))))
   :bind (("C-S-h" . my-find-thing-at-point)
          ("C-h f" . find-function)
          ("C-h k" . find-function-on-key)
          ("C-h v" . find-variable)
          ("C-h l" . find-library)))
-
+
 (use-package spaceline
   :config (progn
             (require 'spaceline-config)
             (setq powerline-height 14
-                  powerline-default-separator 'arrow
+                  powerline-default-separator 'slant
                   spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
             (spaceline-spacemacs-theme)))
-
-(use-package smartscan
-  :init (add-hook #'prog-mode-hook #'smartscan-mode)
-  :config (bind-key "M-'" #'other-window smartscan-map))
-
+
 (use-package smartparens
   :config (progn
             (require 'smartparens-config)
@@ -243,7 +249,7 @@
                        ((kbd "C-M-t")         . sp-transpose-sexp))
             (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
             (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)))
-
+
 (use-package clojure-mode
   :defer  t
   :pin melpa-stable
@@ -270,14 +276,16 @@
             (bind-keys :map clojure-mode-map ((kbd "C-h")   . cider-find-var-no-prompt)
                                              ((kbd "C-S-h") . cider-find-var-no-prompt)
                                              ((kbd "C-M-x") . cider-eval-defun-at-point))))
-
+
 (use-package geiser
   :defer t
   :config (setq geiser-debug-show-debug-p nil
-                geiser-debug-jump-to-debug-p nil)) 
-
-(use-package racket-mode :defer t :config (add-hook 'racket-mode-hook #'company-quickhelp--disable))
-
+                geiser-debug-jump-to-debug-p nil))
+
+(use-package racket-mode
+  :defer t
+  :config (add-hook 'racket-mode-hook #'company-quickhelp--disable))
+
 (use-package rainbow-delimiters
   :config (progn
             (setq rainbow-delimiters-max-face-count 9
@@ -288,28 +296,27 @@
                             scheme-mode-hook
                             racket-mode-hook)
                           #'rainbow-delimiters-mode)))
-
+
 (use-package evil
-  :init (progn
-          (use-package evil-leader
-            :init (global-evil-leader-mode)
-            :config (progn
-                      (defun my-switch-to-previous-buffer ()
-                        (interactive)
-                        (switch-to-buffer (other-buffer (current-buffer) 1)))
-                      (setq evil-leader/in-all-states t
-                            evil-leader/no-prefix-mode-rx '("magit-.*-mode"))
-                      (evil-leader/set-leader "SPC")
-                      (evil-leader/set-key "SPC" 'lazy-highlight-cleanup
-                                           "SPC" 'evil-search-highlight-persist-remove-all
-                                           "f"   'find-file-at-point
-                                           "g"   'counsel-ag
-                                           "a"   'align-regexp
-                                           "s"   'delete-trailing-whitespace
-                                           "c"   'compile
-                                           "b"   'switch-to-buffer
-                                           "TAB" 'my-switch-to-previous-buffer)
-                      (evil-leader-mode t))))
+  :init (use-package evil-leader
+          :init (global-evil-leader-mode)
+          :config (progn
+                    (defun my-switch-to-previous-buffer ()
+                      (interactive)
+                      (switch-to-buffer (other-buffer (current-buffer) 1)))
+                    (setq evil-leader/in-all-states t
+                          evil-leader/no-prefix-mode-rx '("magit-.*-mode"))
+                    (evil-leader/set-leader "SPC")
+                    (evil-leader/set-key "SPC" 'lazy-highlight-cleanup
+                      "SPC" 'evil-search-highlight-persist-remove-all
+                      "f"   'find-file-at-point
+                      "g"   'counsel-ag
+                      "a"   'align-regexp
+                      "s"   'delete-trailing-whitespace
+                      "c"   'compile
+                      "b"   'switch-to-buffer
+                      "TAB" 'my-switch-to-previous-buffer)
+                    (evil-leader-mode t)))
   :config (progn
             (use-package evil-org :defer t)
             (use-package evil-numbers)
@@ -330,13 +337,18 @@
                                                 (line-end-position)
                                                 'line)
                           (evil-next-line))
+                        (define-key evil-motion-state-map (kbd "gc") 'evil-commentary)
                         (bind-key "C-/" 'my-comment-line-and-go-to-next)
                         (bind-key "C-/" 'evil-commentary evil-visual-state-map )
                         (evil-commentary-mode)))
             ;; Emacs keys in INSERT mode
             (setcdr evil-insert-state-map nil)
             (setq evil-move-cursor-back t
-                  evil-default-cursor   t)
+                  evil-default-cursor   t
+                  evil-want-C-u-scroll  t
+                  evil-want-C-w-delete  t)
+            ;; treat symbol as a word
+            (defalias #'forward-evil-word #'forward-evil-symbol)
             ;; kill buffer, but don't close window
             (evil-ex-define-cmd "q[uit]" 'kill-this-buffer)
             (evil-ex-define-cmd "ls"     'ibuffer-list-buffers)
@@ -381,7 +393,7 @@
                           #'my-evil-off)
             (with-eval-after-load 'term
               (evil-set-initial-state 'term-mode 'emacs))))
-
+
 (use-package eldoc
   :diminish eldoc-mode
   :commands turn-on-eldoc-mode
@@ -389,7 +401,7 @@
                         lisp-interaction-mode-hook
                         ielm-mode-hook)
                       #'turn-on-eldoc-mode))
-
+
 (use-package swiper
   :demand t
   :diminish ivy-mode
@@ -412,7 +424,9 @@
                                    ([next]   . my-ivy-page-down)
                                    ("C-f"    . my-ivy-page-down)
                                    ([prior]  . my-ivy-page-up)
-                                   ("C-b"    . my-ivy-page-up))
+                                   ("C-b"    . my-ivy-page-up)
+                                   ("C-k"    . ivy-previous-line)
+                                   ("C-j"    . ivy-next-line))
                         (ivy-mode 1)))
             (use-package counsel))
   :bind (("\C-s"    . swiper)
@@ -429,7 +443,7 @@
          ("C-c j"   . counsel-git-grep)
          ("C-c k"   . counsel-ag)
          ("C-x l"   . counsel-locate)))
-
+
 (use-package projectile
   :diminish projectile-mode
   :config (progn
@@ -451,13 +465,22 @@ Otherwise run projectile-find-file."
                   projectile-completion-system 'ivy
                   projectile-enable-caching t
                   projectile-switch-project-action 'my-projectile-switch-to-project)
-
             (when (eq system-type 'windows-nt)
               (setq projectile-indexing-method 'alien
                     projectile-enable-caching  nil))
-            (projectile-global-mode))
-  :bind (("C-S-p" . projectile-switch-project)))
-
+            (projectile-global-mode)
+
+            (defun my-find-file ()
+              "If currently in a project, then use Projectile to fuzzy find a file.
+Use Counsel otherwise."
+              (interactive)
+              (require 'projectile)
+              (if (projectile-project-p)
+                  (projectile-find-file)
+                (counsel-find-file))))
+  :bind (("C-S-p" . projectile-switch-project)
+         ("C-S-n" . my-find-file)))
+
 (use-package company
   :pin gnu
   :diminish company-mode
@@ -476,7 +499,7 @@ Otherwise run projectile-find-file."
                   company-selection-wrap-around t
                   company-transformers '(company-sort-by-occurrence))
             (add-hook 'after-init-hook 'global-company-mode)))
-
+
 (use-package org
   :defer t
   :config (progn
@@ -507,7 +530,7 @@ Otherwise run projectile-find-file."
          ("\C-ca" . org-agenda)
          ("\C-cb" . org-iswitchb)
          ("<f12>" . org-agenda)))
-
+
 (use-package magit
   :defer t
   :pin melpa
@@ -537,7 +560,7 @@ Otherwise run projectile-find-file."
               (interactive)
               (my-magit-checkout-current-file "--theirs")))
   :bind (("C-x g" . magit-status)))
-
+
 (use-package ediff
   :defer t
   :config (progn
@@ -551,18 +574,18 @@ Otherwise run projectile-find-file."
                 (ediff-toggle-wide-display)))
             (add-hook 'ediff-cleanup-hook 'my-toggle-ediff-wide-display)
             (add-hook 'ediff-quit-hook    'winner-undo)))
-
+
 (use-package eshell
   :defer t
   :config (setq eshell-save-history-on-exit t
                 eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'"))
-
+
 (use-package web-mode
   :defer t
   :pin melpa-stable
   :config (progn (add-to-list 'auto-mode-alist '("\\.html?\\'"   . web-mode))
                  (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))))
-
+
 (use-package flycheck
   :defer t
   :config (progn
@@ -579,7 +602,7 @@ Start from the beginning of buffer otherwise."
                   (flycheck-next-error-function 1 t))))
             (define-key flycheck-mode-map (kbd "<f2>") #'my-flycheck-next-error-cycle)
             (define-key flycheck-mode-map (kbd "<f3>") #'flycheck-list-errors)))
-
+
 (use-package undo-tree
   :diminish undo-tree-mode
   :config (progn
@@ -587,15 +610,13 @@ Start from the beginning of buffer otherwise."
             (setq undo-tree-visualizer-timestamps t
                   undo-tree-visualizer-diff       t)
             (define-key undo-tree-map (kbd "C-/") nil)))
-
+
 (use-package eyebrowse
   :diminish eyebrowse-mode
   :pin melpa-stable
   :config (progn
             (eyebrowse-mode t)
             (eyebrowse-setup-evil-keys)
-            (require 'evil-commentary)
-            (define-key evil-motion-state-map (kbd "gc") 'evil-commentary)
             (setq eyebrowse-new-workspace t
                   eyebrowse-close-window-config-prompt t)
             (bind-keys ("C-1"  . eyebrowse-switch-to-window-config-1)
@@ -608,7 +629,7 @@ Start from the beginning of buffer otherwise."
                        ("C-8"  . eyebrowse-switch-to-window-config-8)
                        ("C-9"  . eyebrowse-switch-to-window-config-9)
                        ("C-0"  . eyebrowse-switch-to-window-config-0))))
-
+
 (use-package shackle
   :config (progn
             (setq shackle-lighter ""
@@ -629,20 +650,17 @@ Start from the beginning of buffer otherwise."
                                                             :align 'below
                                                             :ratio 0.4)))
             (shackle-mode t)))
-
-(use-package sauron
-  :defer t
-  :config (progn
-            (setq sauron-modules '(sauron-erc sauron-org sauron-notifications)
-                  sauron-separate-frame nil
-                  sauron-max-line-length 180
-                  sauron-watch-nicks '("kovrik" "kovrik`" "kovrik``"))
-            (sauron-start)))
-
+
 (use-package erc
   :defer t
   :config (progn
             (use-package erc-hl-nicks :config (add-hook 'erc-mode-hook #'erc-hl-nicks-mode))
+            (use-package sauron
+              :config (setq sauron-modules '(sauron-erc sauron-org sauron-notifications)
+                            sauron-separate-frame nil
+                            sauron-max-line-length 180
+                            sauron-watch-nicks '("kovrik" "kovrik`" "kovrik``")
+            (sauron-start)))
             (erc-autojoin-mode t)
             (erc-scrolltobottom-enable)
             (erc-scrolltobottom-mode t)
@@ -661,7 +679,7 @@ Start from the beginning of buffer otherwise."
                   erc-prompt ">"
                   erc-accidental-paste-threshold-seconds 0.5
                   erc-join-buffer 'bury)))
-
+
 ;; Misc
 (progn
   (defun my-hsplit-last-buffer (prefix)
@@ -679,30 +697,6 @@ Start from the beginning of buffer otherwise."
   (bind-keys ("C-x 2" . my-hsplit-last-buffer) ("C-x 3"  . my-vsplit-last-buffer)
              ("C-x -" . my-hsplit-last-buffer) ("C-x \\" . my-vsplit-last-buffer)
              ("C-x _" . my-hsplit-last-buffer) ("C-x |"  . my-vsplit-last-buffer)))
-
-(defun bf-pretty-print-xml-region (begin end)
-  "Pretty format XML markup in region.
-The function inserts linebreaks to separate tags that have
-nothing but whitespace between them.  It then indents the markup
-by using nxml's indentation rules.  Args: BEGIN END"
-  (interactive "r")
-  (save-excursion (nxml-mode)
-                  (goto-char begin)
-                  (while (search-forward-regexp "\>[ \\t]*\<" nil t)
-                    (backward-char)
-                    (insert "\n")
-                    (setq end (1+ end)))
-                  (indent-region begin end)))
-
-(defun my-find-file ()
-  "If currently in a project, then use Projectile to fuzzy find a file.
-Use Counsel otherwise."
-  (interactive)
-  (require 'projectile)
-  (if (projectile-project-p)
-      (projectile-find-file)
-    (counsel-find-file)))
-(bind-key "C-S-n" 'my-find-file)
 
 (defun my-align-repeat (start end regexp)
   "Repeat alignment with respect to the given regular expression.  Args: START END REGEXP."
@@ -725,7 +719,7 @@ Use Counsel otherwise."
   (dolist (mode-map (list help-mode-map proced-mode-map compilation-mode-map))
     (define-key mode-map (kbd "q") 'my-quit)))
 )
-
+
 ;; Allow font-lock-mode to do background parsing and restore some settings
 (setq jit-lock-stealth-time 1
       jit-lock-chunk-size 1000
