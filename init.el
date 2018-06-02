@@ -528,7 +528,7 @@ Evaluate
               ("L" eval-last-sexp-print-value "last s-expression and print value  ")
               ("d" eval-defun "defun / function")
               ("f" eval-defun "defun / function")
-              ("q"   nil "quit" :color blue)))
+              ("q"   nil "quit" :color blue))
 
             (defhydra hydra-window
               (:hint nil)
