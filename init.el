@@ -117,8 +117,6 @@
 (bind-keys ([escape]   . keyboard-quit)
            ("RET"      . newline-and-indent)
            ("C-c r"    . revert-buffer)
-           ("C-c n"    . narrow-to-region)
-           ("C-c w"    . widen)
            ("<M-up>"   . backward-page)
            ("<M-down>" . forward-page)
            ("C-M-l"    . indent-region)
@@ -319,7 +317,7 @@
                           (evil-next-line))
                         (define-key evil-motion-state-map (kbd "gc") 'evil-commentary)
                         (bind-key "C-/" 'my-comment-line-and-go-to-next)
-                        (bind-key "C-/" 'evil-commentary evil-visual-state-map )
+                        (bind-key "C-/" 'evil-commentary evil-visual-state-map)
                         (evil-commentary-mode)))
             ;; Emacs keys in INSERT mode
             (setcdr evil-insert-state-map nil)
@@ -432,7 +430,8 @@
             (defhydra hydra-undo-tree
               (:color yellow :hint nil)
 "
-_k_: undo  _j_: redo _s_: save _l_: load   "
+
+_k_: undo  _j_: redo  _s_: save  _l_: load   "
               ("k"   undo-tree-undo)
               ("j"   undo-tree-redo)
               ("s"   undo-tree-save-history)
@@ -440,23 +439,104 @@ _k_: undo  _j_: redo _s_: save _l_: load   "
               ("v"   undo-tree-visualize "visualize" :color blue)
               ("q"   nil "quit" :color blue))
 
+            (defhydra hydra-find
+              (:color blue :hint nil)
+"
+
+_h_: at point  _f_: function  _k_: function on key  _v_: variable  _l_: library  "
+              ("h"   my-find-thing-at-point)
+              ("f"   find-function)
+              ("F"   find-file-at-point)
+              ("k"   find-function-on-key)
+              ("v"   find-variable)
+              ("l"   find-library)
+              ("q"   nil "quit" :color blue))
+
+            (defhydra hydra-zoom
+              (:hint nil)
+"
+
+_j_: zoom in  _k_: zoom out  _n_: narrow  _w_: widen  "
+              ("j" text-scale-increase "in")
+              ("k" text-scale-decrease "out")
+              ("n" narrow-to-region :color blue)
+              ("w" widen :color blue))
+
+            (defhydra hydra-packages
+              (:color blue :hint nil)
+"
+
+_l_: list  _r_: refresh  "
+              ("l" list-packages)
+              ("r" package-refresh-contents))
+
+            (defhydra hydra-ediff (:color blue :hint nil)
+              "
+^Buffers              Files               VC                Ediff regions
+----------------------------------------------------------------------------------
+_b_: buffers           _f_: files (_=_)        _r_: revisions      _l_: linewise
+_B_: Buffers (3-way)   _F_: Files (3-way)                      _w_: wordwise
+                     _c_: current file
+"
+              ("b" ediff-buffers)
+              ("B" ediff-buffers3)
+              ("=" ediff-files)
+              ("f" ediff-files)
+              ("F" ediff-files3)
+              ("c" ediff-current-file)
+              ("r" ediff-revision)
+              ("l" ediff-regions-linewise)
+              ("w" ediff-regions-wordwise)
+              ("q" nil "quit"))
+
+            (defhydra hydra-describe
+              (:exit t :columns 2)
+              "Describe"
+              ("v" counsel-describe-variable "variable")
+              ("f" counsel-describe-function "function")
+              ("F" counsel-describe-face "face")
+              ("k" describe-key "key")
+              ("q" nil "quit"))
+
+            (defhydra hydra-eval
+              (:exit t :columns 2)
+              "Lisp eval"
+              ("r" eval-region "region")
+              ("b" eval-buffer "buffer")
+              ("e" eval-expression "S-expression")
+              ("l" eval-last-sexp "last s-expression")
+              ("L" eval-last-sexp-print-value "last s-expression and print value  ")
+              ("d" eval-defun "defun / function")
+              ("f" eval-defun "defun / function"))
+
             (defhydra hydra-common-commands
               (:color blue :hint nil)
 "
-_SPC_: remove highlight   _f_: find file at point            _g_: ag
-_u_:   undo tree          _s_: delete trailing whitepsaces   _a_: align
-_c_:   compile            _b_: switch to buffer            "
+
+_SPC_: remove highlight   _f_: find                          _g_: ag        _i_:   indent         _d_: describe
+_u_:   undo tree          _s_: delete trailing whitepsaces   _a_: align     _w_:   window
+_c_:   compile            _b_: switch to buffer              _P_: project   _TAB_: other window
+_p_:   packages           _z_: zoom                          _D_: ediff     _e_:   evaluate
+"
               ("SPC" evil-search-highlight-persist-remove-all)
-              ("f"   find-file-at-point)
+              ("f"   hydra-find/body)
               ("g"   counsel-ag)
+              ("i"   indent-region)
+              ("w"   indent-region) ;; TODO
+              ("d"   hydra-describe/body)
               ("a"   align-regexp)
               ("s"   delete-trailing-whitespace)
               ("u"   hydra-undo-tree/body)
               ("c"   compile)
               ("b"   switch-to-buffer)
+              ("P"   projectile-switch-project)
+              ("TAB" other-window)
+              ("p"   hydra-packages/body)
+              ("z"   hydra-zoom/body)
+              ("D"   hydra-ediff/body)
+              ("e"   hydra-eval/body)
               ("q"   nil "quit"))
-            )
-  )
+            ))
 
 (use-package projectile
   :diminish projectile-mode
