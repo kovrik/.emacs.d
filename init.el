@@ -430,7 +430,8 @@
             (defhydra hydra-undo-tree
               (:color yellow :hint nil)
 "
-
+Undo Tree
+----------
 _k_: undo  _j_: redo  _s_: save  _l_: load   "
               ("k"   undo-tree-undo)
               ("j"   undo-tree-redo)
@@ -442,7 +443,8 @@ _k_: undo  _j_: redo  _s_: save  _l_: load   "
             (defhydra hydra-find
               (:color blue :hint nil)
 "
-
+Find
+-----
 _h_: at point  _f_: function  _k_: function on key  _v_: variable  _l_: library  "
               ("h"   my-find-thing-at-point)
               ("f"   find-function)
@@ -455,20 +457,27 @@ _h_: at point  _f_: function  _k_: function on key  _v_: variable  _l_: library 
             (defhydra hydra-zoom
               (:hint nil)
 "
+Zoom           Region
+--------------------------
+_j_: zoom in     _n_: narrow
+_k_: zoom out    _w_: widen
 
-_j_: zoom in  _k_: zoom out  _n_: narrow  _w_: widen  "
-              ("j" text-scale-increase "in")
-              ("k" text-scale-decrease "out")
+"
+              ("j" text-scale-increase)
+              ("k" text-scale-decrease)
               ("n" narrow-to-region :color blue)
-              ("w" widen :color blue))
+              ("w" widen :color blue)
+              ("q"   nil "quit" :color blue))
 
             (defhydra hydra-packages
               (:color blue :hint nil)
 "
-
+Packages
+---------
 _l_: list  _r_: refresh  "
               ("l" list-packages)
-              ("r" package-refresh-contents))
+              ("r" package-refresh-contents)
+              ("q"   nil "quit" :color blue))
 
             (defhydra hydra-ediff (:color blue :hint nil)
               "
@@ -491,7 +500,9 @@ _B_: Buffers (3-way)   _F_: Files (3-way)                      _w_: wordwise
 
             (defhydra hydra-describe
               (:exit t :columns 2)
-              "Describe"
+"
+Describe
+--------- "
               ("v" counsel-describe-variable "variable")
               ("f" counsel-describe-function "function")
               ("F" counsel-describe-face "face")
@@ -500,29 +511,73 @@ _B_: Buffers (3-way)   _F_: Files (3-way)                      _w_: wordwise
 
             (defhydra hydra-eval
               (:exit t :columns 2)
-              "Lisp eval"
+"
+Evaluate
+--------- "
               ("r" eval-region "region")
               ("b" eval-buffer "buffer")
               ("e" eval-expression "S-expression")
               ("l" eval-last-sexp "last s-expression")
               ("L" eval-last-sexp-print-value "last s-expression and print value  ")
               ("d" eval-defun "defun / function")
-              ("f" eval-defun "defun / function"))
+              ("f" eval-defun "defun / function")
+              ("q"   nil "quit" :color blue)))
+
+            (defhydra hydra-window
+              (:hint nil)
+              "
+Split:    Delete     Switch Window   Buffers            Winner     Resize
+--------------------------------------------------------------------------------------------
+_\\_: vert   _c_: close   _h_: left         _p_: previous        _u_: undo    _H_: splitter left
+_-_: horz   _o_: only    _j_: down         _n_: next            _r_: redo    _J_: splitter down
+                     _k_: up           _b_: select                     _K_: splitter up
+                     _l_: right                                      _L_: splitter right
+"
+              ("z" scroll-up-line)
+              ("a" scroll-down-line)
+              ("i" idomenu)
+
+              ("u" winner-undo)
+              ("r" winner-redo)
+
+              ("h" windmove-left)
+              ("j" windmove-down)
+              ("k" windmove-up)
+              ("l" windmove-right)
+
+              ("p" previous-buffer)
+              ("n" next-buffer)
+              ("b" ido-switch-buffer)
+              ("f" ido-find-file)
+              ("F" projectile-find-file)
+
+              ("-" split-window-below)
+              ("\\" split-window-right)
+
+              ("c" delete-window)
+              ("o" delete-other-windows)
+
+              ("H" hydra-move-splitter-left)
+              ("J" hydra-move-splitter-down)
+              ("K" hydra-move-splitter-up)
+              ("L" hydra-move-splitter-right)
+
+              ("q" nil "quit"))
 
             (defhydra hydra-common-commands
               (:color blue :hint nil)
 "
 
-_SPC_: remove highlight   _f_: find                          _g_: ag        _i_:   indent         _d_: describe
-_u_:   undo tree          _s_: delete trailing whitepsaces   _a_: align     _w_:   window
-_c_:   compile            _b_: switch to buffer              _P_: project   _TAB_: other window
-_p_:   packages           _z_: zoom                          _D_: ediff     _e_:   evaluate
+_SPC_: remove highlight    _f_: find                           _g_: ag         _i_:   indent          _d_: describe
+_u_:   undo tree           _s_: delete trailing whitepsaces    _a_: align      _w_:   window
+_c_:   compile             _b_: switch to buffer               _P_: project    _TAB_: other window
+_p_:   packages            _z_: zoom                           _D_: ediff      _e_:   evaluate
 "
               ("SPC" evil-search-highlight-persist-remove-all)
               ("f"   hydra-find/body)
               ("g"   counsel-ag)
               ("i"   indent-region)
-              ("w"   indent-region) ;; TODO
+              ("w"   hydra-window/body)
               ("d"   hydra-describe/body)
               ("a"   align-regexp)
               ("s"   delete-trailing-whitespace)
@@ -535,8 +590,7 @@ _p_:   packages           _z_: zoom                          _D_: ediff     _e_:
               ("z"   hydra-zoom/body)
               ("D"   hydra-ediff/body)
               ("e"   hydra-eval/body)
-              ("q"   nil "quit"))
-            ))
+              ("q"   nil "quit"))))
 
 (use-package projectile
   :diminish projectile-mode
