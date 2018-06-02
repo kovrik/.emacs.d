@@ -208,7 +208,6 @@
                        ("C-x v p" . diff-hl-previous-hunk-cycle)
                        ("C-x v k" . diff-hl-previous-hunk-cycle)
                        ("C-x v r" . diff-hl-revert-hunk))
-            (evil-leader/set-key "v"   'diff-hl-next-hunk-cycle)
             (global-diff-hl-mode t)))
 
 (use-package find-func
@@ -298,25 +297,6 @@
                           #'rainbow-delimiters-mode)))
 
 (use-package evil
-  :init (use-package evil-leader
-          :init (global-evil-leader-mode)
-          :config (progn
-                    (defun my-switch-to-previous-buffer ()
-                      (interactive)
-                      (switch-to-buffer (other-buffer (current-buffer) 1)))
-                    (setq evil-leader/in-all-states t
-                          evil-leader/no-prefix-mode-rx '("magit-.*-mode"))
-                    (evil-leader/set-leader "SPC")
-                    (evil-leader/set-key "SPC" 'lazy-highlight-cleanup
-                      "SPC" 'evil-search-highlight-persist-remove-all
-                      "f"   'find-file-at-point
-                      "g"   'counsel-ag
-                      "a"   'align-regexp
-                      "s"   'delete-trailing-whitespace
-                      "c"   'compile
-                      "b"   'switch-to-buffer
-                      "TAB" 'my-switch-to-previous-buffer)
-                    (evil-leader-mode t)))
   :config (progn
             (use-package evil-org :defer t)
             (use-package evil-numbers)
@@ -378,7 +358,9 @@
                                                   ([prior]  . evil-scroll-up)
                                                   ([escape] . keyboard-quit)
                                                   ("j"      . evil-next-visual-line)
-                                                  ("k"      . evil-previous-visual-line))
+                                                  ("k"      . evil-previous-visual-line)
+                                                  ("SPC" . hydra-common-commands/body))
+            (bind-keys :map evil-visual-state-map ("SPC" . hydra-common-commands/body))
             (my-add-hooks '(help-mode-hook prog-mode-hook text-mode-hook) #'evil-local-mode)
             (defun my-evil-off ()
               "Turn 'evil-mode' off and change cursor type to bar."
@@ -443,6 +425,38 @@
          ("C-c j"   . counsel-git-grep)
          ("C-c k"   . counsel-ag)
          ("C-x l"   . counsel-locate)))
+
+;; TODO add more hydras
+(use-package hydra
+  :config (progn
+            (defhydra hydra-undo-tree
+              (:color yellow :hint nil)
+"
+_k_: undo  _j_: redo _s_: save _l_: load   "
+              ("k"   undo-tree-undo)
+              ("j"   undo-tree-redo)
+              ("s"   undo-tree-save-history)
+              ("l"   undo-tree-load-history)
+              ("v"   undo-tree-visualize "visualize" :color blue)
+              ("q"   nil "quit" :color blue))
+
+            (defhydra hydra-common-commands
+              (:color blue :hint nil)
+"
+_SPC_: remove highlight   _f_: find file at point            _g_: ag
+_u_:   undo tree          _s_: delete trailing whitepsaces   _a_: align
+_c_:   compile            _b_: switch to buffer            "
+              ("SPC" evil-search-highlight-persist-remove-all)
+              ("f"   find-file-at-point)
+              ("g"   counsel-ag)
+              ("a"   align-regexp)
+              ("s"   delete-trailing-whitespace)
+              ("u"   hydra-undo-tree/body)
+              ("c"   compile)
+              ("b"   switch-to-buffer)
+              ("q"   nil "quit"))
+            )
+  )
 
 (use-package projectile
   :diminish projectile-mode
