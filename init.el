@@ -137,7 +137,8 @@
             (load-theme 'doom-nord t)
             (doom-themes-org-config)
             (global-hl-line-mode)
-            (set-face-background 'hl-line "#404960")))
+            (set-face-background 'hl-line "#404960")
+            (set-face-background 'region  "#606980")))
 
 ;; PATH
 (use-package exec-path-from-shell
@@ -431,8 +432,11 @@
               (:color yellow :hint nil)
 "
 Undo Tree
-----------
-_k_: undo  _j_: redo  _s_: save  _l_: load   "
+-------------------
+_k_: undo    _s_: save
+_j_: redo    _l_: load
+
+"
               ("k"   undo-tree-undo)
               ("j"   undo-tree-redo)
               ("s"   undo-tree-save-history)
