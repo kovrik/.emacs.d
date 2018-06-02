@@ -445,13 +445,16 @@ _k_: undo  _j_: redo  _s_: save  _l_: load   "
 "
 Find
 -----
-_h_: at point  _f_: function  _k_: function on key  _v_: variable  _l_: library  "
+_h_: at point         _f_: file      _F_: function
+_k_: function on key  _v_: variabl  _l_: library
+"
               ("h"   my-find-thing-at-point)
-              ("f"   find-function)
-              ("F"   find-file-at-point)
+              ("F"   find-function)
+              ("f"   counsel-find-file)
               ("k"   find-function-on-key)
               ("v"   find-variable)
               ("l"   find-library)
+
               ("q"   nil "quit" :color blue))
 
             (defhydra hydra-zoom
@@ -564,7 +567,7 @@ _-_: horz   _o_: only    _j_: down         _n_: next        _r_: redo
 "
 
 _SPC_: remove highlight    _f_: find                           _g_: ag         _i_:   indent          _d_: describe
-_u_:   undo tree           _s_: delete trailing whitepsaces    _a_: align      _w_:   window
+_u_:   undo tree           _s_: delete trailing whitepsaces    _a_: align      _w_:   window          _x_: execute
 _c_:   compile             _b_: switch to buffer               _P_: project    _TAB_: other window
 _p_:   packages            _z_: zoom                           _D_: ediff      _e_:   evaluate
 "
@@ -585,6 +588,7 @@ _p_:   packages            _z_: zoom                           _D_: ediff      _
               ("z"   hydra-zoom/body)
               ("D"   hydra-ediff/body)
               ("e"   hydra-eval/body)
+              ("x"   counsel-M-x)
               ("q"   nil "quit"))))
 
 (use-package projectile
