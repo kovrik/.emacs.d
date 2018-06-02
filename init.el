@@ -526,12 +526,12 @@ Evaluate
             (defhydra hydra-window
               (:hint nil)
               "
-Split:    Delete     Switch Window   Buffers            Winner     Resize
+Split     Delete     Switch Window   Buffers        Winner
 --------------------------------------------------------------------------------------------
-_\\_: vert   _c_: close   _h_: left         _p_: previous        _u_: undo    _H_: splitter left
-_-_: horz   _o_: only    _j_: down         _n_: next            _r_: redo    _J_: splitter down
-                     _k_: up           _b_: select                     _K_: splitter up
-                     _l_: right                                      _L_: splitter right
+_\\_: vert   _c_: close   _h_: left         _p_: previous    _u_: undo
+_-_: horz   _o_: only    _j_: down         _n_: next        _r_: redo
+                     _k_: up           _b_: select
+                     _l_: right
 "
               ("z" scroll-up-line)
               ("a" scroll-down-line)
@@ -556,12 +556,6 @@ _-_: horz   _o_: only    _j_: down         _n_: next            _r_: redo    _J_
 
               ("c" delete-window)
               ("o" delete-other-windows)
-
-              ;; TODO
-              ("H" hydra-move-splitter-left)
-              ("J" hydra-move-splitter-down)
-              ("K" hydra-move-splitter-up)
-              ("L" hydra-move-splitter-right)
 
               ("q" nil "quit"))
 
