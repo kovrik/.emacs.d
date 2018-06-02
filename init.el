@@ -527,7 +527,7 @@ Evaluate
               (:hint nil)
               "
 Split     Delete     Switch Window   Buffers        Winner
---------------------------------------------------------------------------------------------
+--------------------------------------------------------------
 _\\_: vert   _c_: close   _h_: left         _p_: previous    _u_: undo
 _-_: horz   _o_: only    _j_: down         _n_: next        _r_: redo
                      _k_: up           _b_: select
