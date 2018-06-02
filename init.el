@@ -557,6 +557,7 @@ _-_: horz   _o_: only    _j_: down         _n_: next            _r_: redo    _J_
               ("c" delete-window)
               ("o" delete-other-windows)
 
+              ;; TODO
               ("H" hydra-move-splitter-left)
               ("J" hydra-move-splitter-down)
               ("K" hydra-move-splitter-up)
