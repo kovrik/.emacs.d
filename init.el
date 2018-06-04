@@ -450,7 +450,7 @@ _j_: redo    _l_: load
 Find
 -----
 _h_: at point         _f_: file      _F_: function
-_k_: function on key  _v_: variabl  _l_: library
+_k_: function on key  _v_: variabl   _l_: library
 "
               ("h"   my-find-thing-at-point)
               ("F"   find-function)
