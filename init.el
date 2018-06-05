@@ -587,7 +587,8 @@ _-_: horz   _o_: other   _j_: down         _n_: next        _r_: redo
             (defhydra hydra-project
               (:color blue :hint nil)
 "
-projectile-switch-project
+Project
+--------
 _p_: projectile   _c_: compile
 "
               ("p"   projectile-switch-project)
@@ -598,24 +599,20 @@ _p_: projectile   _c_: compile
               (:color blue :hint nil)
 "
 
-_SPC_: remove highlight    _f_: find                           _i_: indent       _d_: describe
-_TAB_: other window        _s_: delete trailing whitepsaces    _a_: align        _x_: execute
-_P_:   project             _u_: undo tree                      _w_: window       _e_: evaluate
-_p_:   packages            _z_: zoom                           _D_: ediff
+_SPC_: no highlight    _f_: find        _i_: indent    _s_: delete trailing whitepsaces
+_P_:   project         _d_: describe    _a_: align     _D_: ediff
+_p_:   packages        _e_: evaluate    _w_: window    _z_: zoom
+                     _x_: execute
 "
               ("SPC" evil-search-highlight-persist-remove-all)
               ("f"   hydra-find/body)
-              ("g"   counsel-ag)
               ("i"   indent-region)
               ("w"   hydra-window/body)
               ("d"   hydra-describe/body)
               ("a"   align-regexp)
               ("s"   delete-trailing-whitespace)
               ("u"   hydra-undo-tree/body)
-              ("c"   compile)
-              ("b"   switch-to-buffer)
               ("P"   hydra-project/body)
-              ("TAB" other-window)
               ("p"   hydra-packages/body)
               ("z"   hydra-zoom/body)
               ("D"   hydra-ediff/body)
