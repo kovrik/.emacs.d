@@ -466,8 +466,8 @@ _j_: redo    _l_: load
 "
 Find
 -----
-_h_: at point         _f_: file      _F_: function   _s_: swiper
-_k_: function on key  _v_: variabl   _l_: library
+_h_: at point         _f_: file      _F_: function   _s_: swiper   _g_: grep
+_k_: function on key  _v_: variabl   _l_: library    _a_: ag
 "
               ("h"   my-find-thing-at-point)
               ("F"   find-function)
@@ -476,6 +476,8 @@ _k_: function on key  _v_: variabl   _l_: library
               ("k"   find-function-on-key)
               ("v"   find-variable)
               ("l"   find-library)
+              ("a"   counsel-ag)
+              ("g"   counsel-grep)
 
               ("q"   nil "quit" :color blue))
 
@@ -554,7 +556,7 @@ Evaluate
 Split     Delete     Switch Window   Buffers        Winner
 --------------------------------------------------------------
 _\\_: vert   _c_: close   _h_: left         _p_: previous    _u_: undo
-_-_: horz   _o_: other    _j_: down         _n_: next        _r_: redo
+_-_: horz   _o_: other   _j_: down         _n_: next        _r_: redo
                      _k_: up           _b_: select
                      _l_: right        _w_: ace-window
                                      _R_: revert-buffer
@@ -596,10 +598,10 @@ _p_: projectile   _c_: compile
               (:color blue :hint nil)
 "
 
-_SPC_: remove highlight    _f_: find                           _i_: indent       _g_: ag       _d_: describe
-_TAB_: other window        _s_: delete trailing whitepsaces    _a_: align        _w_: window   _x_: execute
-_P_:   project             _u_: undo tree                      _D_: ediff                    _e_: evaluate
-_p_:   packages            _z_: zoom
+_SPC_: remove highlight    _f_: find                           _i_: indent       _d_: describe
+_TAB_: other window        _s_: delete trailing whitepsaces    _a_: align        _x_: execute
+_P_:   project             _u_: undo tree                      _w_: window       _e_: evaluate
+_p_:   packages            _z_: zoom                           _D_: ediff
 "
               ("SPC" evil-search-highlight-persist-remove-all)
               ("f"   hydra-find/body)
