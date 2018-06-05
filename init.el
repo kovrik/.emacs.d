@@ -116,12 +116,10 @@
 (global-unset-key (kbd "<f3>"))
 (bind-keys ([escape]   . keyboard-quit)
            ("RET"      . newline-and-indent)
-           ("C-c r"    . revert-buffer)
-           ("<M-up>"   . backward-page)
-           ("<M-down>" . forward-page)
+           ("M-o"      . ace-window)
+           ("M-SPC"    . hydra-common-commands/body)
            ("C-M-l"    . indent-region)
-           ("<f5>"     . (lambda () (interactive) (find-file user-init-file)))
-           ("<C-tab>"  . other-window)) ;; magit and org-mode?
+           ("<f5>"     . (lambda () (interactive) (find-file user-init-file))))
 
 (load custom-file :noerror :nomessage)
 ;; (use-package solarized-theme
@@ -425,6 +423,25 @@
          ("C-c k"   . counsel-ag)
          ("C-x l"   . counsel-locate)))
 
+(use-package ace-window
+  :ensure t
+  :defer 1
+  :config
+  (set-face-attribute 'aw-leading-char-face nil :foreground "deep sky blue" :weight 'bold :height 3.0)
+  (set-face-attribute 'aw-mode-line-face nil :inherit 'mode-line-buffer-id :foreground "lawn green")
+  (setq aw-keys '(?a ?s ?d ?f ?j ?k ?l)
+        aw-dispatch-always t
+        aw-dispatch-alist '((?x aw-delete-window "Ace - Delete Window")
+                            (?c aw-swap-window "Ace - Swap Window")
+                            (?n aw-flip-window)
+                            (?v aw-split-window-vert "Ace - Split Vert Window")
+                            (?h aw-split-window-horz "Ace - Split Horz Window")
+                            (?m delete-other-windows "Ace - Maximize Window")
+                            (?g delete-other-windows)
+                            (?b balance-windows)
+                            (?u (lambda () (progn (winner-undo) (setq this-command 'winner-undo))))
+                            (?r winner-redo))))
+
 ;; TODO add more hydras
 (use-package hydra
   :config (progn
@@ -449,11 +466,12 @@ _j_: redo    _l_: load
 "
 Find
 -----
-_h_: at point         _f_: file      _F_: function
+_h_: at point         _f_: file      _F_: function   _s_: swiper
 _k_: function on key  _v_: variabl   _l_: library
 "
               ("h"   my-find-thing-at-point)
               ("F"   find-function)
+              ("s"   swiper)
               ("f"   counsel-find-file)
               ("k"   find-function-on-key)
               ("v"   find-variable)
@@ -538,7 +556,8 @@ Split     Delete     Switch Window   Buffers        Winner
 _\\_: vert   _c_: close   _h_: left         _p_: previous    _u_: undo
 _-_: horz   _o_: only    _j_: down         _n_: next        _r_: redo
                      _k_: up           _b_: select
-                     _l_: right
+                     _l_: right        _w_: ace-window
+                                     _R_: revert-buffer
 "
               ("z" scroll-up-line)
               ("a" scroll-down-line)
@@ -554,9 +573,9 @@ _-_: horz   _o_: only    _j_: down         _n_: next        _r_: redo
 
               ("p" previous-buffer)
               ("n" next-buffer)
-              ("b" ido-switch-buffer)
-              ("f" ido-find-file)
-              ("F" projectile-find-file)
+              ("b" counsel-ibuffer :color blue)
+              ("w" ace-window :color blue)
+              ("R" revert-buffer :color blue)
 
               ("-" split-window-below)
               ("\\" split-window-right)
@@ -566,14 +585,24 @@ _-_: horz   _o_: only    _j_: down         _n_: next        _r_: redo
 
               ("q" nil "quit"))
 
+            (defhydra hydra-project
+              (:color blue :hint nil)
+"
+projectile-switch-project
+_p_: projectile   _c_: compile
+"
+              ("p"   projectile-switch-project)
+              ("c"   compile)
+              ("q"   nil "quit"))
+
             (defhydra hydra-common-commands
               (:color blue :hint nil)
 "
 
-_SPC_: remove highlight    _f_: find                           _g_: ag         _i_:   indent          _d_: describe
-_u_:   undo tree           _s_: delete trailing whitepsaces    _a_: align      _w_:   window          _x_: execute
-_c_:   compile             _b_: switch to buffer               _P_: project    _TAB_: other window
-_p_:   packages            _z_: zoom                           _D_: ediff      _e_:   evaluate
+_SPC_: remove highlight    _f_: find                           _i_: indent       _g_: ag       _d_: describe
+_TAB_: other window        _s_: delete trailing whitepsaces    _a_: align        _w_: window   _x_: execute
+_P_:   project             _u_: undo tree                      _D_: ediff                    _e_: evaluate
+_p_:   packages            _z_: zoom
 "
               ("SPC" evil-search-highlight-persist-remove-all)
               ("f"   hydra-find/body)
@@ -586,7 +615,7 @@ _p_:   packages            _z_: zoom                           _D_: ediff      _
               ("u"   hydra-undo-tree/body)
               ("c"   compile)
               ("b"   switch-to-buffer)
-              ("P"   projectile-switch-project)
+              ("P"   hydra-project/body)
               ("TAB" other-window)
               ("p"   hydra-packages/body)
               ("z"   hydra-zoom/body)
