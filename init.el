@@ -554,17 +554,17 @@ Evaluate
 Split     Delete     Switch Window   Buffers        Winner
 --------------------------------------------------------------
 _\\_: vert   _c_: close   _h_: left         _p_: previous    _u_: undo
-_-_: horz   _o_: only    _j_: down         _n_: next        _r_: redo
+_-_: horz   _o_: other    _j_: down         _n_: next        _r_: redo
                      _k_: up           _b_: select
                      _l_: right        _w_: ace-window
                                      _R_: revert-buffer
 "
-              ("z" scroll-up-line)
-              ("a" scroll-down-line)
-              ("i" idomenu)
 
-              ("u" winner-undo)
-              ("r" winner-redo)
+              ("-" split-window-below)
+              ("\\" split-window-right)
+
+              ("c" delete-window)
+              ("o" delete-other-windows)
 
               ("h" windmove-left)
               ("j" windmove-down)
@@ -577,11 +577,8 @@ _-_: horz   _o_: only    _j_: down         _n_: next        _r_: redo
               ("w" ace-window :color blue)
               ("R" revert-buffer :color blue)
 
-              ("-" split-window-below)
-              ("\\" split-window-right)
-
-              ("c" delete-window)
-              ("o" delete-other-windows)
+              ("u" winner-undo)
+              ("r" winner-redo)
 
               ("q" nil "quit"))
 
