@@ -6,44 +6,84 @@
       (gc-cons-threshold (* 100 1024 1024))
       (debug-on-error t)
       (debug-on-quit t))
+
+(defadvice load (before debug-log activate)
+  (message "Advice: now loading: '%s'" (ad-get-arg 0)))
+
 ;; Package management
-(require 'package)
-(setq package-archives '(("gnu"          . "http://elpa.gnu.org/packages/")
-                         ("org"          . "http://orgmode.org/elpa/")
-                         ("melpa"        . "http://melpa.org/packages/")
-                         ("melpa-stable" . "http://stable.melpa.org/packages/"))
-      package-enable-at-startup nil)
-(package-initialize)
-(add-to-list 'package-pinned-packages '(queue . "gnu"))
-(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-(add-to-list 'default-frame-alist '(ns-appearance . dark))
+
+;; Straight
+  (progn
+    (defvar bootstrap-version)
+    (let ((bootstrap-file
+           (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+          (bootstrap-version 5))
+      (unless (file-exists-p bootstrap-file)
+        (with-current-buffer
+            (url-retrieve-synchronously
+             "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+             'silent 'inhibit-cookies)
+          (goto-char (point-max))
+          (eval-print-last-sexp)))
+      (load bootstrap-file nil 'nomessage)))
+
+;; Package
+;; (require 'package)
+;; (setq package-archives '(("gnu"          . "http://elpa.gnu.org/packages/")
+                         ;; ("org"          . "http://orgmode.org/elpa/")
+                         ;; ("melpa"        . "http://melpa.org/packages/")
+                         ;; ("melpa-stable" . "http://stable.melpa.org/packages/"))
+;;       package-enable-at-startup nil)
+;; (package-initialize)
+;; (add-to-list 'package-pinned-packages '(queue . "gnu"))
+;; (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+;; (add-to-list 'default-frame-alist '(ns-appearance . dark))
 
 ;; Make sure to have downloaded archive description
-(or (file-directory-p (expand-file-name (concat package-user-dir "/archives")))
-    (package-refresh-contents))
+;; (or (file-directory-p (expand-file-name (concat package-user-dir "/archives")))
+;;     (package-refresh-contents))
 
 ;; use-package
-(when (not (package-installed-p 'use-package))
-  (package-refresh-contents)
-  (package-install 'use-package))
+(straight-use-package 'use-package)
+(setq straight-use-package-by-default t)
 
-(eval-when-compile (require 'use-package))
-(require 'diminish)
+;; (when (not (package-installed-p 'use-package))
+;;   (package-refresh-contents)
+;;   (package-install 'use-package))
+
+;; (eval-when-compile (require 'use-package))
+;;(require 'diminish)
 (require 'bind-key)
 (require 'uniquify)
-(setq use-package-verbose t
-      load-prefer-newer t
-      use-package-always-ensure t)
-(use-package auto-compile :config (auto-compile-on-load-mode))
+;; (setq use-package-verbose t
+;;       load-prefer-newer t
+;;       use-package-always-ensure t)
+;; (use-package auto-compile :config (auto-compile-on-load-mode))
 
-(defun my-ensure-packages-installed (packages)
-  "Assure every package in PACKAGES is installed, ask for installation if it s not.  Return a list of installed packages or nil for every skipped package."
-  (dolist (p packages)
-    (when (and (not (package-installed-p p))
-               (y-or-n-p (format "Package %s is missing.  Install it? " p)))
-      (package-install p))))
+;; (defun my-ensure-packages-installed (packages)
+;;   "Assure every package in PACKAGES is installed, ask for installation if it s not.  Return a list of installed packages or nil for every skipped package."
+;;   (dolist (p packages)
+;;     (when (and (not (package-installed-p p))
+;;                (y-or-n-p (format "Package %s is missing.  Install it? " p)))
+;;       (package-install p))))
 
-(my-ensure-packages-installed '(queue async browse-kill-ring dash epl f fold-dwim fringe-helper goto-chg highlight highlight-escape-sequences idle-highlight-mode markdown-mode pkg-info s))
+;; (my-ensure-packages-installed '(queue async browse-kill-ring dash epl f fold-dwim fringe-helper goto-chg highlight highlight-escape-sequences idle-highlight-mode markdown-mode pkg-info s))
+
+(use-package queue)
+(use-package async)
+(use-package browse-kill-ring)
+(use-package dash)
+(use-package epl)
+(use-package f)
+(use-package fold-dwim)
+(use-package fringe-helper)
+(use-package goto-chg)
+(use-package highlight)
+(use-package highlight-escape-sequences)
+(use-package idle-highlight-mode)
+(use-package markdown-mode)
+(use-package pkg-info)
+(use-package s)
 
 (defun my-add-hooks (hooks function)
   "For each hook in HOOKS list bind FUNCTION."
@@ -101,7 +141,7 @@
 
 (defalias 'list-buffers 'ibuffer)            ;; make ibuffer the default buffer lister.
 (defalias 'xml-pretty-print 'sgml-pretty-print)
-(fringe-mode '(7 . 0))
+;;(fringe-mode '(7 . 0))
 (column-number-mode)
 (desktop-save-mode)
 (global-font-lock-mode)
@@ -153,6 +193,7 @@
               (setq shell-file-name "bash"))
             (setq explicit-bash.exe-args '("--noediting" "--login" "-i"))
             (setenv "SHELL" shell-file-name)
+            (setenv "ITERM_SHELL_INTEGRATION_INSTALLED" nil)
             (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)))
 
 ;; Fonts
@@ -231,11 +272,12 @@
 
 (use-package smartparens
   :config (progn
-            (require 'smartparens-config)
-            (use-package evil-smartparens)
-            (show-smartparens-global-mode t)
-            (smartparens-strict-mode)
+              (require 'smartparens-config)
+              (use-package evil-smartparens)
+              (show-smartparens-global-mode t)
+              (smartparens-strict-mode)
             (bind-keys :map smartparens-mode-map
+                       ;; FIXME Make it work with evil-mode
                        ((kbd "C-<right>")     . sp-forward-slurp-sexp)
                        ((kbd "C-<left>")      . sp-forward-barf-sexp)
                        ((kbd "C-M-<right>")   . sp-backward-slurp-sexp)
@@ -248,12 +290,14 @@
 
 (use-package clojure-mode
   :defer  t
-  :pin melpa-stable
+  ;; :pin melpa-stable
   :config (progn
-            (use-package cider :pin melpa :defer t)
+            (use-package cider
+              ;; :pin melpa-stable
+                         :defer t)
             (use-package clojure-mode-extra-font-locking)
             (use-package flycheck-clojure
-              :pin melpa
+              ;; :pin melpa-stable
               :config (progn
                         (flycheck-clojure-setup)
                         (setq flycheck-checkers (delete 'clojure-cider-typed flycheck-checkers))))
@@ -293,6 +337,60 @@
                             racket-mode-hook)
                           #'rainbow-delimiters-mode)))
 
+;; Slime
+(use-package slime
+  :ensure t
+  :config (progn
+            (use-package slime-company :defer t)
+            (setq byte-compile-warnings '(cl-functions))
+            (load (expand-file-name "~/.quicklisp/slime-helper.el"))
+            (setq inferior-lisp-program "sbcl")
+            (slime-setup '(slime-fancy slime-company slime-asdf slime-indentation slime-sbcl-exts slime-scratch))
+            (setq lisp-indent-function 'common-lisp-indent-function)
+            (setq common-lisp-style-default "modern")
+
+            ;; FIXME (add-hook 'slime-mode-hook #'common-lisp-mode)
+
+            (defun window-with-name-prefix-live-p (name)
+              (cl-some (lambda (buffer-name)
+                         (string-prefix-p name buffer-name))
+                       (mapcar #'buffer-name
+                               (mapcar #'window-buffer
+                                       (window-list)))))
+
+            (defun open-slime ()
+              (interactive)
+              (let* ((buffer-prefix "*slime-repl"))
+                (unless (window-with-name-prefix-live-p buffer-prefix)
+                  (let* ((buffer-name-list (mapcar #'buffer-name
+                                                   (buffer-list)))
+                         (buffer (cl-loop for buffer-name in (mapcar #'buffer-name (buffer-list))
+                                          until (string-match-p (regexp-quote buffer-prefix)
+                                                                buffer-name)
+                                          finally (if (string-match-p (regexp-quote buffer-prefix)
+                                                                      buffer-name)
+                                                      (cl-return buffer-name)
+                                                    nil))))
+                    (if (not buffer)
+                        (slime)
+                      (other-window 1))))))))
+
+(use-package slime-company
+  :after (slime company)
+  :ensure t
+  :config (setq slime-company-completion 'fuzzy
+                slime-company-after-completion 'slime-company-just-one-space)
+  ;; We redefine this function to call SLIME-COMPANY-DOC-MODE in the buffer
+  (defun slime-show-description (string package)
+    (let ((bufname (slime-buffer-name :description)))
+      (slime-with-popup-buffer (bufname :package package
+					                              :connection t
+					                              :select slime-description-autofocus)
+	      (when (string= bufname "*slime-description*")
+	        (with-current-buffer bufname (slime-company-doc-mode)))
+	      (princ string)
+	      (goto-char (point-min))))))
+
 (use-package evil
   :config (progn
             (use-package evil-org :defer t)
@@ -324,6 +422,7 @@
                   evil-default-cursor   t
                   evil-want-C-u-scroll  t
                   evil-want-C-w-delete  t)
+            (evil-set-undo-system 'undo-tree)
             ;; treat symbol as a word
             (defalias #'forward-evil-word #'forward-evil-symbol)
             ;; kill buffer, but don't close window
@@ -381,15 +480,19 @@
                         ielm-mode-hook)
                       #'turn-on-eldoc-mode))
 
+(use-package flx)
+(use-package flx-ido)
+
 (use-package swiper
   :demand t
   :diminish ivy-mode
   :config (progn
             (use-package ivy
               :config (progn
+                        (setq ivy-re-builders-alist '((swiper      . ivy--regex-plus)
+                                                      (t           . ivy--regex-plus)))
                         (setq ivy-use-virtual-buffers t
                               ivy-display-style 'plain
-                              ivy-re-builders-alist '((t . ivy--regex-fuzzy))
                               ivy-initial-inputs-alist nil
                               ivy-count-format "")
                         (defun my-ivy-page-up (&optional arg)
@@ -658,7 +761,7 @@ Use Counsel otherwise."
          ("C-S-n" . my-find-file)))
 
 (use-package company
-  :pin gnu
+  ;; :pin gnu
   :diminish company-mode
   :config (progn
             (use-package company-quickhelp
@@ -709,7 +812,7 @@ Use Counsel otherwise."
 
 (use-package magit
   :defer t
-  :pin melpa
+  ;; :pin melpa
   :config (progn
             (use-package magit-popup)
             (setenv "GIT_ASKPASS" "git-gui--askpass")
@@ -758,7 +861,7 @@ Use Counsel otherwise."
 
 (use-package web-mode
   :defer t
-  :pin melpa-stable
+  ;; :pin melpa-stable
   :config (progn (add-to-list 'auto-mode-alist '("\\.html?\\'"   . web-mode))
                  (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))))
 
@@ -789,7 +892,7 @@ Start from the beginning of buffer otherwise."
 
 (use-package eyebrowse
   :diminish eyebrowse-mode
-  :pin melpa-stable
+  ;; :pin melpa-stable
   :config (progn
             (eyebrowse-mode t)
             (eyebrowse-setup-evil-keys)
@@ -827,34 +930,19 @@ Start from the beginning of buffer otherwise."
                                                             :ratio 0.4)))
             (shackle-mode t)))
 
-(use-package erc
-  :defer t
-  :config (progn
-            (use-package erc-hl-nicks :config (add-hook 'erc-mode-hook #'erc-hl-nicks-mode))
-            (use-package sauron
-              :config (setq sauron-modules '(sauron-erc sauron-org sauron-notifications)
-                            sauron-separate-frame nil
-                            sauron-max-line-length 180
-                            sauron-watch-nicks '("kovrik" "kovrik`" "kovrik``")
-            (sauron-start)))
-            (erc-autojoin-mode t)
-            (erc-scrolltobottom-enable)
-            (erc-scrolltobottom-mode t)
-            (setq erc-autojoin-channels-alist '((".*\\.freenode.net" "#emacs" "#clojure"))
-                  erc-hide-list '("JOIN" "PART" "QUIT" "NICK" "MODE")
-                  erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT" "MODE"
-                                            "324"  "329"  "332"  "333"  "353" "477")
-                  erc-server "irc.freenode.net"
-                  erc-port 6667
-                  erc-nick "kovrik"
-                  erc-track-position-in-mode-line t
-                  erc-input-line-position -2
-                  erc-prompt-for-password nil
-                  erc-header-line-face-method nil
-                  erc-server-coding-system '(utf-8 . utf-8)
-                  erc-prompt ">"
-                  erc-accidental-paste-threshold-seconds 0.5
-                  erc-join-buffer 'bury)))
+;; Solidity
+(use-package solidity-mode)
+(use-package solidity-flycheck
+             :config (progn
+                       (setq solidity-flycheck-solc-checker-active t
+                             solidity-flycheck-solium-checker-active t)))
+(use-package company-solidity
+             :config (progn
+                       (add-hook 'solidity-mode-hook
+                                 (lambda () (set (make-local-variable 'company-backends)
+		                                             (append '((company-solidity company-capf company-dabbrev-code))
+			                                                   company-backends)))) ))
+
 
 ;; Misc
 (progn
