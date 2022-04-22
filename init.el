@@ -4,6 +4,7 @@
 ;;; Code:
 (let ((file-name-handler-alist nil)
       (gc-cons-threshold (* 100 1024 1024))
+      (gc-cons-percentage 0.6)
       (debug-on-error t)
       (debug-on-quit t))
 
@@ -107,12 +108,14 @@
               tab-width 2
               find-file-visit-truename t
               mode-require-final-newline nil
-              major-mode 'text-mode)
+              major-mode 'text-mode
+              pdf-view-display-size 'fit-page)
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
       inhibit-startup-message t
       inhibit-startup-screen t
       inhibit-startup-echo-area-message t
       initial-scratch-message nil
+      frame-inhibit-implied-resize t
       scroll-margin 5
       scroll-conservatively 30
       scroll-step 1
@@ -120,6 +123,7 @@
       ring-bell-function 'ignore
       use-dialog-box nil
       visible-bell nil
+      pdf-view-use-scaling 1
       uniquify-buffer-name-style 'forward
       show-trailing-whitespace t
       ns-use-srgb-colorspace nil
@@ -148,6 +152,7 @@
 (global-hl-line-mode)
 (winner-mode)
 (blink-cursor-mode -1)
+;; (pixel-scroll-mode)
 (fset 'yes-or-no-p 'y-or-n-p)
 (put 'narrow-to-defun  'disabled nil)
 (put 'narrow-to-page   'disabled nil)
@@ -159,17 +164,10 @@
            ("M-o"      . ace-window)
            ("M-SPC"    . hydra-common-commands/body)
            ("C-M-l"    . indent-region)
-           ("<f5>"     . (lambda () (interactive) (find-file user-init-file))))
+           ("<f5>"     . (lambda () (interactive) (find-file user-init-file)))
+           ("M-<f1>"   . dired-jump))
 
 (load custom-file :noerror :nomessage)
-;; (use-package solarized-theme
-;;   :config (progn
-;;             (setq solarized-use-variable-pitch nil
-;;                   soarized-high-contrast-mode-line t
-;;                   solarized-use-less-bold t
-;;                   solarized-scale-org-headlines nil)
-;;             (load-theme 'solarized-light)))
-;; (use-package nord-theme :config (load-theme 'nord))
 (use-package doom-themes
   :config (progn
             (load-theme 'doom-nord t)
@@ -177,6 +175,8 @@
             (global-hl-line-mode)
             (set-face-background 'hl-line "#404960")
             (set-face-background 'region  "#606980")))
+(use-package solaire-mode
+             :config (solaire-global-mode +1))
 
 ;; PATH
 (use-package exec-path-from-shell
@@ -204,8 +204,9 @@
                             (font-spec :name "Consolas"   :size 11)))))
   (when my-font
     (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
-    (set-face-attribute 'default nil :font my-font)
-    (set-frame-font      my-font  nil t)
+    ;; (set-face-attribute 'default nil :font my-font)
+    ;; (set-frame-font      my-font  nil t)
+    (add-to-list 'default-frame-alist `(font . ,(concat (font-get my-font :name) "-" (number-to-string (font-get my-font :size)))))
     (when (eq system-type 'darwin)
       (setq mac-allow-anti-aliasing t))))
 
@@ -214,6 +215,8 @@
 (use-package command-log-mode :defer t)
 (use-package restclient :defer t)
 (use-package iedit)
+(use-package rg :config (rg-enable-default-bindings))
+(use-package wgrep)
 (use-package rainbow-mode :defer t :diminish rainbow-mode)
 (use-package focus :defer t)
 (use-package color-theme :defer t :config (color-theme-initialize))
@@ -247,6 +250,17 @@
                        ("C-x v k" . diff-hl-previous-hunk-cycle)
                        ("C-x v r" . diff-hl-revert-hunk))
             (global-diff-hl-mode t)))
+(use-package hl-todo
+  :hook (prog-mode . hl-todo-mode)
+  :config
+  (setq hl-todo-highlight-punctuation ":"
+        hl-todo-keyword-faces
+        `(("TODO"       warning bold)
+          ("FIXME"      error bold)
+          ("HACK"       font-lock-constant-face bold)
+          ("REVIEW"     font-lock-keyword-face bold)
+          ("NOTE"       success bold)
+          ("DEPRECATED" font-lock-doc-face bold))))
 
 (use-package find-func
   :config (defun my-find-thing-at-point ()
@@ -262,13 +276,10 @@
          ("C-h v" . find-variable)
          ("C-h l" . find-library)))
 
-(use-package spaceline
-  :config (progn
-            (require 'spaceline-config)
-            (setq powerline-height 14
-                  powerline-default-separator 'slant
-                  spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
-            (spaceline-spacemacs-theme)))
+(use-package doom-modeline
+             :ensure t
+             :init (doom-modeline-mode 1)
+             :config (setq doom-modeline-minor-modes t))
 
 (use-package smartparens
   :config (progn
@@ -313,9 +324,9 @@
               "cider-find-var at point without prompt"
               (interactive)
               (cider-find-var t nil))
-            (bind-keys :map clojure-mode-map ((kbd "C-h")   . cider-find-var-no-prompt)
-                                             ((kbd "C-S-h") . cider-find-var-no-prompt)
-                                             ((kbd "C-M-x") . cider-eval-defun-at-point))))
+            (bind-keys :map clojure-mode-map ((kbd "C-h")     . cider-find-var-no-prompt)
+                                             ((kbd "C-S-h")   . cider-find-var-no-prompt)
+                                             ((kbd "C-M-x")   . cider-eval-defun-at-point))))
 
 (use-package geiser
   :defer t
@@ -390,6 +401,17 @@
 	        (with-current-buffer bufname (slime-company-doc-mode)))
 	      (princ string)
 	      (goto-char (point-min))))))
+
+;; SLY
+;; (use-package sly-quicklisp
+;;                :after sly)
+
+;; (use-package sly
+;;              :config (setq sly-lisp-implementations
+;;                            `((sbcl ("/usr/local/bin/sbcl" "--noinform" "--no-linedit") :coding-system utf-8-unix)))
+;;  (evil-set-initial-state 'sly-mrepl-mode 'emacs))
+
+;; (provide 'init-sly)
 
 (use-package evil
   :config (progn
@@ -483,6 +505,44 @@
 (use-package flx)
 (use-package flx-ido)
 
+;; (use-package vertico
+;;              :init
+;;              (vertico-mode)
+
+;;              ;; Different scroll margin
+;;              ;; (setq vertico-scroll-margin 0)
+
+;;              ;; Show more candidates
+;;              ;; (setq vertico-count 20)
+
+;;              ;; Grow and shrink the Vertico minibuffer
+;;              ;; (setq vertico-resize t)
+
+;;              ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+;;              ;; (setq vertico-cycle t)
+;;              )
+;; (use-package marginalia
+;;              ;; Either bind `marginalia-cycle` globally or only in the minibuffer
+;;              :bind (("M-A" . marginalia-cycle)
+;;                     :map minibuffer-local-map
+;;                     ("M-A" . marginalia-cycle))
+
+;;              ;; The :init configuration is always executed (Not lazy!)
+;;              :init
+
+;;              ;; Must be in the :init section of use-package such that the mode gets
+;;              ;; enabled right away. Note that this forces loading the package.
+;;              (marginalia-mode))
+;; (use-package prescient)
+;; ;; (use-package ivy-prescient)
+;; ;; (use-package company-prescient)
+;; (use-package selectrum-prescient)
+;; (use-package selectrum
+;;              :config (selectrum-mode +1)
+;;                      (selectrum-prescient-mode +1))
+;; TODO embark?
+;; TODO consult?
+
 (use-package swiper
   :demand t
   :diminish ivy-mode
@@ -510,7 +570,10 @@
                                    ("C-k"    . ivy-previous-line)
                                    ("C-j"    . ivy-next-line))
                         (ivy-mode 1)))
-            (use-package counsel))
+            (use-package counsel)
+            (use-package ivy-rich
+                         :config (ivy-rich-mode 1)
+                         (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)))
   :bind (("\C-s"    . swiper)
          ("C-c C-r" . ivy-resume)
          ("M-x"     . counsel-M-x)
@@ -694,9 +757,19 @@ Project
 --------
 _p_: projectile   _c_: compile
 "
-              ("p"   projectile-switch-project)
-              ("c"   compile)
-              ("q"   nil "quit"))
+              ("p" projectile-switch-project)
+              ("c" compile)
+              ("q" nil "quit"))
+
+            (defhydra hydra-buffers
+              (:color blue :hint nil)
+"
+Buffers
+--------
+_b_: switch buffer
+"
+              ("b" ivy-switch-buffer)
+              ("q" nil "quit"))
 
             (defhydra hydra-common-commands
               (:color blue :hint nil)
@@ -705,7 +778,7 @@ _p_: projectile   _c_: compile
 _SPC_: no highlight    _f_: find        _i_: indent    _s_: delete trailing whitepsaces
 _P_:   project         _d_: describe    _a_: align     _D_: ediff
 _p_:   packages        _e_: evaluate    _w_: window    _z_: zoom
-                     _x_: execute
+_b_:   buffers         _x_: execute
 "
               ("SPC" evil-search-highlight-persist-remove-all)
               ("f"   hydra-find/body)
@@ -721,6 +794,7 @@ _p_:   packages        _e_: evaluate    _w_: window    _z_: zoom
               ("D"   hydra-ediff/body)
               ("e"   hydra-eval/body)
               ("x"   counsel-M-x)
+              ("b"   hydra-buffers/body)
               ("q"   nil "quit"))))
 
 (use-package projectile
@@ -943,6 +1017,15 @@ Start from the beginning of buffer otherwise."
 		                                             (append '((company-solidity company-capf company-dabbrev-code))
 			                                                   company-backends)))) ))
 
+;; PDF Tools
+(use-package pdf-tools
+             :defer f
+             :config (pdf-loader-install))
+
+(use-package vterm
+             :defer t
+             :config (with-eval-after-load 'vterm
+                       (evil-set-initial-state 'vterm-mode 'emacs)))  
 
 ;; Misc
 (progn
@@ -990,6 +1073,7 @@ Start from the beginning of buffer otherwise."
       jit-lock-defer-time 0.05
       debug-on-error nil
       debug-on-quit nil
-      gc-cons-threshold (* 1 1024 1024))
+      gc-cons-threshold (* 1 1024 1024)
+      gc-cons-percentage 0.1)
 (provide 'init)
 ;;; init.el ends here
