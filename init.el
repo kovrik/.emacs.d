@@ -164,8 +164,7 @@
            ("M-o"      . ace-window)
            ("M-SPC"    . hydra-common-commands/body)
            ("C-M-l"    . indent-region)
-           ("<f5>"     . (lambda () (interactive) (find-file user-init-file)))
-           ("M-<f1>"   . dired-jump))
+           ("<f5>"     . (lambda () (interactive) (find-file user-init-file))))
 
 (load custom-file :noerror :nomessage)
 (use-package doom-themes
@@ -177,6 +176,12 @@
             (set-face-background 'region  "#606980")))
 (use-package solaire-mode
              :config (solaire-global-mode +1))
+
+(use-package all-the-icons
+             :if (display-graphic-p)
+             :config (use-package all-the-icons-dired
+                                  :defer t
+                                  :config (add-hook 'dired-mode-hook #'all-the-icons-dired-mode)))
 
 ;; PATH
 (use-package exec-path-from-shell
@@ -217,6 +222,7 @@
 (use-package iedit)
 (use-package rg :config (rg-enable-default-bindings))
 (use-package wgrep)
+(use-package ranger :defer t)
 (use-package rainbow-mode :defer t :diminish rainbow-mode)
 (use-package focus :defer t)
 (use-package color-theme :defer t :config (color-theme-initialize))
@@ -296,7 +302,7 @@
                        ((kbd "M-<delete>")    . sp-unwrap-sexp)
                        ((kbd "M-<backspace>") . sp-unwrap-sexp)
                        ((kbd "C-M-t")         . sp-transpose-sexp))
-            (add-hook 'prog-mode-hook 'turn-on-smartparens-strict-mode)
+            (add-hook 'prog-mode-hook #'turn-on-smartparens-strict-mode)
             (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)))
 
 (use-package clojure-mode
@@ -312,9 +318,9 @@
               :config (progn
                         (flycheck-clojure-setup)
                         (setq flycheck-checkers (delete 'clojure-cider-typed flycheck-checkers))))
-            (add-hook 'clojure-mode-hook 'flycheck-mode)
-            (add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
-            (add-hook 'cider-mode-hook   'cider-turn-on-eldoc-mode)
+            (add-hook 'clojure-mode-hook #'flycheck-mode)
+            (add-hook 'clojure-mode-hook #'turn-on-eldoc-mode)
+            (add-hook 'cider-mode-hook   #'cider-turn-on-eldoc-mode)
             (setq nrepl-log-messages           t
                   nrepl-hide-special-buffers   t
                   cider-prefer-local-resources t
@@ -575,9 +581,10 @@
                          :config (ivy-rich-mode 1)
                          (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)))
   :bind (("\C-s"    . swiper)
+         ("M-s o"   . swiper-multi)
+         ("C-S-f"   . swiper-all)
          ("C-c C-r" . ivy-resume)
          ("M-x"     . counsel-M-x)
-         ("M-s o"   . swiper-multi)
          ("C-x f"   . counsel-find-file)
          ("C-x C-f" . counsel-find-file)
          ("C-x C-b" . ivy-switch-buffer)
@@ -839,12 +846,13 @@ Use Counsel otherwise."
   :diminish company-mode
   :config (progn
             (use-package company-quickhelp
-              :config (progn (setq company-quickhelp-delay 0.7)
-                             (company-quickhelp-mode 1)))
+                         :config (progn (setq company-quickhelp-delay 0.7)
+                                        (company-quickhelp-mode 1)))
             (use-package company-flx
               :config (with-eval-after-load 'company
                         (company-flx-mode +1)))
             (setq company-show-numbers t
+                  company-idle-delay 0.4
                   company-minimum-prefix-length 3
                   company-require-match 'never
                   company-dabbrev-downcase nil
@@ -964,6 +972,12 @@ Start from the beginning of buffer otherwise."
                   undo-tree-visualizer-diff       t)
             (define-key undo-tree-map (kbd "C-/") nil)))
 
+(use-package dired-sidebar
+             :defer t
+             :commands (dired-sidebar-toggle-sidebar)
+             ;; FIXME Enable evil-mode in dired-sidebar-mode
+             :bind (("M-<f1>" . dired-sidebar-toggle-sidebar)))
+
 (use-package eyebrowse
   :diminish eyebrowse-mode
   ;; :pin melpa-stable
@@ -971,17 +985,17 @@ Start from the beginning of buffer otherwise."
             (eyebrowse-mode t)
             (eyebrowse-setup-evil-keys)
             (setq eyebrowse-new-workspace t
-                  eyebrowse-close-window-config-prompt t)
-            (bind-keys ("C-1"  . eyebrowse-switch-to-window-config-1)
-                       ("C-2"  . eyebrowse-switch-to-window-config-2)
-                       ("C-3"  . eyebrowse-switch-to-window-config-3)
-                       ("C-4"  . eyebrowse-switch-to-window-config-4)
-                       ("C-5"  . eyebrowse-switch-to-window-config-5)
-                       ("C-6"  . eyebrowse-switch-to-window-config-6)
-                       ("C-7"  . eyebrowse-switch-to-window-config-7)
-                       ("C-8"  . eyebrowse-switch-to-window-config-8)
-                       ("C-9"  . eyebrowse-switch-to-window-config-9)
-                       ("C-0"  . eyebrowse-switch-to-window-config-0))))
+                  eyebrowse-close-window-config-prompt t))
+  :bind (("C-1"  . eyebrowse-switch-to-window-config-1)
+         ("C-2"  . eyebrowse-switch-to-window-config-2)
+         ("C-3"  . eyebrowse-switch-to-window-config-3)
+         ("C-4"  . eyebrowse-switch-to-window-config-4)
+         ("C-5"  . eyebrowse-switch-to-window-config-5)
+         ("C-6"  . eyebrowse-switch-to-window-config-6)
+         ("C-7"  . eyebrowse-switch-to-window-config-7)
+         ("C-8"  . eyebrowse-switch-to-window-config-8)
+         ("C-9"  . eyebrowse-switch-to-window-config-9)
+         ("C-0"  . eyebrowse-switch-to-window-config-0)))
 
 (use-package shackle
   :config (progn
