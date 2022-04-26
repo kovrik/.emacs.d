@@ -82,6 +82,7 @@
         visible-bell nil
         pdf-view-use-scaling 1
         uniquify-buffer-name-style 'forward
+        evil-want-keybinding nil
         show-trailing-whitespace t
         ns-use-srgb-colorspace nil
         gnutls-min-prime-bits 4096             ;; remove the warnings from the GnuTLS library when using HTTPS
@@ -119,7 +120,6 @@
   (bind-keys ([escape]   . keyboard-quit)
              ("RET"      . newline-and-indent)
              ("M-o"      . ace-window)
-             ("M-SPC"    . hydra-common-commands/body)
              ("C-M-l"    . indent-region)
              ("<f5>"     . (lambda () (interactive) (find-file user-init-file))))
 
@@ -138,20 +138,21 @@
 
   (use-package doom-themes
                :config (progn
-                         (load-theme 'doom-nord t)
+                         (load-theme 'doom-nord-light t)
                          (doom-themes-org-config)
+                         ;; (doom-themes-neotree-config)
                          (global-hl-line-mode)
-                         (set-face-background 'hl-line "#404960")
-                         (set-face-background 'region  "#606980")))
+                         ;;(set-face-background 'hl-line "#404960")
+                         ;;(set-face-background 'region  "#606980")
+                         ))
   (use-package solaire-mode
                :config (solaire-global-mode +1))
 
   (use-package doom-modeline
                :ensure t
                :init (doom-modeline-mode 1)
-               :config (setq doom-modeline-minor-modes t))
-
-  ;; (use-package color-theme :defer t :config (color-theme-initialize))
+               :config (setq doom-modeline-minor-modes nil)
+                       (add-hook 'pdf-tools-enabled-hook #'doom-modeline-set-pdf-modeline))
 
   ;; PATH
   (use-package exec-path-from-shell
@@ -195,6 +196,18 @@
   (use-package ranger :defer t)
   (use-package rainbow-mode :defer t :diminish rainbow-mode)
   (use-package focus :defer t)
+  (use-package flx)
+  (use-package flx-ido)
+  (use-package request :defer t)
+  (use-package which-key :config (which-key-setup-minibuffer) (which-key-mode))
+  (use-package pdf-view-restore :config (add-hook 'pdf-view-mode-hook 'pdf-view-restore-mode))
+  (use-package vterm :defer t)
+
+  (use-package pdf-tools
+    :defer f
+    :config
+    (pdf-loader-install)
+    (add-hook 'pdf-view-mode-hook #'pdf-misc-size-indication-minor-mode))
 
   (use-package diff-hl
                :config (progn
@@ -453,7 +466,7 @@
                                     ("k"      . evil-previous-visual-line)
                                     ("SPC" . hydra-common-commands/body))
                          (bind-keys :map evil-visual-state-map ("SPC" . hydra-common-commands/body))
-                         (my-add-hooks '(help-mode-hook prog-mode-hook text-mode-hook) #'evil-local-mode)
+                         (my-add-hooks '(help-mode-hook prog-mode-hook text-mode-hook pdf-view-mode-hook) #'evil-local-mode)
                          (defun my-evil-off ()
                            "Turn 'evil-mode' off and change cursor type to bar."
                            (interactive)
@@ -465,8 +478,14 @@
                                          eshell-mode-hook comint-mode-hook
                                          proced-mode-hook nrepl-connected-hook)
                                        #'my-evil-off)
-                         (with-eval-after-load 'term
-                           (evil-set-initial-state 'term-mode 'emacs))))
+                         (with-eval-after-load 'term (evil-set-initial-state 'term-mode 'emacs))
+                         (with-eval-after-load 'vterm (evil-set-initial-state 'vterm-mode 'emacs))
+                         (evil-set-initial-state 'pdf-view-mode 'normal)))
+
+  (use-package evil-collection
+    :after evil
+    :ensure t
+    :config (evil-collection-init))
 
   (use-package eldoc
                :diminish eldoc-mode
@@ -475,9 +494,6 @@
                                      lisp-interaction-mode-hook
                                      ielm-mode-hook)
                                    #'turn-on-eldoc-mode))
-
-  (use-package flx)
-  (use-package flx-ido)
 
   ;; (use-package vertico
   ;;              :init
@@ -512,10 +528,15 @@
   ;; ;; (use-package company-prescient)
   ;; (use-package selectrum-prescient)
   ;; (use-package selectrum
-  ;;              :config (selectrum-mode +1)
-  ;;                      (selectrum-prescient-mode +1))
+               ;; :config (selectrum-mode +1)
+                       ;; (selectrum-prescient-mode +1))
   ;; TODO embark?
   ;; TODO consult?
+
+  ;; (use-package prescient
+  ;;   :config (progn
+  ;;             (use-package ivy-prescient :config (ivy-prescient-mode))
+  ;;             (use-package company-prescient :config (company-prescient-mode))))
 
   (use-package swiper
                :demand t
@@ -523,8 +544,8 @@
                :config (progn
                          (use-package ivy
                                       :config (progn
-                                                (setq ivy-re-builders-alist '((swiper      . ivy--regex-plus)
-                                                                              (t           . ivy--regex-plus)))
+                                                (setq ivy-re-builders-alist '((swiper . ivy--regex-plus)
+                                                                              (t      . ivy--regex-plus)))
                                                 (setq ivy-use-virtual-buffers t
                                                       ivy-display-style 'plain
                                                       ivy-initial-inputs-alist nil
@@ -544,11 +565,12 @@
                                                            ("C-k"    . ivy-previous-line)
                                                            ("C-j"    . ivy-next-line))
                                                 (ivy-mode 1)))
-                         (use-package counsel)
+                         (use-package counsel
+                           :config  (setq counsel-grep-base-command "rg -i -M 120 --no-heading --line-number --color never %s %s"))
                          (use-package ivy-rich
                                       :config (ivy-rich-mode 1)
                                       (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)))
-               :bind (("\C-s"    . swiper)
+               :bind (("\C-s"    . swiper-isearch)
                       ("M-s o"   . swiper-multi)
                       ("C-S-f"   . swiper-all)
                       ("C-c C-r" . ivy-resume)
@@ -583,117 +605,91 @@
                                          (?u (lambda () (progn (winner-undo) (setq this-command 'winner-undo))))
                                          (?r winner-redo))))
 
-  ;; TODO add more hydras
   (use-package hydra
-               :config (progn
-                         (defhydra hydra-undo-tree
-                             (:color yellow :hint nil)
-                           "
+    :config (progn
+              (defhydra hydra-undo-tree
+                (:color yellow :hint nil)
+                "
 Undo Tree
 -------------------
 _k_: undo    _s_: save
 _j_: redo    _l_: load
 
 "
-                           ("k"   undo-tree-undo)
-                           ("j"   undo-tree-redo)
-                           ("s"   undo-tree-save-history)
-                           ("l"   undo-tree-load-history)
-                           ("v"   undo-tree-visualize "visualize" :color blue)
-                           ("q"   nil "quit" :color blue))
+                ("k"   undo-tree-undo)
+                ("j"   undo-tree-redo)
+                ("s"   undo-tree-save-history)
+                ("l"   undo-tree-load-history)
+                ("v"   undo-tree-visualize "visualize" :color blue)
+                ("q"   nil "quit" :color blue))
 
-                         (defhydra hydra-find
-                             (:color blue :hint nil)
-                           "
+              (defhydra hydra-find
+                (:color blue :hint nil)
+                "
 Find
 -----
 _h_: at point         _f_: file      _F_: function   _s_: swiper   _g_: grep
 _k_: function on key  _v_: variabl   _l_: library    _a_: ag
 "
-                           ("h"   my-find-thing-at-point)
-                           ("F"   find-function)
-                           ("s"   swiper)
-                           ("f"   counsel-find-file)
-                           ("k"   find-function-on-key)
-                           ("v"   find-variable)
-                           ("l"   find-library)
-                           ("a"   counsel-ag)
-                           ("g"   counsel-grep)
+                ("h"   my-find-thing-at-point)
+                ("F"   find-function)
+                ("s"   swiper-isearch)
+                ("f"   counsel-find-file)
+                ("k"   find-function-on-key)
+                ("v"   find-variable)
+                ("l"   find-library)
+                ("a"   counsel-ag)
+                ("g"   counsel-grep)
 
-                           ("q"   nil "quit" :color blue))
+                ("q"   nil "quit" :color blue))
 
-                         (defhydra hydra-zoom
-                             (:hint nil)
-                           "
-Zoom           Region
---------------------------
-_j_: zoom in     _n_: narrow
-_k_: zoom out    _w_: widen
-
-"
-                           ("j" text-scale-increase)
-                           ("k" text-scale-decrease)
-                           ("n" narrow-to-region :color blue)
-                           ("w" widen :color blue)
-                           ("q"   nil "quit" :color blue))
-
-                         (defhydra hydra-packages
-                             (:color blue :hint nil)
-                           "
-Packages
----------
-_l_: list  _r_: refresh  "
-                           ("l" list-packages)
-                           ("r" package-refresh-contents)
-                           ("q"   nil "quit" :color blue))
-
-                         (defhydra hydra-ediff (:color blue :hint nil)
-                           "
+              (defhydra hydra-ediff (:color blue :hint nil)
+                "
 ^Buffers              Files               VC                Ediff regions
 ----------------------------------------------------------------------------------
 _b_: buffers           _f_: files (_=_)        _r_: revisions      _l_: linewise
 _B_: Buffers (3-way)   _F_: Files (3-way)                      _w_: wordwise
                      _c_: current file
 "
-                           ("b" ediff-buffers)
-                           ("B" ediff-buffers3)
-                           ("=" ediff-files)
-                           ("f" ediff-files)
-                           ("F" ediff-files3)
-                           ("c" ediff-current-file)
-                           ("r" ediff-revision)
-                           ("l" ediff-regions-linewise)
-                           ("w" ediff-regions-wordwise)
-                           ("q" nil "quit"))
+                ("b" ediff-buffers)
+                ("B" ediff-buffers3)
+                ("=" ediff-files)
+                ("f" ediff-files)
+                ("F" ediff-files3)
+                ("c" ediff-current-file)
+                ("r" ediff-revision)
+                ("l" ediff-regions-linewise)
+                ("w" ediff-regions-wordwise)
+                ("q" nil "quit"))
 
-                         (defhydra hydra-describe
-                             (:exit t :columns 2)
-                           "
+              (defhydra hydra-describe
+                (:exit t :columns 2)
+                "
 Describe
 --------- "
-                           ("v" counsel-describe-variable "variable")
-                           ("f" counsel-describe-function "function")
-                           ("F" counsel-describe-face "face")
-                           ("k" describe-key "key")
-                           ("q" nil "quit"))
+                ("v" counsel-describe-variable "variable")
+                ("f" counsel-describe-function "function")
+                ("F" counsel-describe-face "face")
+                ("k" describe-key "key")
+                ("q" nil "quit"))
 
-                         (defhydra hydra-eval
-                             (:exit t :columns 2)
-                           "
+              (defhydra hydra-eval
+                (:exit t :columns 2)
+                "
 Evaluate
 --------- "
-                           ("r" eval-region "region")
-                           ("b" eval-buffer "buffer")
-                           ("e" eval-expression "S-expression")
-                           ("l" eval-last-sexp "last s-expression")
-                           ("L" eval-last-sexp-print-value "last s-expression and print value  ")
-                           ("d" eval-defun "defun / function")
-                           ("f" eval-defun "defun / function")
-                           ("q"   nil "quit" :color blue))
+                ("r" eval-region "region")
+                ("b" eval-buffer "buffer")
+                ("e" eval-expression "S-expression")
+                ("l" eval-last-sexp "last s-expression")
+                ("L" eval-last-sexp-print-value "last s-expression and print value  ")
+                ("d" eval-defun "defun / function")
+                ("f" eval-defun "defun / function")
+                ("q"   nil "quit" :color blue))
 
-                         (defhydra hydra-window
-                             (:hint nil)
-                           "
+              (defhydra hydra-window
+                (:hint nil)
+                "
 Split     Delete     Switch Window   Buffers        Winner
 --------------------------------------------------------------
 _\\_: vert   _c_: close   _h_: left         _p_: previous    _u_: undo
@@ -703,100 +699,96 @@ _-_: horz   _o_: other   _j_: down         _n_: next        _r_: redo
                                      _R_: revert-buffer
 "
 
-                           ("-" split-window-below)
-                           ("\\" split-window-right)
+                ("-" split-window-below)
+                ("\\" split-window-right)
 
-                           ("c" delete-window)
-                           ("o" delete-other-windows)
+                ("c" delete-window)
+                ("o" delete-other-windows)
 
-                           ("h" windmove-left)
-                           ("j" windmove-down)
-                           ("k" windmove-up)
-                           ("l" windmove-right)
+                ("h" windmove-left)
+                ("j" windmove-down)
+                ("k" windmove-up)
+                ("l" windmove-right)
 
-                           ("p" previous-buffer)
-                           ("n" next-buffer)
-                           ("b" counsel-ibuffer :color blue)
-                           ("w" ace-window :color blue)
-                           ("R" revert-buffer :color blue)
+                ("p" previous-buffer)
+                ("n" next-buffer)
+                ("b" counsel-ibuffer :color blue)
+                ("w" ace-window :color blue)
+                ("R" revert-buffer :color blue)
 
-                           ("u" winner-undo)
-                           ("r" winner-redo)
+                ("u" winner-undo)
+                ("r" winner-redo)
 
-                           ("q" nil "quit"))
+                ("q" nil "quit"))
 
-                         (defhydra hydra-project
-                             (:color blue :hint nil)
-                           "
+              (defhydra hydra-project
+                (:color blue :hint nil)
+                "
 Project
 --------
 _p_: projectile   _c_: compile
 "
-                           ("p" projectile-switch-project)
-                           ("c" compile)
-                           ("q" nil "quit"))
+                ("p" projectile-switch-project)
+                ("c" compile)
+                ("q" nil "quit"))
 
-                         (defhydra hydra-buffers
-                             (:color blue :hint nil)
-                           "
+              (defhydra hydra-buffers
+                (:color blue :hint nil)
+                "
 Buffers
 --------
 _b_: switch buffer
 "
-                           ("b" ivy-switch-buffer)
-                           ("q" nil "quit"))
+                ("b" ivy-switch-buffer)
+                ("q" nil "quit"))
 
-                         (defhydra hydra-common-commands
-                             (:color blue :hint nil)
-                           "
+              (defhydra hydra-common-commands
+                (:color blue :hint nil)
+                "
 
-_SPC_: no highlight    _f_: find        _i_: indent    _s_: delete trailing whitepsaces
-_P_:   project         _d_: describe    _a_: align     _D_: ediff
-_p_:   packages        _e_: evaluate    _w_: window    _z_: zoom
-_b_:   buffers         _x_: execute
+_SPC_: no highlight    _f_: find        _x_: execute   _s_: delete trailing whitepsaces
+_P_:   project         _d_: describe    _D_: ediff
+_b_:   buffers         _e_: evaluate    _w_: window
 "
-                           ("SPC" evil-search-highlight-persist-remove-all)
-                           ("f"   hydra-find/body)
-                           ("i"   indent-region)
-                           ("w"   hydra-window/body)
-                           ("d"   hydra-describe/body)
-                           ("a"   align-regexp)
-                           ("s"   delete-trailing-whitespace)
-                           ("u"   hydra-undo-tree/body)
-                           ("P"   hydra-project/body)
-                           ("p"   hydra-packages/body)
-                           ("z"   hydra-zoom/body)
-                           ("D"   hydra-ediff/body)
-                           ("e"   hydra-eval/body)
-                           ("x"   counsel-M-x)
-                           ("b"   hydra-buffers/body)
-                           ("q"   nil "quit"))))
+                ("SPC" evil-search-highlight-persist-remove-all)
+                ("f"   hydra-find/body)
+                ("e"   hydra-eval/body)
+                ("w"   hydra-window/body)
+                ("d"   hydra-describe/body)
+                ("s"   delete-trailing-whitespace)
+                ("u"   hydra-undo-tree/body)
+                ("P"   hydra-project/body)
+                ("D"   hydra-ediff/body)
+                ("x"   counsel-M-x)
+                ("b"   hydra-buffers/body)
+                ("q"   nil "quit")))
+    :bind (("M-SPC" . hydra-common-commands/body)))
 
   (use-package projectile
-               :diminish projectile-mode
-               :config (progn
-                         (defun my-projectile-switch-to-project ()
-                           "My switch-to-project action for projectile.
+    :diminish projectile-mode
+    :config (progn
+              (defun my-projectile-switch-to-project ()
+                "My switch-to-project action for projectile.
 If project is a git-project, then run magit-status.
 Otherwise run projectile-find-file."
-                           (interactive)
-                           (let ((pr (projectile-project-root))
-                                 (git-projects (cl-remove-if
-                                                (lambda (p) (or (file-remote-p p)
-                                                                (not (file-directory-p (concat p "/.git/")))))
-                                                (mapcar 'expand-file-name projectile-known-projects))))
-                             (if (member pr git-projects)
-                                 (magit-status pr)
-                                 (projectile-find-file))))
+                (interactive)
+                (let ((pr (projectile-project-root))
+                      (git-projects (cl-remove-if
+                                     (lambda (p) (or (file-remote-p p)
+                                                     (not (file-directory-p (concat p "/.git/")))))
+                                     (mapcar 'expand-file-name projectile-known-projects))))
+                  (if (member pr git-projects)
+                      (magit-status pr)
+                    (projectile-find-file))))
 
-                         (setq projectile-keymap-prefix (kbd "C-c p")
-                               projectile-completion-system 'ivy
-                               projectile-enable-caching t
-                               projectile-switch-project-action 'my-projectile-switch-to-project)
-                         (when (eq system-type 'windows-nt)
-                           (setq projectile-indexing-method 'alien
-                                 projectile-enable-caching  nil))
-                         (projectile-global-mode)
+              (setq projectile-keymap-prefix (kbd "C-c p")
+                    projectile-completion-system 'ivy
+                    projectile-enable-caching t
+                    projectile-switch-project-action 'my-projectile-switch-to-project)
+              (when (eq system-type 'windows-nt)
+                (setq projectile-indexing-method 'alien
+                      projectile-enable-caching  nil))
+              (projectile-global-mode)
 
                          (defun my-find-file ()
                            "If currently in a project, then use Projectile to fuzzy find a file.
@@ -820,7 +812,7 @@ Use Counsel otherwise."
                                       :config (with-eval-after-load 'company
                                                 (company-flx-mode +1)))
                          (setq company-show-numbers t
-                               company-idle-delay 0.4
+                               company-idle-delay 0.7
                                company-minimum-prefix-length 3
                                company-require-match 'never
                                company-dabbrev-downcase nil
@@ -1006,16 +998,6 @@ Start from the beginning of buffer otherwise."
 		                                               (append '((company-solidity company-capf company-dabbrev-code))
 			                                                     company-backends)))) ))
 
-  ;; PDF Tools
-  (use-package pdf-tools
-               :defer f
-               :config (pdf-loader-install))
-
-  (use-package vterm
-               :defer t
-               :config (with-eval-after-load 'vterm
-                         (evil-set-initial-state 'vterm-mode 'emacs)))
-
   ;; Misc
   (progn
     (defun my-hsplit-last-buffer (prefix)
@@ -1055,6 +1037,16 @@ Start from the beginning of buffer otherwise."
     (require 'compile)
     (dolist (mode-map (list help-mode-map proced-mode-map compilation-mode-map))
       (define-key mode-map (kbd "q") 'my-quit)))
+
+  (defun new-scratch-buffer ()
+    "Creates a new scratch buffer."
+    (interactive)
+    (switch-to-buffer (generate-new-buffer-name "*scratch*")))
+
+  (defun emacs-quit ()
+    "Quit Emacs."
+    (interactive)
+    (kill-emacs))
   )
 
 ;; Allow font-lock-mode to do background parsing and restore some settings
