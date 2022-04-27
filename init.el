@@ -217,6 +217,8 @@
     (add-hook 'pdf-view-mode-hook #'pdf-misc-size-indication-minor-mode))
 
   (use-package diff-hl
+    :hook ((magit-pre-refresh-hook . diff-hl-magit-pre-refresh)
+           (magit-post-refresh . diff-hl-magit-post-refresh))
     :config (progn
               (defun diff-hl-next-hunk-cycle (&optional backward)
                 "Go to the beginning of the next (previous if BACKWARD) hunk in the current buffer."
