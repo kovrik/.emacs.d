@@ -119,7 +119,6 @@
   (global-unset-key (kbd "<f3>"))
   (bind-keys ([escape]   . keyboard-quit)
              ("RET"      . newline-and-indent)
-             ("M-o"      . ace-window)
              ("C-M-l"    . indent-region)
              ("<f5>"     . (lambda () (interactive) (find-file user-init-file))))
 
@@ -138,7 +137,7 @@
 
   (use-package doom-themes
     :config (progn
-              (load-theme 'doom-nord-light t)
+              (load-theme 'doom-opera-light t)
               (doom-themes-org-config)
               ;; (doom-themes-neotree-config)
               (global-hl-line-mode)
@@ -203,6 +202,14 @@
   (use-package pdf-view-restore :config (add-hook 'pdf-view-mode-hook 'pdf-view-restore-mode))
   (use-package vterm :defer t)
 
+  (use-package helpful
+    :config (progn
+              (global-set-key (kbd "C-h f") #'helpful-callable)
+              (global-set-key (kbd "C-h v") #'helpful-variable)
+              (global-set-key (kbd "C-h k") #'helpful-key)
+              (global-set-key (kbd "C-h C") #'helpful-command)
+              (global-set-key (kbd "C-h .") #'helpful-at-point)))
+
   (use-package pdf-tools
     :defer f
     :config
@@ -238,7 +245,8 @@
                          ("C-x v p" . diff-hl-previous-hunk-cycle)
                          ("C-x v k" . diff-hl-previous-hunk-cycle)
                          ("C-x v r" . diff-hl-revert-hunk))
-              (global-diff-hl-mode t)))
+              (global-diff-hl-mode t)
+              (diff-hl-margin-mode t)))
 
   (use-package hl-todo
     :hook (prog-mode . hl-todo-mode)
@@ -399,6 +407,29 @@
 
   ;; (provide 'init-sly)
 
+  ;; (use-package evil-leader
+  ;;   :defer nil
+  ;;   :ensure t
+  ;;   :config (progn
+  ;;             (global-evil-leader-mode)
+  ;;             (evil-leader/set-leader "<SPC>")
+  ;;             (evil-leader/set-key
+  ;;               "s" 'evil-search-highlight-persist-remove-all
+  ;;               ;; toggle
+  ;;               "t l" 'linum-mode
+  ;;               ;; find
+  ;;               "f f" 'counsel-find-file
+  ;;               "f s" 'swiper-isearch
+  ;;               ;; helpful
+  ;;               "h ?" 'help-for-help
+  ;;               "h k" 'helpful-key
+  ;;               "h f" 'helpful-function
+  ;;               "h s" 'helpful-symbol
+  ;;               "h v" 'helpful-variable
+  ;;               "h ." 'helpful-at-point
+  ;;               ;; open
+  ;;               "o t" 'vterm)))
+
   (use-package evil
     :config (progn
               (use-package evil-org :defer t)
@@ -447,8 +478,6 @@
                   (when (get-buffer "*Completions*")
                     (delete-windows-on "*Completions*"))
                   (abort-recursive-edit)))
-              (global-set-key                             (kbd "C-x x")   'evil-ex)
-              (global-set-key                             (kbd "C-x C-x") 'evil-ex)
               (global-set-key                             [escape] 'evil-exit-emacs-state)
               (define-key evil-visual-state-map           [escape] 'keyboard-quit)
               (define-key minibuffer-local-map            [escape] 'minibuffer-keyboard-quit)
@@ -458,12 +487,15 @@
               (define-key minibuffer-local-isearch-map    [escape] 'minibuffer-keyboard-quit)
               (define-key evil-insert-state-map           [escape] 'evil-normal-state)
               (define-key evil-insert-state-map           (kbd "C-n") 'company-complete)
-              (bind-keys :map evil-normal-state-map ([next]   . evil-scroll-down)
+              (bind-keys :map evil-normal-state-map
+                         ([next]   . evil-scroll-down)
                          ([prior]  . evil-scroll-up)
                          ([escape] . keyboard-quit)
                          ("j"      . evil-next-visual-line)
                          ("k"      . evil-previous-visual-line)
-                         ("SPC" . hydra-common-commands/body))
+                         ("C-y"    . evil-paste-after)
+                         ("SPC"    . hydra-common-commands/body)
+                         )
               (bind-keys :map evil-visual-state-map ("SPC" . hydra-common-commands/body))
               (my-add-hooks '(help-mode-hook prog-mode-hook text-mode-hook pdf-view-mode-hook) #'evil-local-mode)
               (defun my-evil-off ()
@@ -472,10 +504,8 @@
                 (turn-off-evil-mode)
                 (setq cursor-type 'bar))
               ;; Disable evil-mode in some major modes
-              (my-add-hooks '(shell-mode-hook  term-mode-hook
-                                               magit-mode-hook  erc-mode-hook
-                                               eshell-mode-hook comint-mode-hook
-                                               proced-mode-hook nrepl-connected-hook)
+              (my-add-hooks '(shell-mode-hook term-mode-hook magit-mode-hook erc-mode-hook
+                                              eshell-mode-hook comint-mode-hook proced-mode-hook nrepl-connected-hook)
                             #'my-evil-off)
               (with-eval-after-load 'term (evil-set-initial-state 'term-mode 'emacs))
               (with-eval-after-load 'vterm (evil-set-initial-state 'vterm-mode 'emacs))
@@ -532,10 +562,10 @@
   ;; TODO embark?
   ;; TODO consult?
 
-  ;; (use-package prescient
-  ;;   :config (progn
-  ;;             (use-package ivy-prescient :config (ivy-prescient-mode))
-  ;;             (use-package company-prescient :config (company-prescient-mode))))
+  (use-package prescient
+    :config (progn
+              (use-package ivy-prescient :config (ivy-prescient-mode))
+              (use-package company-prescient :config (company-prescient-mode))))
 
   (use-package swiper
     :demand t
@@ -565,7 +595,9 @@
                                      ("C-j"    . ivy-next-line))
                           (ivy-mode 1)))
               (use-package counsel
-                :config  (setq counsel-grep-base-command "rg -i -M 120 --no-heading --line-number --color never %s %s"))
+                :config  (setq counsel-grep-base-command "rg -i -M 120 --no-heading --line-number --color never %s %s"
+                               counsel-describe-function-function #'helpful-callable
+                               counsel-describe-variable-function #'helpful-variable))
               (use-package ivy-rich
                 :config (ivy-rich-mode 1)
                 (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)))
@@ -585,183 +617,24 @@
            ("C-c k"   . counsel-ag)
            ("C-x l"   . counsel-locate)))
 
-  (use-package ace-window
-    :ensure t
-    :defer 1
-    :config
-    (set-face-attribute 'aw-leading-char-face nil :foreground "deep sky blue" :weight 'bold :height 3.0)
-    (set-face-attribute 'aw-mode-line-face nil :inherit 'mode-line-buffer-id :foreground "lawn green")
-    (setq aw-keys '(?a ?s ?d ?f ?j ?k ?l)
-          aw-dispatch-always t
-          aw-dispatch-alist '((?x aw-delete-window "Ace - Delete Window")
-                              (?c aw-swap-window "Ace - Swap Window")
-                              (?n aw-flip-window)
-                              (?v aw-split-window-vert "Ace - Split Vert Window")
-                              (?h aw-split-window-horz "Ace - Split Horz Window")
-                              (?m delete-other-windows "Ace - Maximize Window")
-                              (?g delete-other-windows)
-                              (?b balance-windows)
-                              (?u (lambda () (progn (winner-undo) (setq this-command 'winner-undo))))
-                              (?r winner-redo))))
-
-  (use-package hydra
-    :config (progn
-              (defhydra hydra-undo-tree
-                (:color yellow :hint nil)
-                "
-Undo Tree
--------------------
-_k_: undo    _s_: save
-_j_: redo    _l_: load
-
-"
-                ("k"   undo-tree-undo)
-                ("j"   undo-tree-redo)
-                ("s"   undo-tree-save-history)
-                ("l"   undo-tree-load-history)
-                ("v"   undo-tree-visualize "visualize" :color blue)
-                ("q"   nil "quit" :color blue))
-
-              (defhydra hydra-find
-                (:color blue :hint nil)
-                "
-Find
------
-_h_: at point         _f_: file      _F_: function   _s_: swiper   _g_: grep
-_k_: function on key  _v_: variabl   _l_: library    _a_: ag
-"
-                ("h"   my-find-thing-at-point)
-                ("F"   find-function)
-                ("s"   swiper-isearch)
-                ("f"   counsel-find-file)
-                ("k"   find-function-on-key)
-                ("v"   find-variable)
-                ("l"   find-library)
-                ("a"   counsel-ag)
-                ("g"   counsel-grep)
-
-                ("q"   nil "quit" :color blue))
-
-              (defhydra hydra-ediff (:color blue :hint nil)
-                "
-^Buffers              Files               VC                Ediff regions
-----------------------------------------------------------------------------------
-_b_: buffers           _f_: files (_=_)        _r_: revisions      _l_: linewise
-_B_: Buffers (3-way)   _F_: Files (3-way)                      _w_: wordwise
-                     _c_: current file
-"
-                ("b" ediff-buffers)
-                ("B" ediff-buffers3)
-                ("=" ediff-files)
-                ("f" ediff-files)
-                ("F" ediff-files3)
-                ("c" ediff-current-file)
-                ("r" ediff-revision)
-                ("l" ediff-regions-linewise)
-                ("w" ediff-regions-wordwise)
-                ("q" nil "quit"))
-
-              (defhydra hydra-describe
-                (:exit t :columns 2)
-                "
-Describe
---------- "
-                ("v" counsel-describe-variable "variable")
-                ("f" counsel-describe-function "function")
-                ("F" counsel-describe-face "face")
-                ("k" describe-key "key")
-                ("q" nil "quit"))
-
-              (defhydra hydra-eval
-                (:exit t :columns 2)
-                "
-Evaluate
---------- "
-                ("r" eval-region "region")
-                ("b" eval-buffer "buffer")
-                ("e" eval-expression "S-expression")
-                ("l" eval-last-sexp "last s-expression")
-                ("L" eval-last-sexp-print-value "last s-expression and print value  ")
-                ("d" eval-defun "defun / function")
-                ("f" eval-defun "defun / function")
-                ("q"   nil "quit" :color blue))
-
-              (defhydra hydra-window
-                (:hint nil)
-                "
-Split     Delete     Switch Window   Buffers        Winner
---------------------------------------------------------------
-_\\_: vert   _c_: close   _h_: left         _p_: previous    _u_: undo
-_-_: horz   _o_: other   _j_: down         _n_: next        _r_: redo
-                     _k_: up           _b_: select
-                     _l_: right        _w_: ace-window
-                                     _R_: revert-buffer
-"
-
-                ("-" split-window-below)
-                ("\\" split-window-right)
-
-                ("c" delete-window)
-                ("o" delete-other-windows)
-
-                ("h" windmove-left)
-                ("j" windmove-down)
-                ("k" windmove-up)
-                ("l" windmove-right)
-
-                ("p" previous-buffer)
-                ("n" next-buffer)
-                ("b" counsel-ibuffer :color blue)
-                ("w" ace-window :color blue)
-                ("R" revert-buffer :color blue)
-
-                ("u" winner-undo)
-                ("r" winner-redo)
-
-                ("q" nil "quit"))
-
-              (defhydra hydra-project
-                (:color blue :hint nil)
-                "
-Project
---------
-_p_: projectile   _c_: compile
-"
-                ("p" projectile-switch-project)
-                ("c" compile)
-                ("q" nil "quit"))
-
-              (defhydra hydra-buffers
-                (:color blue :hint nil)
-                "
-Buffers
---------
-_b_: switch buffer
-"
-                ("b" ivy-switch-buffer)
-                ("q" nil "quit"))
-
-              (defhydra hydra-common-commands
-                (:color blue :hint nil)
-                "
-
-_SPC_: no highlight    _f_: find        _x_: execute   _s_: delete trailing whitepsaces
-_P_:   project         _d_: describe    _D_: ediff
-_b_:   buffers         _e_: evaluate    _w_: window
-"
-                ("SPC" evil-search-highlight-persist-remove-all)
-                ("f"   hydra-find/body)
-                ("e"   hydra-eval/body)
-                ("w"   hydra-window/body)
-                ("d"   hydra-describe/body)
-                ("s"   delete-trailing-whitespace)
-                ("u"   hydra-undo-tree/body)
-                ("P"   hydra-project/body)
-                ("D"   hydra-ediff/body)
-                ("x"   counsel-M-x)
-                ("b"   hydra-buffers/body)
-                ("q"   nil "quit")))
-    :bind (("M-SPC" . hydra-common-commands/body)))
+  ;; (use-package ace-window
+  ;;              :ensure t
+  ;;              :defer 1
+  ;;              :config
+  ;;              (set-face-attribute 'aw-leading-char-face nil :foreground "deep sky blue" :weight 'bold :height 3.0)
+  ;;              (set-face-attribute 'aw-mode-line-face nil :inherit 'mode-line-buffer-id :foreground "lawn green")
+  ;;              (setq aw-keys '(?a ?s ?d ?f ?j ?k ?l)
+  ;;                    aw-dispatch-always t
+  ;;                    aw-dispatch-alist '((?x aw-delete-window "Ace - Delete Window")
+  ;;                                        (?c aw-swap-window "Ace - Swap Window")
+  ;;                                        (?n aw-flip-window)
+  ;;                                        (?v aw-split-window-vert "Ace - Split Vert Window")
+  ;;                                        (?h aw-split-window-horz "Ace - Split Horz Window")
+  ;;                                        (?m delete-other-windows "Ace - Maximize Window")
+  ;;                                        (?g delete-other-windows)
+  ;;                                        (?b balance-windows)
+  ;;                                        (?u (lambda () (progn (winner-undo) (setq this-command 'winner-undo))))
+  ;;                                        (?r winner-redo))))
 
   (use-package projectile
     :diminish projectile-mode
@@ -967,9 +840,7 @@ Start from the beginning of buffer otherwise."
     :config (progn
               (setq shackle-lighter ""
                     shackle-rules '(("\\`\\*magit.*?\\'"      :regexp t :same t)
-                                    ("\\`\\*helm.*?\\*\\'"    :regexp t :align t :ratio 0.4)
                                     (compilation-mode         :same   t)
-                                    (sauron-mode              :ignore t)
                                     (erc-mode                 :same   t)
                                     (proced-mode              :same   t)
                                     (help-mode                :same   t)
@@ -995,7 +866,241 @@ Start from the beginning of buffer otherwise."
               (add-hook 'solidity-mode-hook
                         (lambda () (set (make-local-variable 'company-backends)
                                         (append '((company-solidity company-capf company-dabbrev-code))
-                                                company-backends)))) ))
+                                                company-backends))))))
+
+  (use-package tree-sitter
+    :config (require 'tree-sitter)
+    (require 'tree-sitter-hl)
+    (global-tree-sitter-mode))
+  (use-package tree-sitter-langs
+    :config (require 'tree-sitter-langs))
+
+  ;; TODO Remove Hydra and just use which-key
+  ;; Hydras
+  (use-package hydra
+    :config (progn
+              (defhydra hydra-undo-tree
+                (:color yellow :hint nil)
+                "
+  Undo Tree
+  -------------------
+  _k_: undo    _s_: save
+  _j_: redo    _l_: load
+
+  "
+                ("k"   undo-tree-undo)
+                ("j"   undo-tree-redo)
+                ("s"   undo-tree-save-history)
+                ("l"   undo-tree-load-history)
+                ("v"   undo-tree-visualize "visualize" :color blue)
+                ("q"   nil "quit" :color blue))
+
+              (defhydra hydra-find
+                (:color blue :hint nil)
+                "
+  Find
+  -----
+  _h_: at point         _f_: file      _F_: function   _s_: swiper   _g_: grep
+  _k_: function on key  _v_: variabl   _l_: library    _a_: ag
+  "
+                ("h"   my-find-thing-at-point)
+                ("F"   find-function)
+                ("s"   swiper-isearch)
+                ("f"   counsel-find-file)
+                ("k"   find-function-on-key)
+                ("v"   find-variable)
+                ("l"   find-library)
+                ("a"   counsel-ag)
+                ("g"   counsel-grep)
+
+                ("q"   nil "quit" :color blue))
+
+              (defhydra hydra-ediff (:color blue :hint nil)
+                "
+  ^Buffers              Files               VC                Ediff regions
+  ----------------------------------------------------------------------------------
+  _b_: buffers           _f_: files (_=_)        _r_: revisions      _l_: linewise
+  _B_: Buffers (3-way)   _F_: Files (3-way)                      _w_: wordwise
+                       _c_: current file
+  "
+                ("b" ediff-buffers)
+                ("B" ediff-buffers3)
+                ("=" ediff-files)
+                ("f" ediff-files)
+                ("F" ediff-files3)
+                ("c" ediff-current-file)
+                ("r" ediff-revision)
+                ("l" ediff-regions-linewise)
+                ("w" ediff-regions-wordwise)
+                ("q" nil "quit"))
+
+              (defhydra hydra-describe
+                (:exit t :columns 2)
+                "
+  Describe
+  --------- "
+                ("v" counsel-describe-variable "variable")
+                ("f" counsel-describe-function "function")
+                ("F" counsel-describe-face "face")
+                ("k" describe-key "key")
+                ("q" nil "quit"))
+
+              (defhydra hydra-eval
+                (:exit t :columns 2)
+                "
+  Evaluate
+  --------- "
+                ("r" eval-region "region")
+                ("b" eval-buffer "buffer")
+                ("e" eval-expression "S-expression")
+                ("l" eval-last-sexp "last s-expression")
+                ("L" eval-last-sexp-print-value "last s-expression and print value  ")
+                ("d" eval-defun "defun / function")
+                ("f" eval-defun "defun / function")
+                ("q"   nil "quit" :color blue))
+
+              (defhydra hydra-window
+                (:hint nil)
+                "
+  Split     Delete     Switch Window   Buffers        Winner
+  --------------------------------------------------------------
+  _\\_: vert   _c_: close   _h_: left         _p_: previous    _u_: undo
+  _-_: horz   _o_: other   _j_: down         _n_: next        _r_: redo
+                       _k_: up           _b_: select
+                       _l_: right        _w_: ace-window
+                                       _R_: revert-buffer
+  "
+
+                ("-" split-window-below)
+                ("\\" split-window-right)
+
+                ("c" delete-window)
+                ("o" delete-other-windows)
+
+                ("h" windmove-left)
+                ("j" windmove-down)
+                ("k" windmove-up)
+                ("l" windmove-right)
+
+                ("p" previous-buffer)
+                ("n" next-buffer)
+                ("b" counsel-ibuffer :color blue)
+                ("w" ace-window :color blue)
+                ("R" revert-buffer :color blue)
+
+                ("u" winner-undo)
+                ("r" winner-redo)
+
+                ("q" nil "quit"))
+
+              (defhydra hydra-project
+                (:color blue :hint nil)
+                "
+  Project
+  --------
+  _p_: projectile   _c_: compile
+  "
+                ("p" projectile-switch-project)
+                ("c" compile)
+                ("q" nil "quit"))
+
+              (defhydra hydra-buffers
+                (:color blue :hint nil)
+                "
+  Buffers
+  --------
+  _b_: switch buffer
+  "
+                ("b" ivy-switch-buffer)
+                ("q" nil "quit"))
+
+              (defhydra hydra-metahelp-menu (:hint nil :exit t :foreign-keys warn)
+                "
+  Describe                           ^^^^^^                             Goto         ^^ View
+  -----------------------------------------------------------------------------------------------------
+  _b_: bindings             _k_:   key                   _s_:   symbol               _e_: *Messages*    _a_: apropos
+  _c_: key-briefly          _K_:   Key (info)            _S_:   Symbol (info)        _i_: info manual   _l_: lossage
+  _C_: coding system        _L_:   Language environment  _C-s_: syntax table         _._: local help
+  _d_: documentation        _m_:   mode                  _v_:   variable
+  _E_: Emacs...             _p_:   package (by topic)    _V_:   Variable (counsel)
+  _f_: function             _P_:   Package (by name)     _w_:   whereis (func->keys)
+  _F_: Function (info)      _C-p_: external package
+  _I_: key input method                                           ^^^^^^                 _q_: quit
+  "
+                ("?"   counsel-hydra-heads)
+                ("a"   counsel-apropos-thing-at-point)
+                ("b"   describe-bindings)
+                ("c"   describe-key-briefly)
+                ("C"   describe-coding-system)
+                ("d"   apropos-documentation)
+                ("e"   view-echo-area-messages)
+                ("E"   hydra-metahelp-emacs-menu/body)
+                ("f"   counsel-describe-function)
+                ("F"   Info-goto-emacs-command-node)
+                ("i"   info)
+                ("I"   describe-input-method)
+                ("k"   describe-key)
+                ("K"   Info-goto-emacs-key-command-node)
+                ("l"   view-lossage)
+                ("L"   describe-language-environment)
+                ("m"   describe-mode)
+                ("p"   finder-by-keyword)
+                ("P"   describe-package)
+                ("C-p" view-external-packages)
+                ("q"   nil nil)
+                ("s"   describe-symbol)
+                ("S"   info-lookup-symbol)
+                ("C-s" describe-syntax)
+                ("v"   describe-variable)
+                ("V"   counsel-describe-variable)
+                ("w"   where-is)
+                ("."   display-local-help))
+
+              (defhydra hydra-metahelp-emacs-menu (:hint nil :exit t :foreign-keys warn)
+                "
+  Emacs
+  ----------------------------------------------------------------------------------------
+  _a_: about Emacs  _D_: Distribution  _h_: hello file     _n_: news            _T_: Todo          _q_: quit
+  _c_: copying      _F_: FAQ           _i_: info manual
+  _d_: debuging     _G_: GNU           _t_: tutorial
+  "
+                ("?" counsel-hydra-heads)
+                ("a" about-emacs)
+                ("c" describe-copying)
+                ("d" view-emacs-debugging)
+                ("D" describe-distribution)
+                ("F" view-emacs-FAQ)
+                ("G" describe-gnu-project)
+                ("h" view-hello-file)
+                ("i" info-manual)
+                ("n" view-emacs-news)
+                ("q" nil nil)
+                ("t" help-with-tutorial)
+                ("m" view-order-anuals)
+                ("T" view-emacs-todo))
+
+              (defhydra hydra-common-commands
+                (:color blue :hint nil)
+                "
+
+  _h_:   help            _f_: find        _x_: execute  _s_:   delete trailing whitepsaces
+  _P_:   project         _d_: describe    _D_: ediff    _SPC_: no highlight
+  _b_:   buffers         _e_: evaluate    _w_: window
+  "
+                ("h"   hydra-metahelp-menu/body)
+                ("f"   hydra-find/body)
+                ("e"   hydra-eval/body)
+                ("w"   hydra-window/body)
+                ("d"   hydra-describe/body)
+                ("s"   delete-trailing-whitespace)
+                ("SPC" evil-search-highlight-persist-remove-all)
+                ("u"   hydra-undo-tree/body)
+                ("P"   hydra-project/body)
+                ("D"   hydra-ediff/body)
+                ("x"   counsel-M-x)
+                ("b"   hydra-buffers/body)
+                ("q"   nil "quit")))
+    :bind (("M-SPC" . hydra-common-commands/body)))
 
   ;; Misc
   (progn
