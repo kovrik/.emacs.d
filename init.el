@@ -99,7 +99,8 @@
         delete-old-versions t                  ;; delete excess backup versions silently
         vc-make-backup-files t                 ;; make backups file even when in version controlled dir
         create-lockfiles nil
-        custom-file "~/.emacs.d/custom.el")
+        undo-tree-history-directory-alist `(("." . ,(concat user-emacs-directory "undo")))
+        custom-file (concat user-emacs-directory "custom.el"))
 
   (defalias 'list-buffers 'ibuffer)            ;; make ibuffer the default buffer lister.
   (defalias 'xml-pretty-print 'sgml-pretty-print)
@@ -140,10 +141,7 @@
               (load-theme 'doom-opera-light t)
               (doom-themes-org-config)
               ;; (doom-themes-neotree-config)
-              (global-hl-line-mode)
-              ;;(set-face-background 'hl-line "#404960")
-              ;;(set-face-background 'region  "#606980")
-              ))
+              (global-hl-line-mode)))
   (use-package solaire-mode
     :config (solaire-global-mode +1))
 
@@ -151,7 +149,7 @@
     :ensure t
     :init (doom-modeline-mode 1)
     :config (setq doom-modeline-minor-modes nil)
-    (add-hook 'pdf-tools-enabled-hook #'doom-modeline-set-pdf-modeline))
+    (add-hook 'pdf-view-mode-hook #'doom-modeline-set-pdf-modeline))
 
   ;; PATH
   (use-package exec-path-from-shell
@@ -432,8 +430,11 @@
   ;;               ;; open
   ;;               "o t" 'vterm)))
 
+  (use-package anzu :config (global-anzu-mode +1))
+
   (use-package evil
     :config (progn
+              (use-package evil-anzu)
               (use-package evil-org :defer t)
               (use-package evil-numbers)
               (use-package evil-surround   :config (global-evil-surround-mode 1))
@@ -496,8 +497,7 @@
                          ("j"      . evil-next-visual-line)
                          ("k"      . evil-previous-visual-line)
                          ("C-y"    . evil-paste-after)
-                         ("SPC"    . hydra-common-commands/body)
-                         )
+                         ("SPC"    . hydra-common-commands/body))
               (bind-keys :map evil-visual-state-map ("SPC" . hydra-common-commands/body))
               (my-add-hooks '(help-mode-hook prog-mode-hook text-mode-hook pdf-view-mode-hook) #'evil-local-mode)
               (defun my-evil-off ()
@@ -870,6 +870,7 @@ Start from the beginning of buffer otherwise."
                                         (append '((company-solidity company-capf company-dabbrev-code))
                                                 company-backends))))))
 
+  ;; FIXME Setup grammars
   (use-package tree-sitter
     :config (require 'tree-sitter)
     (require 'tree-sitter-hl)
@@ -1127,22 +1128,23 @@ Start from the beginning of buffer otherwise."
     (interactive "r\nsAlign regexp: ")
     (align-regexp start end (concat "\\(\\s-*\\)" regexp) 1 1 t))
 
-  (progn
-    (defun my-quit (count)
-      "Quit if in a read-only buffer; otherwise, call self-insert-command."
-      (interactive "p")
-      (let ((m (buffer-local-value 'major-mode (current-buffer))))
-        (cond
-         ((eq 'magit-popup-mode m) (magit-popup-quit))
-         ((eq 'neotree-mode m)     (neotree-toggle))
-         ((not buffer-read-only)   (self-insert-command count))
-         (t                        (kill-this-buffer)))))
-    (global-set-key (kbd "q") 'my-quit)
-    (require 'help-mode)
-    (require 'proced)
-    (require 'compile)
-    (dolist (mode-map (list help-mode-map proced-mode-map compilation-mode-map))
-      (define-key mode-map (kbd "q") 'my-quit)))
+  ;; (progn
+  ;;   (defun my-quit (count)
+  ;;     "Quit if in a read-only buffer; otherwise, call self-insert-command."
+  ;;     (interactive "p")
+  ;;     (let ((m (buffer-local-value 'major-mode (current-buffer))))
+  ;;       (cond
+  ;;        ((eq 'magit-popup-mode m) (magit-popup-quit))
+  ;;        ((eq 'neotree-mode m)     (neotree-toggle))
+  ;;        ((eq 'vterm-mode m)       (vterm--self-insert))
+  ;;        ((not buffer-read-only)   (self-insert-command count))
+  ;;        (t                        (kill-this-buffer)))))
+  ;;   (global-set-key (kbd "q") 'my-quit)
+  ;;   (require 'help-mode)
+  ;;   (require 'proced)
+  ;;   (require 'compile)
+  ;;   (dolist (mode-map (list help-mode-map proced-mode-map compilation-mode-map))
+  ;;     (define-key mode-map (kbd "q") 'my-quit)))
 
   (defun new-scratch-buffer ()
     "Creates a new scratch buffer."
