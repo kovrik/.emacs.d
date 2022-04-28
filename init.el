@@ -239,14 +239,15 @@
                 (interactive)
                 (diff-hl-next-hunk-cycle t))
 
-              (bind-keys :map diff-hl-mode-map
-                         ("C-x v n" . diff-hl-next-hunk-cycle)
-                         ("C-x v j" . diff-hl-next-hunk-cycle)
-                         ("C-x v p" . diff-hl-previous-hunk-cycle)
-                         ("C-x v k" . diff-hl-previous-hunk-cycle)
-                         ("C-x v r" . diff-hl-revert-hunk))
+              (bind-keys )
               (global-diff-hl-mode t)
-              (diff-hl-margin-mode t)))
+              (diff-hl-margin-mode t))
+    :bind (:map diff-hl-mode-map
+                ("C-x v n" . diff-hl-next-hunk-cycle)
+                ("C-x v j" . diff-hl-next-hunk-cycle)
+                ("C-x v p" . diff-hl-previous-hunk-cycle)
+                ("C-x v k" . diff-hl-previous-hunk-cycle)
+                ("C-x v r" . diff-hl-revert-hunk)))
 
   (use-package hl-todo
     :hook (prog-mode . hl-todo-mode)
@@ -278,17 +279,17 @@
               (use-package evil-smartparens)
               (show-smartparens-global-mode t)
               (smartparens-strict-mode)
-              (bind-keys :map smartparens-mode-map
-                         ;; FIXME Make it work with evil-mode
-                         ((kbd "C-<right>")     . sp-forward-slurp-sexp)
-                         ((kbd "C-<left>")      . sp-forward-barf-sexp)
-                         ((kbd "C-M-<right>")   . sp-backward-slurp-sexp)
-                         ((kbd "C-M-<left>")    . sp-backward-barf-sexp)
-                         ((kbd "M-<delete>")    . sp-unwrap-sexp)
-                         ((kbd "M-<backspace>") . sp-unwrap-sexp)
-                         ((kbd "C-M-t")         . sp-transpose-sexp))
               (add-hook 'prog-mode-hook #'turn-on-smartparens-strict-mode)
-              (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode)))
+              (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode))
+    ;; FIXME Make it work with evil-mode
+    :bind (:map smartparens-mode-map
+                ("C-<right>"      . sp-forward-slurp-sexp)
+                ("C-<left>"       . sp-forward-barf-sexp)
+                ("C-M-<right>"    . sp-backward-slurp-sexp)
+                ("C-M-<left>"     . sp-backward-barf-sexp)
+                ("M-<delete>"     . sp-unwrap-sexp)
+                ("M-<backspace>"  . sp-unwrap-sexp)
+                ("C-M-t"          . sp-transpose-sexp)))
 
   (use-package clojure-mode
     :defer  t
@@ -315,10 +316,11 @@
                 "cider-find-var at point without prompt"
                 (interactive)
                 (cider-find-var t nil))
-              (bind-keys :map clojure-mode-map
-                         ((kbd "C-h")     . cider-find-var-no-prompt)
-                         ((kbd "C-S-h")   . cider-find-var-no-prompt)
-                         ((kbd "C-M-x")   . cider-eval-defun-at-point))))
+              )
+    :bind (:map clojure-mode-map
+                ("C-h"   . cider-find-var-no-prompt)
+                ("C-S-h" . cider-find-var-no-prompt)
+                ("C-M-x" . cider-eval-defun-at-point)))
 
   (use-package geiser
     :defer t
@@ -350,12 +352,7 @@
               (slime-setup '(slime-fancy slime-company slime-asdf slime-indentation slime-sbcl-exts slime-scratch))
               (setq lisp-indent-function 'common-lisp-indent-function)
               (setq common-lisp-style-default "modern")
-
               ;; FIXME (add-hook 'slime-mode-hook #'common-lisp-mode)
-              (bind-keys :map slime-mode-map
-                         ((kbd "C-h")     . slime-describe-symbol)
-                         ((kbd "C-S-h")   . slime-describe-symbol))
-
               (defun window-with-name-prefix-live-p (name)
                 (cl-some (lambda (buffer-name)
                            (string-prefix-p name buffer-name))
@@ -378,7 +375,10 @@
                                                       nil))))
                       (if (not buffer)
                           (slime)
-                        (other-window 1))))))))
+                        (other-window 1)))))))
+    :bind (:map slime-mode-map
+                ("C-h" . slime-describe-symbol)
+                ("C-S-h" . slime-describe-symbol)))
 
   (use-package slime-company
     :after (slime company)
@@ -517,6 +517,14 @@
     :after evil
     :ensure t
     :config (evil-collection-init))
+
+  (use-package dired
+    :straight (:type built-in)
+    :bind (:map dired-mode-map
+                ("j" . dired-next-line)
+                ("k" . dired-previous-line)
+                ("n" . evil-search-next)
+                ("N" . evil-search-previous)))
 
   (use-package eldoc
     :diminish eldoc-mode
