@@ -57,7 +57,7 @@
   (when window-system
     (tooltip-mode    -1)
     (tool-bar-mode   -1)
-    (menu-bar-mode   -1)
+    (menu-bar-mode    t)
     (scroll-bar-mode -1)
     (toggle-horizontal-scroll-bar -1))
 
@@ -198,7 +198,7 @@
   (use-package pdf-view-restore :config (add-hook 'pdf-view-mode-hook 'pdf-view-restore-mode))
   (use-package vterm :defer t)
   (use-package auto-dim-other-buffers
-    :config (set-face-background 'auto-dim-other-buffers-face "#e0e0e7")
+    :config (set-face-background 'auto-dim-other-buffers-face "#e0e0e6")
     (auto-dim-other-buffers-mode t))
 
   (use-package helpful
