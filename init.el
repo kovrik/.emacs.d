@@ -197,6 +197,9 @@
   (use-package which-key :config (which-key-setup-minibuffer) (which-key-mode))
   (use-package pdf-view-restore :config (add-hook 'pdf-view-mode-hook 'pdf-view-restore-mode))
   (use-package vterm :defer t)
+  (use-package auto-dim-other-buffers
+    :config (set-face-background 'auto-dim-other-buffers-face "#e0e0e7")
+    (auto-dim-other-buffers-mode t))
 
   (use-package helpful
     :config (progn
@@ -482,6 +485,7 @@
               (defalias #'forward-evil-word #'forward-evil-symbol)
               ;; kill buffer, but don't close window
               (evil-ex-define-cmd "q[uit]" 'kill-this-buffer)
+              (evil-ex-define-cmd "quit"   'evil-quit)
               (evil-ex-define-cmd "ls"     'ibuffer-list-buffers)
               ;; ESC quits
               (defun minibuffer-keyboard-quit ()
