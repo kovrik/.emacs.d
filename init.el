@@ -142,6 +142,7 @@
               (doom-themes-org-config)
               ;; (doom-themes-neotree-config)
               (global-hl-line-mode)))
+
   (use-package solaire-mode
     :config (solaire-global-mode +1))
 
@@ -177,8 +178,6 @@
                               (font-spec :name "Consolas"   :size 11)))))
     (when my-font
       (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
-      ;; (set-face-attribute 'default nil :font my-font)
-      ;; (set-frame-font      my-font  nil t)
       (add-to-list 'default-frame-alist `(font . ,(concat (font-get my-font :name) "-" (number-to-string (font-get my-font :size)))))
       (when (eq system-type 'darwin)
         (setq mac-allow-anti-aliasing t))))
@@ -194,7 +193,6 @@
   (use-package rainbow-mode :defer t :diminish rainbow-mode)
   (use-package focus :defer t)
   (use-package flx)
-  (use-package flx-ido)
   (use-package request :defer t)
   (use-package which-key :config (which-key-setup-minibuffer) (which-key-mode))
   (use-package pdf-view-restore :config (add-hook 'pdf-view-mode-hook 'pdf-view-restore-mode))
@@ -432,7 +430,23 @@
 
   (use-package anzu :config (global-anzu-mode +1))
 
+  ;; (use-package undo-tree
+  ;;   :diminish undo-tree-mode
+  ;;   :config (progn
+  ;;             (global-undo-tree-mode)
+  ;;             (setq undo-tree-visualizer-timestamps t
+  ;;                   undo-tree-visualizer-diff       t)
+  ;;             (define-key undo-tree-map (kbd "C-/") nil)))
+
+  (use-package undo-fu
+               :config
+               (global-unset-key (kbd "C-z"))
+               (global-set-key (kbd "C-z")   'undo-fu-only-undo)
+               (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
+
   (use-package evil
+    :init (setq evil-undo-system 'undo-fu)
+    ;; :init (evil-undo-system 'undo-tree)
     :config (progn
               (use-package evil-anzu)
               (use-package evil-org :defer t)
@@ -464,7 +478,6 @@
                     evil-default-cursor   t
                     evil-want-C-u-scroll  t
                     evil-want-C-w-delete  t)
-              (evil-set-undo-system 'undo-tree)
               ;; treat symbol as a word
               (defalias #'forward-evil-word #'forward-evil-symbol)
               ;; kill buffer, but don't close window
@@ -805,14 +818,6 @@ Start from the beginning of buffer otherwise."
                     (flycheck-next-error-function 1 t))))
               (define-key flycheck-mode-map (kbd "<f2>") #'my-flycheck-next-error-cycle)
               (define-key flycheck-mode-map (kbd "<f3>") #'flycheck-list-errors)))
-
-  (use-package undo-tree
-    :diminish undo-tree-mode
-    :config (progn
-              (global-undo-tree-mode)
-              (setq undo-tree-visualizer-timestamps t
-                    undo-tree-visualizer-diff       t)
-              (define-key undo-tree-map (kbd "C-/") nil)))
 
   (use-package neotree
     :defer t
