@@ -141,7 +141,7 @@
               (load-theme 'doom-opera-light t)
               (doom-themes-org-config)
               ;; (doom-themes-neotree-config)
-              (global-hl-line-mode)))
+              ))
 
   (use-package solaire-mode
     :config (solaire-global-mode +1))
@@ -858,12 +858,15 @@ Start from the beginning of buffer otherwise."
   (use-package shackle
     :config (progn
               (setq shackle-lighter ""
-                    shackle-rules '(("\\`\\*magit.*?\\'"      :regexp t :same t)
+                    shackle-rules '(("\\`magit.*?\\'"         :regexp t :same t)
                                     (compilation-mode         :same   t)
                                     (erc-mode                 :same   t)
                                     (proced-mode              :same   t)
                                     (help-mode                :same   t)
                                     (ibuffer-mode             :same   t)
+                                    (slime-repl-mode          :popup  t
+                                                              :align 'below
+                                                              :ratio 0.3)
                                     (flycheck-error-list-mode :popup  t
                                                               :align 'below
                                                               :ratio 0.4
