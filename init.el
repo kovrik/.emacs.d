@@ -61,6 +61,12 @@
     (scroll-bar-mode -1)
     (toggle-horizontal-scroll-bar -1))
 
+  (customize-set-variable 'display-buffer-base-action
+                          '((display-buffer-reuse-window display-buffer-same-window)
+                            (reusable-frames . t)))
+  ;; avoid resizing
+  (customize-set-variable 'even-window-sizes nil)
+
   (setq-default indent-tabs-mode nil
                 tab-width 2
                 find-file-visit-truename t
