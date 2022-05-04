@@ -199,6 +199,7 @@
   (use-package vterm :defer t)
   (use-package auto-dim-other-buffers
     :config (set-face-background 'auto-dim-other-buffers-face "#e0e0e6")
+    (setq auto-dim-other-buffers-dim-on-switch-to-minibuffer nil)
     (auto-dim-other-buffers-mode t))
 
   (use-package helpful
