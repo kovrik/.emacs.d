@@ -359,31 +359,7 @@
               (setq inferior-lisp-program "sbcl")
               (slime-setup '(slime-fancy slime-company slime-asdf slime-indentation slime-sbcl-exts slime-scratch))
               (setq lisp-indent-function 'common-lisp-indent-function)
-              (setq common-lisp-style-default "modern")
-              ;; FIXME (add-hook 'slime-mode-hook #'common-lisp-mode)
-              (defun window-with-name-prefix-live-p (name)
-                (cl-some (lambda (buffer-name)
-                           (string-prefix-p name buffer-name))
-                         (mapcar #'buffer-name
-                                 (mapcar #'window-buffer
-                                         (window-list)))))
-
-              (defun open-slime ()
-                (interactive)
-                (let* ((buffer-prefix "*slime-repl"))
-                  (unless (window-with-name-prefix-live-p buffer-prefix)
-                    (let* ((buffer-name-list (mapcar #'buffer-name
-                                                     (buffer-list)))
-                           (buffer (cl-loop for buffer-name in (mapcar #'buffer-name (buffer-list))
-                                            until (string-match-p (regexp-quote buffer-prefix)
-                                                                  buffer-name)
-                                            finally (if (string-match-p (regexp-quote buffer-prefix)
-                                                                        buffer-name)
-                                                        (cl-return buffer-name)
-                                                      nil))))
-                      (if (not buffer)
-                          (slime)
-                        (other-window 1)))))))
+              (setq common-lisp-style-default "modern"))
     :bind (:map slime-mode-map
                 ("C-h" . slime-describe-symbol)
                 ("C-S-h" . slime-describe-symbol)))
@@ -871,17 +847,20 @@ Start from the beginning of buffer otherwise."
                                     (proced-mode              :same   t)
                                     (help-mode                :same   t)
                                     (ibuffer-mode             :same   t)
-                                    (slime-repl-mode          :popup  t
+                                    (slime-mode               :popup  t
                                                               :align 'below
-                                                              :ratio 0.3)
+                                                              :ratio 0.33)
+                                    (inferior-lisp-mode       :popup  t
+                                                              :align 'below
+                                                              :ratio 0.33)
                                     (flycheck-error-list-mode :popup  t
                                                               :align 'below
-                                                              :ratio 0.4
+                                                              :ratio 0.33
                                                               :select t)
                                     ("\\`\\*diff-hl\\*.*?\\'" :regexp t
-                                     :popup  t
-                                     :align 'below
-                                     :ratio 0.4)))
+                                                              :popup  t
+                                                              :align 'below
+                                                              :ratio 0.33)))
               (shackle-mode t)))
 
   ;; Solidity
