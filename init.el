@@ -179,9 +179,10 @@
   ;; Fonts
   (let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name) (font-family-list))))
                              (list
-                              (font-spec :name "Monaco"     :size 10)
-                              (font-spec :name "Meslo LG S" :size 11)
-                              (font-spec :name "Consolas"   :size 11)))))
+                              (font-spec :name "Roboto Mono" :size 10)
+                              (font-spec :name "Monaco"      :size 10)
+                              (font-spec :name "Meslo LG S"  :size 11)
+                              (font-spec :name "Consolas"    :size 11)))))
     (when my-font
       (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
       (add-to-list 'default-frame-alist `(font . ,(concat (font-get my-font :name) "-" (number-to-string (font-get my-font :size)))))
@@ -818,6 +819,13 @@ Start from the beginning of buffer otherwise."
                     (neotree-toggle)
                   (neotree-find (buffer-file-name)))))
     :bind (("M-<f1>". neotree-current-file)))
+
+  (use-package imenu-list
+               :config (setq imenu-list-position 'left
+                             imenu-list-size 36
+                             imenu-list-focus-after-activation t)
+                       (my-add-hooks '(imenu-list-major-mode-hook) #'turn-on-evil-mode)
+               :bind (("M-<f2>" . imenu-list-smart-toggle)))
 
   (use-package eyebrowse
     :diminish eyebrowse-mode
