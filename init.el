@@ -14,6 +14,7 @@
   ;; Package management
 
   ;; Straight
+  (setq straight-check-for-modifications nil)
   (progn
     (defvar bootstrap-version)
     (let ((bootstrap-file
@@ -101,10 +102,11 @@
         global-auto-revert-non-file-buffers t  ;; Also auto refresh dired, but be quiet about it
         auto-revert-verbose nil
         version-control t                      ;; Version control
-        vc-follow-symlinks t                   ;; don't ask for confirmation when opening symlinked file
         delete-old-versions t                  ;; delete excess backup versions silently
+        vc-follow-symlinks t                   ;; don't ask for confirmation when opening symlinked file
         vc-make-backup-files t                 ;; make backups file even when in version controlled dir
         create-lockfiles nil
+        package-enable-at-startup nil
         undo-tree-history-directory-alist `(("." . ,(concat user-emacs-directory "undo")))
         custom-file (concat user-emacs-directory "custom.el"))
 
