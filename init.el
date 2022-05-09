@@ -553,6 +553,11 @@
   ;;              ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
   ;;              ;; (setq vertico-cycle t)
   ;;              )
+
+  ;; (use-package savehist
+  ;;   :init (savehist-mode))
+
+  ;; (use-package consult)
   ;; (use-package marginalia
   ;;              ;; Either bind `marginalia-cycle` globally or only in the minibuffer
   ;;              :bind (("M-A" . marginalia-cycle)
@@ -573,7 +578,6 @@
   ;; :config (selectrum-mode +1)
   ;; (selectrum-prescient-mode +1))
   ;; TODO embark?
-  ;; TODO consult?
 
   (use-package prescient
     :config (progn
@@ -1102,9 +1106,9 @@ Start from the beginning of buffer otherwise."
                 (:color blue :hint nil)
                 "
 
-  _h_:   help            _f_: find        _x_: execute  _s_:   delete trailing whitepsaces
-  _P_:   project         _d_: describe    _D_: ediff    _SPC_: no highlight
-  _b_:   buffers         _e_: evaluate    _w_: window
+  _h_:   help            _f_: find        _x_: execute  _._:   find file
+  _P_:   project         _d_: describe    _D_: ediff    _s_:   delete trailing whitepsaces
+  _b_:   buffers         _e_: evaluate    _w_: window   _SPC_: no highlight
   "
                 ("h"   hydra-metahelp-menu/body)
                 ("f"   hydra-find/body)
@@ -1118,6 +1122,7 @@ Start from the beginning of buffer otherwise."
                 ("D"   hydra-ediff/body)
                 ("x"   counsel-M-x)
                 ("b"   hydra-buffers/body)
+                ("."   counsel-find-file)
                 ("q"   nil "quit")))
     :bind (("M-SPC" . hydra-common-commands/body)))
 
