@@ -180,11 +180,11 @@
 
   ;; Fonts
   (let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name) (font-family-list))))
-                             (list
-                              (font-spec :name "Roboto Mono" :size 10)
-                              (font-spec :name "Monaco"      :size 10)
-                              (font-spec :name "Meslo LG S"  :size 11)
-                              (font-spec :name "Consolas"    :size 11)))))
+                             (list (font-spec :name "Fira Code"   :size 10)
+                                   (font-spec :name "Roboto Mono" :size 10)
+                                   (font-spec :name "Monaco"      :size 10)
+                                   (font-spec :name "Meslo LG S"  :size 11)
+                                   (font-spec :name "Consolas"    :size 11)))))
     (when my-font
       (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
       (add-to-list 'default-frame-alist `(font . ,(concat (font-get my-font :name) "-" (number-to-string (font-get my-font :size)))))
@@ -419,13 +419,27 @@
 
   (use-package anzu :config (global-anzu-mode +1))
 
-  ;; (use-package undo-tree
-  ;;   :diminish undo-tree-mode
-  ;;   :config (progn
-  ;;             (global-undo-tree-mode)
-  ;;             (setq undo-tree-visualizer-timestamps t
-  ;;                   undo-tree-visualizer-diff       t)
-  ;;             (define-key undo-tree-map (kbd "C-/") nil)))
+  (use-package vundo
+               :commands (vundo)
+               :straight (vundo :type git :host github :repo "casouri/vundo")
+               :config
+               ;; Take less on-screen space.
+               (setq vundo-compact-display t)
+               ;; Use `HJKL` VIM-like motion, also Home/End to jump around.
+               (define-key vundo-mode-map (kbd "l") #'vundo-forward)
+               (define-key vundo-mode-map (kbd "<right>") #'vundo-forward)
+               (define-key vundo-mode-map (kbd "h") #'vundo-backward)
+               (define-key vundo-mode-map (kbd "<left>") #'vundo-backward)
+               (define-key vundo-mode-map (kbd "j") #'vundo-next)
+               (define-key vundo-mode-map (kbd "<down>") #'vundo-next)
+               (define-key vundo-mode-map (kbd "k") #'vundo-previous)
+               (define-key vundo-mode-map (kbd "<up>") #'vundo-previous)
+               (define-key vundo-mode-map (kbd "<home>") #'vundo-stem-root)
+               (define-key vundo-mode-map (kbd "<end>") #'vundo-stem-end)
+               (define-key vundo-mode-map (kbd "q") #'vundo-quit)
+               (define-key vundo-mode-map (kbd "C-g") #'vundo-quit)
+               (define-key vundo-mode-map (kbd "RET") #'vundo-confirm))
+  (with-eval-after-load 'evil (evil-define-key 'normal 'global (kbd "C-M-u") 'vundo))
 
   (use-package undo-fu
                :config
@@ -435,7 +449,6 @@
 
   (use-package evil
     :init (setq evil-undo-system 'undo-fu)
-    ;; :init (evil-undo-system 'undo-tree)
     :config (progn
               (use-package evil-anzu)
               (use-package evil-org :defer t)
@@ -691,7 +704,6 @@ Use Counsel otherwise."
            ("C-S-n" . my-find-file)))
 
   (use-package company
-    ;; :pin gnu
     :diminish company-mode
     :config (progn
               (use-package company-quickhelp
@@ -902,22 +914,6 @@ Start from the beginning of buffer otherwise."
   ;; Hydras
   (use-package hydra
     :config (progn
-              (defhydra hydra-undo-tree
-                (:color yellow :hint nil)
-                "
-  Undo Tree
-  -------------------
-  _k_: undo    _s_: save
-  _j_: redo    _l_: load
-
-  "
-                ("k"   undo-tree-undo)
-                ("j"   undo-tree-redo)
-                ("s"   undo-tree-save-history)
-                ("l"   undo-tree-load-history)
-                ("v"   undo-tree-visualize "visualize" :color blue)
-                ("q"   nil "quit" :color blue))
-
               (defhydra hydra-find
                 (:color blue :hint nil)
                 "
@@ -1032,9 +1028,13 @@ Start from the beginning of buffer otherwise."
                 "
   Buffers
   --------
-  _b_: switch buffer
+  _b_: switch buffer  _B_: bury buffer
+  _k_: kill buffer    _SPC_: previous buffer
   "
                 ("b" ivy-switch-buffer)
+                ("k" kill-buffer)
+                ("B" bury-buffer)
+                ("SPC" previous-buffer)
                 ("q" nil "quit"))
 
               (defhydra hydra-metahelp-menu (:hint nil :exit t :foreign-keys warn)
@@ -1117,7 +1117,7 @@ Start from the beginning of buffer otherwise."
                 ("d"   hydra-describe/body)
                 ("s"   delete-trailing-whitespace)
                 ("SPC" evil-search-highlight-persist-remove-all)
-                ("u"   hydra-undo-tree/body)
+                ("u"   vundo)
                 ("P"   hydra-project/body)
                 ("D"   hydra-ediff/body)
                 ("x"   counsel-M-x)
