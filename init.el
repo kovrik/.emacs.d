@@ -278,7 +278,8 @@
                ((function-called-at-point)       (find-function (function-called-at-point)))
                ((not (eq 0 (variable-at-point))) (find-variable (variable-at-point)))
                (t                                (user-error "Unknown thing at point!"))))
-    :bind (("C-S-h" . my-find-thing-at-point)
+    :bind (:map emacs-lisp-mode-map
+           ("C-S-h" . my-find-thing-at-point)
            ("C-h f" . find-function)
            ("C-h k" . find-function-on-key)
            ("C-h v" . find-variable)
@@ -354,45 +355,65 @@
                             #'rainbow-delimiters-mode)))
 
   ;; Slime
-  (use-package slime
-    :defer t
-    :config (progn
-              (setq byte-compile-warnings '(cl-functions))
-              (load (expand-file-name "~/.quicklisp/slime-helper.el"))
-              (setq inferior-lisp-program "sbcl")
-              (slime-setup '(slime-fancy slime-company slime-asdf slime-indentation slime-sbcl-exts slime-scratch))
-              (setq lisp-indent-function 'common-lisp-indent-function)
-              (setq common-lisp-style-default "modern"))
-    :bind (:map slime-mode-map
-                ("C-h" . slime-describe-symbol)
-                ("C-S-h" . slime-describe-symbol)))
+  ;; (use-package slime
+  ;;   :defer t
+  ;;   :config (progn
+  ;;             (setq byte-compile-warnings '(cl-functions))
+  ;;             (load (expand-file-name "~/.quicklisp/slime-helper.el"))
+  ;;             (setq inferior-lisp-program "sbcl")
+  ;;             (slime-setup '(slime-fancy slime-company slime-asdf slime-indentation slime-sbcl-exts slime-scratch))
+  ;;             (setq lisp-indent-function 'common-lisp-indent-function)
+  ;;             (setq common-lisp-style-default "modern"))
+  ;;   :bind (:map slime-mode-map
+  ;;               ("C-h" . slime-describe-symbol)
+  ;;               ("C-S-h" . slime-describe-symbol)))
 
-  (use-package slime-company
-    :after (slime company)
-    :ensure t
-    :config (setq slime-company-completion 'fuzzy
-                  slime-company-after-completion 'slime-company-just-one-space)
-    ;; We redefine this function to call SLIME-COMPANY-DOC-MODE in the buffer
-    (defun slime-show-description (string package)
-      (let ((bufname (slime-buffer-name :description)))
-        (slime-with-popup-buffer (bufname :package package
-                                          :connection t
-                                          :select slime-description-autofocus)
-                                 (when (string= bufname "*slime-description*")
-                                   (with-current-buffer bufname (slime-company-doc-mode)))
-                                 (princ string)
-                                 (goto-char (point-min))))))
+  ;; (use-package slime-company
+  ;;   :after (slime company)
+  ;;   :ensure t
+  ;;   :config (setq slime-company-completion 'fuzzy
+  ;;                 slime-company-after-completion 'slime-company-just-one-space)
+  ;;   ;; We redefine this function to call SLIME-COMPANY-DOC-MODE in the buffer
+  ;;   (defun slime-show-description (string package)
+  ;;     (let ((bufname (slime-buffer-name :description)))
+  ;;       (slime-with-popup-buffer (bufname :package package
+  ;;                                         :connection t
+  ;;                                         :select slime-description-autofocus)
+  ;;                                (when (string= bufname "*slime-description*")
+  ;;                                  (with-current-buffer bufname (slime-company-doc-mode)))
+  ;;                                (princ string)
+  ;;                                (goto-char (point-min))))))
 
   ;; SLY
-  ;; (use-package sly-quicklisp
-  ;;                :after sly)
+  (use-package sly-quicklisp
+                 :after sly)
 
-  ;; (use-package sly
-  ;;              :config (setq sly-lisp-implementations
-  ;;                            `((sbcl ("/usr/local/bin/sbcl" "--noinform" "--no-linedit") :coding-system utf-8-unix)))
-  ;;  (evil-set-initial-state 'sly-mrepl-mode 'emacs))
+  (use-package sly
+               :config (setq sly-lisp-implementations
+                             `((sbcl ("/usr/local/bin/sbcl" "--noinform" "--no-linedit") :coding-system utf-8-unix)
+                               (abcl ("/usr/local/bin/abcl" "--noinform" "--no-linedit") :coding-system utf-8-unix) ))
+   (evil-set-initial-state 'sly-mrepl-mode 'emacs)
+   :bind (:map sly-mode-map
+               ("C-S-h" . sly-describe-symbol)))
 
-  ;; (provide 'init-sly)
+  (provide 'init-sly)
+
+  (use-package adjust-parens
+    :config (progn
+              (my-add-hooks '(emacs-lisp-mode-hook
+                              clojure-mode-hook
+                              common-lisp-lisp-mode-hook
+                              racket-mode-hook) #'adjust-parens-mode))
+    :bind (:map adjust-parens-mode-map
+                ("TAB" . lisp-indent-adjust-parens)
+                ("<backtab>" . lisp-dedent-adjust-parens)))
+
+  (use-package highlight-quoted
+    :config (progn
+              (my-add-hooks '(emacs-lisp-mode-hook
+                              clojure-mode-hook
+                              common-lisp-lisp-mode-hook
+                              racket-mode-hook) #'highlight-quoted-mode)))
 
   ;; (use-package evil-leader
   ;;   :defer nil
@@ -874,6 +895,9 @@ Start from the beginning of buffer otherwise."
                                     (help-mode                :same   t)
                                     (ibuffer-mode             :same   t)
                                     (slime-mode               :popup  t
+                                                              :align 'below
+                                                              :ratio 0.33)
+                                    (sly-mode                 :popup  t
                                                               :align 'below
                                                               :ratio 0.33)
                                     (inferior-lisp-mode       :popup  t
