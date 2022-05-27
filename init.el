@@ -169,8 +169,6 @@
   ;; Delete trailing whitespace on save
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-  (setenv "SHELL" shell-file-name)
-
   (defun my-add-hooks (hooks function)
     "For each hook in HOOKS list bind FUNCTION."
     (dolist (hook hooks)
