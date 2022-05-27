@@ -34,7 +34,6 @@
   (require 'bind-key)
   (require 'uniquify)
   (use-package queue)
-  (use-package async)
   (use-package browse-kill-ring)
   (use-package dash)
   (use-package epl)
@@ -73,47 +72,81 @@
                 find-file-visit-truename t
                 mode-require-final-newline nil
                 major-mode 'text-mode
-                pdf-view-display-size 'fit-page)
+                pdf-view-display-size 'fit-page
+                fringes-outside-margins nil
+                indicate-buffer-boundaries nil
+                indicate-empty-lines nil
+                overflow-newline-into-fringe t)
   (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
         inhibit-startup-message t
         inhibit-startup-screen t
         inhibit-startup-echo-area-message t
         initial-scratch-message nil
         frame-inhibit-implied-resize t
-        scroll-margin 5
-        scroll-conservatively 30
-        scroll-step 1
+        ;; nicer scrolling
+        scroll-margin 0
+        scroll-conservatively 100000
+        scroll-preserve-screen-position 1
         sentence-end-double-space nil
         ring-bell-function 'ignore
         use-dialog-box nil
         visible-bell nil
+        confirm-kill-emacs #'yes-or-no-p
+        ;; enable external-bound copy-pasting
+        select-enable-clipboard t
+        save-interprogram-paste-before-kill t
+        ;; potentially speed up cursor operations
+        auto-window-vscroll nil
         pdf-view-use-scaling 1
         uniquify-buffer-name-style 'forward
         evil-want-keybinding nil
         show-trailing-whitespace t
         ns-use-srgb-colorspace nil
-        gnutls-min-prime-bits 4096             ;; remove the warnings from the GnuTLS library when using HTTPS
+        ;; remove the warnings from the GnuTLS library when using HTTPS
+        gnutls-min-prime-bits 4096
         tab-always-indent 'complete
         search-default-mode #'char-fold-to-regexp
         coding-system-for-read 'utf-8
         coding-system-for-write 'utf-8
-        load-prefer-newer t                    ;; Always load newest byte code
-        large-file-warning-threshold 200000000 ;; warn when opening files bigger than 200MB
-        global-auto-revert-non-file-buffers t  ;; Also auto refresh dired, but be quiet about it
+        ;; Always load newest byte code
+        load-prefer-newer t
+        ;; warn when opening files bigger than 200MB
+        large-file-warning-threshold 200000000
+        ;; Also auto refresh dired, but be quiet about it
+        global-auto-revert-non-file-buffers t
         auto-revert-verbose nil
-        version-control t                      ;; Version control
-        delete-old-versions t                  ;; delete excess backup versions silently
-        vc-follow-symlinks t                   ;; don't ask for confirmation when opening symlinked file
-        vc-make-backup-files t                 ;; make backups file even when in version controlled dir
+        ;; Version control
+        version-control t
+        ;; delete excess backup versions silently
+        delete-old-versions t
+        ;; don't ask for confirmation when opening symlinked file
+        vc-follow-symlinks t
+        ;; do not create backup files
+        auto-save-default nil
         create-lockfiles nil
+        make-backup-files nil
+        vc-make-backup-files nil
+        ;; disable package
         package-enable-at-startup nil
+        ;; show parent parentheses
+        show-paren-delay 0
+        show-paren-style 'parenthesis
         undo-tree-history-directory-alist `(("." . ,(concat user-emacs-directory "undo")))
         custom-file (concat user-emacs-directory "custom.el"))
 
-  (defalias 'list-buffers 'ibuffer)            ;; make ibuffer the default buffer lister.
+
+  ;; make ibuffer the default buffer lister.
+  (defalias 'list-buffers 'ibuffer)
   (defalias 'xml-pretty-print 'sgml-pretty-print)
+  (defalias 'first 'car)
+  (defalias 'second 'cadr)
+  (defalias 'third 'caddr)
+  (defalias 'when-not 'unless)
+  (defalias 'word-count 'count-words)
+  (defalias 'yes-or-no-p 'y-or-n-p)
   ;;(fringe-mode '(7 . 0))
-  (column-number-mode)
+  (fringe-mode nil)
+  (column-number-mode 1)
   (desktop-save-mode)
   (global-font-lock-mode)
   (global-hl-line-mode)
@@ -133,10 +166,21 @@
 
   (load custom-file :noerror :nomessage)
 
+  ;; Delete trailing whitespace on save
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+  (setenv "SHELL" shell-file-name)
+
   (defun my-add-hooks (hooks function)
     "For each hook in HOOKS list bind FUNCTION."
     (dolist (hook hooks)
       (add-hook hook function)))
+
+  (use-package async
+    :demand t
+    :init (dired-async-mode 1)
+    :config (async-bytecomp-package-mode 1)
+    (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil))))
 
   (use-package all-the-icons
     :if (display-graphic-p)
@@ -144,12 +188,22 @@
               :defer t
               :config (add-hook 'dired-mode-hook #'all-the-icons-dired-mode)))
 
-  (use-package doom-themes
-    :config (progn
-              (load-theme 'doom-opera-light t)
-              (doom-themes-org-config)
-              ;; (doom-themes-neotree-config)
-              ))
+  ;; (use-package doom-themes
+  ;;   :config (progn
+  ;;             (load-theme 'doom-opera-light t)
+  ;;             (doom-themes-org-config)
+  ;;             ;; (doom-themes-neotree-config)
+  ;;             ))
+
+  (use-package modus-themes
+    ;; load the theme files before enabling a theme
+    :init (modus-themes-load-themes)
+    :custom (modus-themes-italic-constructs nil)
+    (modus-themes-bold-constructs nil)
+    (modus-themes-region '(accented bg-only no-extend))
+    ;; OR (modus-themes-load-vivendi)
+    :config (modus-themes-load-operandi)
+    :bind ("S-<f5>" . modus-themes-toggle))
 
   (use-package solaire-mode
     :config (solaire-global-mode +1))
@@ -175,16 +229,17 @@
                 (setq shell-file-name "bash"))
               (setq explicit-bash.exe-args '("--noediting" "--login" "-i"))
               (setenv "SHELL" shell-file-name)
-              (setenv "ITERM_SHELL_INTEGRATION_INSTALLED" nil)
+              ;; (setenv "ITERM_SHELL_INTEGRATION_INSTALLED" nil)
               (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)))
 
   ;; Fonts
   (let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name) (font-family-list))))
-                             (list (font-spec :name "Fira Code"   :size 10)
-                                   (font-spec :name "Roboto Mono" :size 10)
-                                   (font-spec :name "Monaco"      :size 10)
-                                   (font-spec :name "Meslo LG S"  :size 11)
-                                   (font-spec :name "Consolas"    :size 11)))))
+                             (list
+                              (font-spec :name "Monaco"      :size 10)
+                              (font-spec :name "Roboto Mono" :size 10)
+                              (font-spec :name "Fira Code"   :size 10)
+                              (font-spec :name "Meslo LG S"  :size 11)
+                              (font-spec :name "Consolas"    :size 11)))))
     (when my-font
       (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
       (add-to-list 'default-frame-alist `(font . ,(concat (font-get my-font :name) "-" (number-to-string (font-get my-font :size)))))
@@ -203,9 +258,17 @@
   (use-package focus :defer t)
   (use-package flx)
   (use-package request :defer t)
-  (use-package which-key :config (which-key-setup-minibuffer) (which-key-mode))
-  (use-package pdf-view-restore :config (add-hook 'pdf-view-mode-hook 'pdf-view-restore-mode))
-  (use-package vterm :defer t)
+
+  (use-package which-key
+    :init (which-key-mode)
+    :config (which-key-setup-minibuffer))
+
+  (use-package vterm
+    :defer t
+    :custom (vterm-install t)
+    :config (add-hook 'vterm-mode-hook (lambda () (global-hl-line-mode 0)))
+    (setq vterm-max-scrollback 10000))
+
   (use-package auto-dim-other-buffers
     :config (set-face-background 'auto-dim-other-buffers-face "#e0e0e6")
     (setq auto-dim-other-buffers-dim-on-switch-to-minibuffer nil)
@@ -220,10 +283,21 @@
               (global-set-key (kbd "C-h .") #'helpful-at-point)))
 
   (use-package pdf-tools
-    :defer f
+    :defer nil
+    :commands (pdf-view-mode pdf-tools-install)
+    :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
+    :magic ("%PDF" . pdf-view-mode)
     :config
-    (pdf-loader-install)
-    (add-hook 'pdf-view-mode-hook #'pdf-misc-size-indication-minor-mode))
+    (pdf-loader-install :no-query)
+    (setq-default pdf-view-display-size 'fit-page)
+    (add-hook 'pdf-view-mode-hook #'pdf-misc-size-indication-minor-mode)
+    :hook ((pdf-view-mode-hook . (lambda () (display-line-numbers-mode -1)))
+           (pdf-view-mode.hook . (lambda () (blink-cursor-mode -1)))
+           (pdf-view-mode-hook . pdf-tools-enable-minor-modes)))
+
+  (use-package pdf-view-restore
+    :after pdf-tools
+    :hook (pdf-view-mode . pdf-view-restore-mode))
 
   (use-package diff-hl
     :hook ((magit-pre-refresh-hook . diff-hl-magit-pre-refresh)
@@ -285,23 +359,28 @@
            ("C-h v" . find-variable)
            ("C-h l" . find-library)))
 
-  (use-package smartparens
-    :config (progn
-              (require 'smartparens-config)
-              (use-package evil-smartparens)
-              (show-smartparens-global-mode t)
-              (smartparens-strict-mode)
-              (add-hook 'prog-mode-hook #'turn-on-smartparens-strict-mode)
-              (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode))
-    ;; FIXME Make it work with evil-mode
-    :bind (:map smartparens-mode-map
-                ("C-<right>"      . sp-forward-slurp-sexp)
-                ("C-<left>"       . sp-forward-barf-sexp)
-                ("C-M-<right>"    . sp-backward-slurp-sexp)
-                ("C-M-<left>"     . sp-backward-barf-sexp)
-                ("M-<delete>"     . sp-unwrap-sexp)
-                ("M-<backspace>"  . sp-unwrap-sexp)
-                ("C-M-t"          . sp-transpose-sexp)))
+  ;; (use-package smartparens
+  ;;   :config (progn
+  ;;             (require 'smartparens-config)
+  ;;             (use-package evil-smartparens)
+  ;;             (show-smartparens-global-mode t)
+  ;;             (smartparens-strict-mode)
+  ;;             (add-hook 'prog-mode-hook #'turn-on-smartparens-strict-mode)
+  ;;             (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode))
+  ;;   ;; FIXME Make it work with evil-mode
+  ;;   :bind (:map smartparens-mode-map
+  ;;               ("C-<right>"      . sp-forward-slurp-sexp)
+  ;;               ("C-<left>"       . sp-forward-barf-sexp)
+  ;;               ("C-M-<right>"    . sp-backward-slurp-sexp)
+  ;;               ("C-M-<left>"     . sp-backward-barf-sexp)
+  ;;               ("M-<delete>"     . sp-unwrap-sexp)
+  ;;               ("M-<backspace>"  . sp-unwrap-sexp)
+  ;;               ("C-M-t"          . sp-transpose-sexp)))
+  (setq electric-pair-pairs '((?\{ . ?\})
+                              (?\( . ?\))
+                              (?\[ . ?\])
+                              (?\" . ?\")))
+  (electric-pair-mode t)
 
   (use-package clojure-mode
     :defer  t
@@ -478,10 +557,10 @@
               (use-package evil-visualstar :config (global-evil-visualstar-mode))
               (use-package evil-search-highlight-persist
                 :config (global-evil-search-highlight-persist t))
-              (use-package evil-matchit
-                :config (my-add-hooks '(nxml-mode-hook
-                                        html-mode-hook
-                                        web-mode-hook) #'evil-matchit-mode))
+              ;; (use-package evil-matchit
+              ;;   :config (my-add-hooks '(nxml-mode-hook
+              ;;                           html-mode-hook
+              ;;                           web-mode-hook) #'evil-matchit-mode))
               (use-package evil-commentary
                 :config (progn
                           (defun my-comment-line-and-go-to-next ()
@@ -623,6 +702,7 @@
     :diminish ivy-mode
     :config (progn
               (use-package ivy
+                :custom-face (ivy-current-match ((t (:inherit 'hl-line))))
                 :config (progn
                           (setq ivy-re-builders-alist '((swiper . ivy--regex-plus)
                                                         (t      . ivy--regex-plus)))
@@ -820,8 +900,17 @@ Use Counsel otherwise."
 
   (use-package eshell
     :defer t
-    :config (setq eshell-save-history-on-exit t
-                  eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'"))
+    :config (setq eshell-prompt-regexp "^[^αλ\n]*[αλ] "
+                  eshell-highlight-prompt nil
+                  eshell-save-history-on-exit t
+                  eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'")
+    (add-hook 'eshell-mode-hook (lambda () (global-hl-line-mode 0)))
+    (defun eshell/clear-scrollback ()
+      "Clear the scrollback content of the eshell window."
+      (let ((inhibit-read-only t))
+        (erase-buffer)))
+    (defalias 'open 'find-file-other-window)
+    (defalias 'clean 'eshell/clear-scrollback))
 
   (use-package web-mode
     :defer t
@@ -1131,15 +1220,14 @@ Start from the beginning of buffer otherwise."
                 "
 
   _h_:   help            _f_: find        _x_: execute  _._:   find file
-  _P_:   project         _d_: describe    _D_: ediff    _s_:   delete trailing whitepsaces
-  _b_:   buffers         _e_: evaluate    _w_: window   _SPC_: no highlight
+  _P_:   project         _d_: describe    _D_: ediff    _SPC_: no highlight
+  _b_:   buffers         _e_: evaluate    _w_: window
   "
                 ("h"   hydra-metahelp-menu/body)
                 ("f"   hydra-find/body)
                 ("e"   hydra-eval/body)
                 ("w"   hydra-window/body)
                 ("d"   hydra-describe/body)
-                ("s"   delete-trailing-whitespace)
                 ("SPC" evil-search-highlight-persist-remove-all)
                 ("u"   vundo)
                 ("P"   hydra-project/body)
@@ -1149,6 +1237,25 @@ Start from the beginning of buffer otherwise."
                 ("."   counsel-find-file)
                 ("q"   nil "quit")))
     :bind (("M-SPC" . hydra-common-commands/body)))
+
+  (use-package emacs
+    :init
+    ;; do not allow the cursor in the minibuffer prompt
+    (setq minibuffer-prompt-properties '(read-only t cursor-intangible t face minibuffer-prompt))
+    (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+    ;; Emacs 28: hide commands in M-x which do not work in the current mode.
+    (setq read-extended-command-predicate #'command-completion-default-include-p)
+
+    ;; enable recursive minibuffers
+    (setq enable-recursive-minibuffers t)
+
+    ;; completion ignores case
+    (setq completion-ignore-case t)
+    (setq read-file-name-completion-ignore-case t)
+
+    ;; allow Emacs to resize mini windows
+    (setq resize-mini-windows t))
 
   ;; Misc
   (progn
