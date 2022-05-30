@@ -122,10 +122,10 @@
         ;; don't ask for confirmation when opening symlinked file
         vc-follow-symlinks t
         ;; do not create backup files
-        auto-save-default nil
+        ;; auto-save-default nil
         create-lockfiles nil
-        make-backup-files nil
-        vc-make-backup-files nil
+        ;; make-backup-files nil
+        ;; vc-make-backup-files nil
         ;; disable package
         package-enable-at-startup nil
         ;; show parent parentheses
@@ -381,10 +381,51 @@
                               (?\" . ?\")))
   (electric-pair-mode t)
 
+;; (use-package treemacs
+;;   :straight (treemacs :type git :host github :repo "Alexander-Miller/treemacs")
+;;   :ensure t
+;;   :defer t
+;;   :init
+;;   (with-eval-after-load 'winum
+;;     (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+;;   (treemacs-follow-mode t)
+;;   (treemacs-filewatch-mode t)
+;;   (treemacs-fringe-indicator-mode 'always)
+;;   :config (progn
+;;             (use-package treemacs-evil
+;;               :after (treemacs evil)
+;;               :ensure t)
+;;
+;;             (use-package treemacs-projectile
+;;               :after (treemacs projectile)
+;;               :ensure t)
+;;
+;;             (use-package treemacs-icons-dired
+;;               :hook (dired-mode . treemacs-icons-dired-enable-once)
+;;               :ensure t)
+;;
+;;             (use-package treemacs-magit
+;;               :after (treemacs magit)
+;;               :ensure t)))
+
+  (use-package lsp-mode
+    :config
+    (use-package lsp-treemacs)
+    (add-hook 'clojure-mode-hook 'lsp)
+    (add-hook 'clojurescript-mode-hook 'lsp)
+    (add-hook 'clojurec-mode-hook 'lsp)
+    (setq lsp-lens-enable t
+          lsp-signature-auto-activate nil
+          ;; treemacs-space-between-root-nodes nil
+          ))
+
+  (use-package flycheck-clj-kondo :ensure t)
+
   (use-package clojure-mode
     :defer  t
     ;; :pin melpa-stable
     :config (progn
+              (require 'flycheck-clj-kondo)
               (use-package cider
                 ;; :pin melpa-stable
                 :defer t)
@@ -396,7 +437,7 @@
                           (setq flycheck-checkers (delete 'clojure-cider-typed flycheck-checkers))))
               (add-hook 'clojure-mode-hook #'flycheck-mode)
               (add-hook 'clojure-mode-hook #'turn-on-eldoc-mode)
-              (add-hook 'cider-mode-hook   #'cider-turn-on-eldoc-mode)
+              (add-hook 'cider-mode-hook   #'turn-on-eldoc-mode)
               (setq nrepl-log-messages           t
                     nrepl-hide-special-buffers   t
                     cider-prefer-local-resources t
@@ -405,8 +446,7 @@
               (defun cider-find-var-no-prompt ()
                 "cider-find-var at point without prompt"
                 (interactive)
-                (cider-find-var t nil))
-              )
+                (cider-find-var t nil)))
     :bind (:map clojure-mode-map
                 ("C-h"   . cider-find-var-no-prompt)
                 ("C-S-h" . cider-find-var-no-prompt)
@@ -1315,6 +1355,7 @@ Start from the beginning of buffer otherwise."
       debug-on-error nil
       debug-on-quit nil
       gc-cons-threshold (* 1 1024 1024)
-      gc-cons-percentage 0.1)
+      gc-cons-percentage 0.1
+      read-process-output-max (* 1024 1024))
 (provide 'init)
 ;;; init.el ends here
