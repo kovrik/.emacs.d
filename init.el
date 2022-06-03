@@ -449,8 +449,8 @@
                 (interactive)
                 (cider-find-var t nil)))
     :bind (:map clojure-mode-map
-                ("C-h"   . cider-find-var-no-prompt)
-                ("C-S-h" . cider-find-var-no-prompt)
+                ("C-h"   . cider-doc)
+                ("C-S-h" . cider-doc)
                 ("C-M-x" . cider-eval-defun-at-point)))
 
   (use-package geiser
