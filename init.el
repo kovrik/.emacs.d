@@ -233,9 +233,9 @@
   ;; Fonts
   (let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name) (font-family-list))))
                              (list (font-spec :name "JetBrains Mono" :size 11)
-                                   (font-spec :name "Monaco"         :size 10)
-                                   (font-spec :name "Roboto Mono"    :size 10)
-                                   (font-spec :name "Fira Code"      :size 10)
+                                   (font-spec :name "Monaco"         :size 11)
+                                   (font-spec :name "Roboto Mono"    :size 11)
+                                   (font-spec :name "Fira Code"      :size 11)
                                    (font-spec :name "Meslo LG S"     :size 11)
                                    (font-spec :name "Consolas"       :size 11)))))
     (when my-font
