@@ -917,7 +917,11 @@ Use Counsel otherwise."
                     magit-diff-refine-hunk t
                     magit-log-arguments '("--decorate" "--graph" "--color" "-n80")
                     magit-log-cutoff-length 80
+                    magit-display-buffer-function 'display-buffer
                     git-commit-finish-query-functions '())
+
+              (with-eval-after-load 'transient
+                (transient-bind-q-to-quit))
 
               (defun my-magit-checkout-current-file (arg)
                 (let ((f (magit-current-file)))
@@ -1027,12 +1031,12 @@ Start from the beginning of buffer otherwise."
   (use-package shackle
     :config (progn
               (setq shackle-lighter ""
-                    shackle-rules '(("\\`magit.*?\\'"         :regexp t :same t)
-                                    (compilation-mode         :same   t)
-                                    (erc-mode                 :same   t)
-                                    (proced-mode              :same   t)
-                                    (help-mode                :same   t)
-                                    (ibuffer-mode             :same   t)
+                    shackle-rules '(("\\`\\*magit.*?\\*\\'"   :regexp t :same t :inhibit-window-quit t)
+                                    (compilation-mode         :same t :inhibit-window-quit t)
+                                    (erc-mode                 :same t :inhibit-window-quit t)
+                                    (proced-mode              :same t :inhibit-window-quit t)
+                                    (help-mode                :same t :inhibit-window-quit t)
+                                    (ibuffer-mode             :same t :inhibit-window-quit t)
                                     (slime-mode               :popup  t
                                                               :align 'below
                                                               :ratio 0.33)
