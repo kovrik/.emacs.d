@@ -51,9 +51,13 @@
   ;; Globals
   ;; UTF-8 Everywhere
   (prefer-coding-system 'utf-8)
+  (set-language-environment "UTF-8")
   (set-default-coding-systems 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
+  (setq locale-coding-system 'utf-8)
+  (set-selection-coding-system 'utf-8)
+
   (when window-system
     (tooltip-mode    -1)
     (tool-bar-mode   -1)
@@ -76,7 +80,10 @@
                 fringes-outside-margins nil
                 indicate-buffer-boundaries nil
                 indicate-empty-lines nil
-                overflow-newline-into-fringe t)
+                overflow-newline-into-fringe t
+                bidi-paragraph-direction 'left-to-right
+                bidi-inhibit-bpa t)
+
   (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
         inhibit-startup-message t
         inhibit-startup-screen t
@@ -87,6 +94,8 @@
         scroll-margin 0
         scroll-conservatively 100000
         scroll-preserve-screen-position 1
+        ;; move by logical lines rather than visual lines (better for macros)
+        line-move-visual nil
         sentence-end-double-space nil
         ring-bell-function 'ignore
         use-dialog-box nil
@@ -134,7 +143,6 @@
         undo-tree-history-directory-alist `(("." . ,(concat user-emacs-directory "undo")))
         custom-file (concat user-emacs-directory "custom.el"))
 
-
   ;; make ibuffer the default buffer lister.
   (defalias 'list-buffers 'ibuffer)
   (defalias 'xml-pretty-print 'sgml-pretty-print)
@@ -150,6 +158,7 @@
   (desktop-save-mode)
   (global-font-lock-mode)
   (global-hl-line-mode)
+  (global-so-long-mode 1)
   (winner-mode)
   (blink-cursor-mode -1)
   ;; (pixel-scroll-mode)
