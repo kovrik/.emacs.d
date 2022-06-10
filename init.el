@@ -73,6 +73,12 @@
 
   (setq-default indent-tabs-mode nil
                 tab-width 2
+                ;; Silence warnings for redefinition
+                ad-redefinition-action 'accept
+                ;; Hide the cursor in inactive windows
+                cursor-in-non-selected-windows nil
+                ;; Prevent tracking for auto-saves
+                auto-save-list-file-prefix nil
                 find-file-visit-truename t
                 mode-require-final-newline nil
                 major-mode 'text-mode
@@ -157,7 +163,8 @@
   (column-number-mode 1)
   (desktop-save-mode)
   (global-font-lock-mode)
-  (global-hl-line-mode)
+  ;; hl-line
+  (global-hl-line-mode 1)
   (global-so-long-mode 1)
   (winner-mode)
   (blink-cursor-mode -1)
@@ -273,10 +280,16 @@
   (use-package vterm
     :defer t
     :custom (vterm-install t)
-    :config (add-hook 'vterm-mode-hook (lambda () (global-hl-line-mode 0)))
+    :hook (vterm-mode . evil-emacs-state)
+    (vterm-copy-mode . evil-normal-in-vterm-copy-mode)
+    :config (add-hook 'vterm-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
     (setq vterm-max-scrollback 10000)
-    :bind (:map vterm-mode-map
-                ("C-y" . vterm-yank)))
+    (advice-add #'vterm--redraw :after (lambda (&rest args) (evil-refresh-cursor evil-state)))
+    (defun evil-normal-in-vterm-copy-mode ()
+      (if (bound-and-true-p vterm-copy-mode)
+          (evil-normal-state)
+        (evil-emacs-state)))
+    :bind (:map vterm-mode-map ("C-y" . vterm-yank)))
 
   (use-package auto-dim-other-buffers
     :config (set-face-background 'auto-dim-other-buffers-face "#e0e0e6")
@@ -429,6 +442,13 @@
           ;; treemacs-space-between-root-nodes nil
           ))
 
+  (use-package lsp-ui
+    :ensure t
+    :commands lsp-ui-mode)
+
+  (use-package lsp-java
+    :config (add-hook 'java-mode-hook 'lsp))
+
   (use-package flycheck-clj-kondo :ensure t)
 
   (use-package clojure-mode
@@ -453,6 +473,11 @@
                     cider-prefer-local-resources t
                     cider-repl-popup-stacktraces t
                     cider-popup-stacktraces      nil)
+              (dolist (mode '(clojure-mode
+                              clojurec-mode
+                              clojurescript-mode
+                              clojurex-mode))
+                (add-to-list 'lsp-language-id-configuration `(,mode . "clojure")))
               (defun cider-find-var-no-prompt ()
                 "cider-find-var at point without prompt"
                 (interactive)
@@ -461,6 +486,32 @@
                 ("C-h"   . cider-doc)
                 ("C-S-h" . cider-doc)
                 ("C-M-x" . cider-eval-defun-at-point)))
+
+  (use-package js2-mode
+    :straight nil
+    :mode (rx ".js" eos)
+    :custom
+    (js-indent-level 2)
+    (js-switch-indent-offset 2)
+    (js2-highlight-level 3)
+    (js2-idle-timer-delay 0)
+    (js2-mode-show-parse-errors nil)
+    (js2-mode-show-strict-warnings nil))
+
+  (use-package rjsx-mode
+    :mode (rx (or ".jsx" (and "components/" (* anything) ".js")) eos)
+    :hook
+    (rjsx-mode . (lambda () (setq me/pretty-print-function #'sgml-pretty-print)))
+    (rjsx-mode . sgml-electric-tag-pair-mode))
+
+  (use-package typescript-mode
+    :init
+    (define-derived-mode typescript-tsx-mode typescript-mode "TSX")
+    (add-to-list 'auto-mode-alist `(,(rx ".tsx" eos) . typescript-tsx-mode))
+    :config
+    (add-hook 'typescript-tsx-mode-hook #'sgml-electric-tag-pair-mode)
+    :custom
+    (typescript-indent-level 2))
 
   (use-package geiser
     :defer t
@@ -628,12 +679,14 @@
               (setq evil-move-cursor-back t
                     evil-default-cursor   t
                     evil-want-C-u-scroll  t
-                    evil-want-C-w-delete  t)
+                    evil-want-C-w-delete  t
+                    evil-insert-state-cursor '(bar "blue")
+                    evil-visual-state-cursor '(box "magenta")
+                    evil-normal-state-cursor '(box "pink"))
               ;; treat symbol as a word
               (defalias #'forward-evil-word #'forward-evil-symbol)
               ;; kill buffer, but don't close window
               (evil-ex-define-cmd "q[uit]" 'kill-this-buffer)
-              ;; (evil-ex-define-cmd "quit"   'evil-quit)
               (evil-ex-define-cmd "ls"     'ibuffer-list-buffers)
               ;; ESC quits
               (defun minibuffer-keyboard-quit ()
@@ -672,17 +725,22 @@
                 (turn-off-evil-mode)
                 (setq cursor-type 'bar))
               ;; Disable evil-mode in some major modes
-              (my-add-hooks '(shell-mode-hook term-mode-hook magit-mode-hook erc-mode-hook
-                                              eshell-mode-hook comint-mode-hook proced-mode-hook nrepl-connected-hook)
+              (my-add-hooks '(magit-mode-hook
+                              erc-mode-hook
+                              nrepl-connected-hook)
                             #'my-evil-off)
-              (with-eval-after-load 'term (evil-set-initial-state 'term-mode 'emacs))
-              (with-eval-after-load 'vterm (evil-set-initial-state 'vterm-mode 'emacs))
+              (with-eval-after-load 'term (evil-set-initial-state 'term-mode 'insert))
+              (with-eval-after-load 'vterm (evil-set-initial-state 'vterm-mode 'insert))
               (evil-set-initial-state 'pdf-view-mode 'normal)))
 
   (use-package evil-collection
     :after evil
     :ensure t
-    :config (evil-collection-init))
+    :config (evil-collection-init '(cider company compile debug diff-hl diff-mode dired
+                                    doc-view ediff eldoc elisp-mode elisp-refs eshell
+                                    geiser ibugger imenu imenu-list ivy log-view magit
+                                    org pdf scheme sly typescript-mode vdiff vterm vundo
+                                    which-key)))
 
   (use-package dired
     :straight (:type built-in)
@@ -958,7 +1016,7 @@ Use Counsel otherwise."
                   eshell-highlight-prompt nil
                   eshell-save-history-on-exit t
                   eshell-cmpl-dir-ignore "\\`\\(\\.\\.?\\|CVS\\|\\.svn\\|\\.git\\)/\\'")
-    (add-hook 'eshell-mode-hook (lambda () (global-hl-line-mode 0)))
+    (add-hook 'eshell-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
     (defun eshell/clear-scrollback ()
       "Clear the scrollback content of the eshell window."
       (let ((inhibit-read-only t))
