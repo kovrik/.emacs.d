@@ -310,12 +310,40 @@
     :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
     :magic ("%PDF" . pdf-view-mode)
     :config
-    (pdf-loader-install :no-query)
+    (pdf-tools-install :no-query)
     (setq-default pdf-view-display-size 'fit-page)
     (add-hook 'pdf-view-mode-hook #'pdf-misc-size-indication-minor-mode)
     :hook ((pdf-view-mode-hook . (lambda () (display-line-numbers-mode -1)))
            (pdf-view-mode.hook . (lambda () (blink-cursor-mode -1)))
-           (pdf-view-mode-hook . pdf-tools-enable-minor-modes)))
+           (pdf-view-mode-hook . pdf-tools-enable-minor-modes))
+    :bind (:map pdf-view-mode-map
+                ;; From Spacemacs
+                ;; Navigation
+                ("j"  . pdf-view-next-line-or-next-page)
+                ("k"  . pdf-view-previous-line-or-previous-page)
+                ("l"  . image-forward-hscroll)
+                ("h"  . image-backward-hscroll)
+                ("J"  . pdf-view-next-page)
+                ("K"  . pdf-view-previous-page)
+                ("u"  . pdf-view-scroll-down-or-previous-page)
+                ("d"  . pdf-view-scroll-up-or-next-page)
+                ("0"  . image-bol)
+                ("$"  . image-eol)
+                ;; Scale/Fit
+                ("W"  .  pdf-view-fit-width-to-window)
+                ("H"  .  pdf-view-fit-height-to-window)
+                ("P"  .  pdf-view-fit-page-to-window)
+                ("m"  .  pdf-view-set-slice-using-mouse)
+                ("b"  .  pdf-view-set-slice-from-bounding-box)
+                ("R"  .  pdf-view-reset-slice)
+                ("zr" .  pdf-view-scale-reset)
+                ;; Actions
+                ("s"  . pdf-occur)
+                ("O"  . pdf-outline)
+                ("p"  . pdf-misc-print-document)
+                ("o"  . pdf-links-action-perform)
+                ("r"  . pdf-view-revert-buffer)
+                ("n"  . pdf-view-midnight-minor-mode)))
 
   (use-package pdf-view-restore
     :after pdf-tools
@@ -730,8 +758,7 @@
                               nrepl-connected-hook)
                             #'my-evil-off)
               (with-eval-after-load 'term (evil-set-initial-state 'term-mode 'insert))
-              (with-eval-after-load 'vterm (evil-set-initial-state 'vterm-mode 'insert))
-              (evil-set-initial-state 'pdf-view-mode 'normal)))
+              (with-eval-after-load 'vterm (evil-set-initial-state 'vterm-mode 'insert))))
 
   (use-package evil-collection
     :after evil
