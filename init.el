@@ -203,11 +203,8 @@
               :config (add-hook 'dired-mode-hook #'all-the-icons-dired-mode)))
 
   ;; (use-package doom-themes
-  ;;   :config (progn
-  ;;             (load-theme 'doom-opera-light t)
-  ;;             (doom-themes-org-config)
-  ;;             ;; (doom-themes-neotree-config)
-  ;;             ))
+  ;;   :config (load-theme 'doom-opera-light t)
+  ;;   (doom-themes-org-config))
 
   (use-package modus-themes
     ;; load the theme files before enabling a theme
@@ -216,8 +213,7 @@
     (modus-themes-bold-constructs nil)
     (modus-themes-region '(accented bg-only no-extend))
     ;; OR (modus-themes-load-vivendi)
-    :config (modus-themes-load-operandi)
-    :bind ("S-<f5>" . modus-themes-toggle))
+    :config (modus-themes-load-operandi))
 
   (use-package solaire-mode
     :config (solaire-global-mode +1))
@@ -292,7 +288,7 @@
     :bind (:map vterm-mode-map ("C-y" . vterm-yank)))
 
   (use-package auto-dim-other-buffers
-    :config (set-face-background 'auto-dim-other-buffers-face "#e0e0e6")
+    :config
     (setq auto-dim-other-buffers-dim-on-switch-to-minibuffer nil)
     (auto-dim-other-buffers-mode t))
 
@@ -466,9 +462,10 @@
     (add-hook 'clojurescript-mode-hook 'lsp)
     (add-hook 'clojurec-mode-hook 'lsp)
     (setq lsp-lens-enable t
-          lsp-signature-auto-activate nil
-          ;; treemacs-space-between-root-nodes nil
-          ))
+          lsp-signature-auto-activate nil)
+    :bind (:map lsp-mode-map
+                ("C-S-h" . lsp-find-definition)
+                ("C-."   . lsp-find-definition)))
 
   (use-package lsp-ui
     :ensure t
@@ -537,7 +534,10 @@
     (define-derived-mode typescript-tsx-mode typescript-mode "TSX")
     (add-to-list 'auto-mode-alist `(,(rx ".tsx" eos) . typescript-tsx-mode))
     :config
+    (add-hook 'typescript-mode-hook #'sgml-electric-tag-pair-mode)
     (add-hook 'typescript-tsx-mode-hook #'sgml-electric-tag-pair-mode)
+    (add-hook 'typescript-mode-hook 'lsp)
+    (add-hook 'typescript-tsx-mode-hook 'lsp)
     :custom
     (typescript-indent-level 2))
 
@@ -1158,7 +1158,8 @@ Start from the beginning of buffer otherwise."
   (use-package tree-sitter
     :config (require 'tree-sitter)
     (require 'tree-sitter-hl)
-    (global-tree-sitter-mode))
+    (global-tree-sitter-mode)
+    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
   (use-package tree-sitter-langs
     :config (require 'tree-sitter-langs))
 
