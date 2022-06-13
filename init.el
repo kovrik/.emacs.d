@@ -406,55 +406,11 @@
            ("C-h v" . find-variable)
            ("C-h l" . find-library)))
 
-  ;; (use-package smartparens
-  ;;   :config (progn
-  ;;             (require 'smartparens-config)
-  ;;             (use-package evil-smartparens)
-  ;;             (show-smartparens-global-mode t)
-  ;;             (smartparens-strict-mode)
-  ;;             (add-hook 'prog-mode-hook #'turn-on-smartparens-strict-mode)
-  ;;             (add-hook 'smartparens-enabled-hook #'evil-smartparens-mode))
-  ;;   ;; FIXME Make it work with evil-mode
-  ;;   :bind (:map smartparens-mode-map
-  ;;               ("C-<right>"      . sp-forward-slurp-sexp)
-  ;;               ("C-<left>"       . sp-forward-barf-sexp)
-  ;;               ("C-M-<right>"    . sp-backward-slurp-sexp)
-  ;;               ("C-M-<left>"     . sp-backward-barf-sexp)
-  ;;               ("M-<delete>"     . sp-unwrap-sexp)
-  ;;               ("M-<backspace>"  . sp-unwrap-sexp)
-  ;;               ("C-M-t"          . sp-transpose-sexp)))
   (setq electric-pair-pairs '((?\{ . ?\})
                               (?\( . ?\))
                               (?\[ . ?\])
                               (?\" . ?\")))
   (electric-pair-mode t)
-
-;; (use-package treemacs
-;;   :straight (treemacs :type git :host github :repo "Alexander-Miller/treemacs")
-;;   :ensure t
-;;   :defer t
-;;   :init
-;;   (with-eval-after-load 'winum
-;;     (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-;;   (treemacs-follow-mode t)
-;;   (treemacs-filewatch-mode t)
-;;   (treemacs-fringe-indicator-mode 'always)
-;;   :config (progn
-;;             (use-package treemacs-evil
-;;               :after (treemacs evil)
-;;               :ensure t)
-;;
-;;             (use-package treemacs-projectile
-;;               :after (treemacs projectile)
-;;               :ensure t)
-;;
-;;             (use-package treemacs-icons-dired
-;;               :hook (dired-mode . treemacs-icons-dired-enable-once)
-;;               :ensure t)
-;;
-;;             (use-package treemacs-magit
-;;               :after (treemacs magit)
-;;               :ensure t)))
 
   (use-package lsp-mode
     :config
@@ -743,28 +699,6 @@
   (use-package savehist
     :init (savehist-mode))
 
-  ;; A few more useful configurations...
-  (use-package emacs
-    :init
-    ;; Add prompt indicator to `completing-read-multiple'.
-    ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
-    (defun crm-indicator (args)
-      (cons (format "[CRM%s] %s"
-                    (replace-regexp-in-string
-                     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-                     crm-separator)
-                    (car args))
-            (cdr args)))
-    (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
-
-    ;; Do not allow the cursor in the minibuffer prompt
-    (setq minibuffer-prompt-properties
-          '(read-only t cursor-intangible t face minibuffer-prompt))
-    (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
-
-    ;; Enable recursive minibuffers
-    (setq enable-recursive-minibuffers t))
-
   (use-package consult)
   (use-package marginalia
     ;; Either bind `marginalia-cycle` globally or only in the minibuffer
@@ -790,31 +724,26 @@
   (use-package corfu
     :custom
     (corfu-cycle t)
-    ;; Recommended: Enable Corfu globally.
+    (corfu-auto nil)
+    (corfu-auto-prefix 2)
+    (corfu-auto-delay 0.25)
+    (corfu-scroll-margin 4)
+    ;; Enable Corfu globally.
     ;; This is recommended since Dabbrev can be used globally (M-/).
     ;; See also `corfu-excluded-modes'.
     :init
     (global-corfu-mode)
-    :config
+    :config (use-package corfu-doc
+              :config (add-hook 'corfu-mode-hook #'corfu-doc-mode))
     :bind (:map corfu-map
                 ("TAB"     . corfu-next)
                 ([tab]     . corfu-next)
                 ("C-j"     . corfu-next)
                 ("S-TAB"   . corfu-previous)
                 ("C-k"     . corfu-previous)
-                ([backtab] . corfu-previous)))
-
-  (use-package corfu-doc
-    :config (add-hook 'corfu-mode-hook #'corfu-doc-mode))
-
-  ;; A few more useful configurations...
-  (use-package emacs
-    :init
-    ;; TAB cycle if there are only few candidates
-    (setq completion-cycle-threshold 5)
-    ;; Enable indentation+completion using the TAB key.
-    ;; `completion-at-point' is often bound to M-TAB.
-    (setq tab-always-indent 'complete))
+                ([backtab] . corfu-previous)
+                ("<escape>" . corfu-quit)
+                ("<return>" . corfu-insert)))
 
   ;; Add extensions
   (use-package cape
@@ -833,8 +762,7 @@
     (add-to-list 'completion-at-point-functions #'cape-file)
     (add-to-list 'completion-at-point-functions #'cape-dabbrev)
     (add-to-list 'completion-at-point-functions #'cape-keyword)
-    (add-to-list 'completion-at-point-functions #'cape-symbol)
-    (add-to-list 'completion-at-point-functions #'cape-line))
+    (add-to-list 'completion-at-point-functions #'cape-symbol))
 
   (use-package swiper
     :demand t
@@ -1289,21 +1217,33 @@ Start from the beginning of buffer otherwise."
   (use-package emacs
     :init
     ;; do not allow the cursor in the minibuffer prompt
-    (setq minibuffer-prompt-properties '(read-only t cursor-intangible t face minibuffer-prompt))
+    (setq ;; enable recursive minibuffers
+          enable-recursive-minibuffers t
+          ;; completion ignores case
+          completion-ignore-case t
+          ;; TAB cycle if there are only few candidates
+          completion-cycle-threshold 5
+          ;; Do not allow the cursor in the minibuffer prompt
+          minibuffer-prompt-properties '(read-only t cursor-intangible t face minibuffer-prompt)
+          read-file-name-completion-ignore-case t
+          ;; allow Emacs to resize mini windows
+          resize-mini-windows t
+          ;; Enable indentation+completion using the TAB key.
+          ;; `completion-at-point' is often bound to M-TAB.
+          tab-always-indent 'complete)
     (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
 
-    ;; Emacs 28: hide commands in M-x which do not work in the current mode.
-    (setq read-extended-command-predicate #'command-completion-default-include-p)
-
-    ;; enable recursive minibuffers
-    (setq enable-recursive-minibuffers t)
-
-    ;; completion ignores case
-    (setq completion-ignore-case t)
-    (setq read-file-name-completion-ignore-case t)
-
-    ;; allow Emacs to resize mini windows
-    (setq resize-mini-windows t))
+    ;; Add prompt indicator to `completing-read-multiple'.
+    ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+    (defun crm-indicator (args)
+      (cons (format "[CRM%s] %s"
+                    (replace-regexp-in-string
+                     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                     crm-separator)
+                    (car args))
+            (cdr args)))
+    (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+    (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
 
   ;; Misc
   (progn
@@ -1319,32 +1259,20 @@ Start from the beginning of buffer otherwise."
       (split-window-horizontally)
       (other-window 1 nil)
       (when (= prefix 1) (set-buffer-major-mode (switch-to-buffer (generate-new-buffer "*new*")))))
-    (bind-keys ("C-x 2" . my-hsplit-last-buffer) ("C-x 3"  . my-vsplit-last-buffer)
-               ("C-x -" . my-hsplit-last-buffer) ("C-x \\" . my-vsplit-last-buffer)
-               ("C-x _" . my-hsplit-last-buffer) ("C-x |"  . my-vsplit-last-buffer)))
+    (bind-keys ("C-x 2"    . my-hsplit-last-buffer)
+               ("C-x -"    . my-hsplit-last-buffer)
+               ("C-x -"    . my-hsplit-last-buffer)
+               ("C-x C-\-" . my-hsplit-last-buffer)
+               ("C-x _"    . my-hsplit-last-buffer)
+               ("C-x 3"    . my-vsplit-last-buffer)
+               ("C-x \\"   . my-vsplit-last-buffer)
+               ("C-x C-\\" . my-vsplit-last-buffer)
+               ("C-x |"    . my-vsplit-last-buffer)))
 
   (defun my-align-repeat (start end regexp)
     "Repeat alignment with respect to the given regular expression.  Args: START END REGEXP."
     (interactive "r\nsAlign regexp: ")
     (align-regexp start end (concat "\\(\\s-*\\)" regexp) 1 1 t))
-
-  ;; (progn
-  ;;   (defun my-quit (count)
-  ;;     "Quit if in a read-only buffer; otherwise, call self-insert-command."
-  ;;     (interactive "p")
-  ;;     (let ((m (buffer-local-value 'major-mode (current-buffer))))
-  ;;       (cond
-  ;;        ((eq 'magit-popup-mode m) (magit-popup-quit))
-  ;;        ((eq 'neotree-mode m)     (neotree-toggle))
-  ;;        ((eq 'vterm-mode m)       (vterm--self-insert))
-  ;;        ((not buffer-read-only)   (self-insert-command count))
-  ;;        (t                        (kill-this-buffer)))))
-  ;;   (global-set-key (kbd "q") 'my-quit)
-  ;;   (require 'help-mode)
-  ;;   (require 'proced)
-  ;;   (require 'compile)
-  ;;   (dolist (mode-map (list help-mode-map proced-mode-map compilation-mode-map))
-  ;;     (define-key mode-map (kbd "q") 'my-quit)))
 
   (defun new-scratch-buffer ()
     "Creates a new scratch buffer."
