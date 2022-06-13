@@ -158,7 +158,6 @@
   (defalias 'when-not 'unless)
   (defalias 'word-count 'count-words)
   (defalias 'yes-or-no-p 'y-or-n-p)
-  ;;(fringe-mode '(7 . 0))
   (fringe-mode nil)
   (column-number-mode 1)
   (desktop-save-mode)
@@ -202,6 +201,11 @@
     :config (use-package all-the-icons-dired
               :defer t
               :config (add-hook 'dired-mode-hook #'all-the-icons-dired-mode)))
+
+  (use-package all-the-icons-completion
+    :after (marginalia all-the-icons)
+    :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+    :init (all-the-icons-completion-mode))
 
   ;; (use-package doom-themes
   ;;   :config (load-theme 'doom-opera-light t)
@@ -301,51 +305,6 @@
               (global-set-key (kbd "C-h C") #'helpful-command)
               (global-set-key (kbd "C-h .") #'helpful-at-point)))
 
-  (use-package pdf-tools
-    :defer nil
-    :commands (pdf-view-mode pdf-tools-install)
-    :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
-    :magic ("%PDF" . pdf-view-mode)
-    :config
-    (pdf-tools-install :no-query)
-    (setq-default pdf-view-display-size 'fit-page)
-    (add-hook 'pdf-view-mode-hook #'pdf-misc-size-indication-minor-mode)
-    :hook ((pdf-view-mode-hook . (lambda () (display-line-numbers-mode -1)))
-           (pdf-view-mode.hook . (lambda () (blink-cursor-mode -1)))
-           (pdf-view-mode-hook . pdf-tools-enable-minor-modes))
-    :bind (:map pdf-view-mode-map
-                ;; From Spacemacs
-                ;; Navigation
-                ("j"  . pdf-view-next-line-or-next-page)
-                ("k"  . pdf-view-previous-line-or-previous-page)
-                ("l"  . image-forward-hscroll)
-                ("h"  . image-backward-hscroll)
-                ("J"  . pdf-view-next-page)
-                ("K"  . pdf-view-previous-page)
-                ("u"  . pdf-view-scroll-down-or-previous-page)
-                ("d"  . pdf-view-scroll-up-or-next-page)
-                ("0"  . image-bol)
-                ("$"  . image-eol)
-                ;; Scale/Fit
-                ("W"  .  pdf-view-fit-width-to-window)
-                ("H"  .  pdf-view-fit-height-to-window)
-                ("P"  .  pdf-view-fit-page-to-window)
-                ("m"  .  pdf-view-set-slice-using-mouse)
-                ("b"  .  pdf-view-set-slice-from-bounding-box)
-                ("R"  .  pdf-view-reset-slice)
-                ("zr" .  pdf-view-scale-reset)
-                ;; Actions
-                ("s"  . pdf-occur)
-                ("O"  . pdf-outline)
-                ("p"  . pdf-misc-print-document)
-                ("o"  . pdf-links-action-perform)
-                ("r"  . pdf-view-revert-buffer)
-                ("n"  . pdf-view-midnight-minor-mode)))
-
-  (use-package pdf-view-restore
-    :after pdf-tools
-    :hook (pdf-view-mode . pdf-view-restore-mode))
-
   (use-package diff-hl
     :hook ((magit-pre-refresh-hook . diff-hl-magit-pre-refresh)
            (magit-post-refresh . diff-hl-magit-post-refresh))
@@ -400,11 +359,11 @@
                ((not (eq 0 (variable-at-point))) (find-variable (variable-at-point)))
                (t                                (user-error "Unknown thing at point!"))))
     :bind (:map emacs-lisp-mode-map
-           ("C-S-h" . my-find-thing-at-point)
-           ("C-h f" . find-function)
-           ("C-h k" . find-function-on-key)
-           ("C-h v" . find-variable)
-           ("C-h l" . find-library)))
+                ("C-S-h" . my-find-thing-at-point)
+                ("C-h f" . find-function)
+                ("C-h k" . find-function-on-key)
+                ("C-h v" . find-variable)
+                ("C-h l" . find-library)))
 
   (setq electric-pair-pairs '((?\{ . ?\})
                               (?\( . ?\))
@@ -531,15 +490,15 @@
 
   ;; SLY
   (use-package sly-quicklisp
-                 :after sly)
+    :after sly)
 
   (use-package sly
-               :config (setq sly-lisp-implementations
-                             `((sbcl ("/usr/local/bin/sbcl" "--noinform" "--no-linedit") :coding-system utf-8-unix)
-                               (abcl ("/usr/local/bin/abcl" "--noinform" "--no-linedit") :coding-system utf-8-unix) ))
-   (evil-set-initial-state 'sly-mrepl-mode 'emacs)
-   :bind (:map sly-mode-map
-               ("C-S-h" . sly-describe-symbol)))
+    :config (setq sly-lisp-implementations
+                  `((sbcl ("/usr/local/bin/sbcl" "--noinform" "--no-linedit") :coding-system utf-8-unix)
+                    (abcl ("/usr/local/bin/abcl" "--noinform" "--no-linedit") :coding-system utf-8-unix) ))
+    (evil-set-initial-state 'sly-mrepl-mode 'emacs)
+    :bind (:map sly-mode-map
+                ("C-S-h" . sly-describe-symbol)))
 
   (provide 'init-sly)
 
@@ -563,32 +522,32 @@
   (use-package anzu :config (global-anzu-mode +1))
 
   (use-package vundo
-               :commands (vundo)
-               :straight (vundo :type git :host github :repo "casouri/vundo")
-               :config
-               ;; Take less on-screen space.
-               (setq vundo-compact-display t)
-               ;; Use `HJKL` VIM-like motion, also Home/End to jump around.
-               (define-key vundo-mode-map (kbd "l") #'vundo-forward)
-               (define-key vundo-mode-map (kbd "<right>") #'vundo-forward)
-               (define-key vundo-mode-map (kbd "h") #'vundo-backward)
-               (define-key vundo-mode-map (kbd "<left>") #'vundo-backward)
-               (define-key vundo-mode-map (kbd "j") #'vundo-next)
-               (define-key vundo-mode-map (kbd "<down>") #'vundo-next)
-               (define-key vundo-mode-map (kbd "k") #'vundo-previous)
-               (define-key vundo-mode-map (kbd "<up>") #'vundo-previous)
-               (define-key vundo-mode-map (kbd "<home>") #'vundo-stem-root)
-               (define-key vundo-mode-map (kbd "<end>") #'vundo-stem-end)
-               (define-key vundo-mode-map (kbd "q") #'vundo-quit)
-               (define-key vundo-mode-map (kbd "C-g") #'vundo-quit)
-               (define-key vundo-mode-map (kbd "RET") #'vundo-confirm))
+    :commands (vundo)
+    :straight (vundo :type git :host github :repo "casouri/vundo")
+    :config
+    ;; Take less on-screen space.
+    (setq vundo-compact-display t)
+    ;; Use `HJKL` VIM-like motion, also Home/End to jump around.
+    (define-key vundo-mode-map (kbd "l")       #'vundo-forward)
+    (define-key vundo-mode-map (kbd "<right>") #'vundo-forward)
+    (define-key vundo-mode-map (kbd "h")       #'vundo-backward)
+    (define-key vundo-mode-map (kbd "<left>")  #'vundo-backward)
+    (define-key vundo-mode-map (kbd "j")       #'vundo-next)
+    (define-key vundo-mode-map (kbd "<down>")  #'vundo-next)
+    (define-key vundo-mode-map (kbd "k")       #'vundo-previous)
+    (define-key vundo-mode-map (kbd "<up>")    #'vundo-previous)
+    (define-key vundo-mode-map (kbd "<home>")  #'vundo-stem-root)
+    (define-key vundo-mode-map (kbd "<end>")   #'vundo-stem-end)
+    (define-key vundo-mode-map (kbd "q")       #'vundo-quit)
+    (define-key vundo-mode-map (kbd "C-g")     #'vundo-quit)
+    (define-key vundo-mode-map (kbd "RET")     #'vundo-confirm))
   (with-eval-after-load 'evil (evil-define-key 'normal 'global (kbd "C-M-u") 'vundo))
 
   (use-package undo-fu
-               :config
-               (global-unset-key (kbd "C-z"))
-               (global-set-key (kbd "C-z")   'undo-fu-only-undo)
-               (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
+    :config
+    (global-unset-key (kbd "C-z"))
+    (global-set-key (kbd "C-z")   'undo-fu-only-undo)
+    (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
 
   (use-package evil
     :init (setq evil-undo-system 'undo-fu)
@@ -701,9 +660,20 @@
   ;; TODO embark?
 
   (use-package vertico
-    :custom-face (vertico-current ((t (:inherit hl-line :weight bold))))
-    :config (setq vertico-cycle t)
     :init (vertico-mode)
+    :custom-face (vertico-current ((t (:inherit hl-line :weight bold))))
+    ;; Correct file path when changed
+    :hook (rfn-eshadow-update-overlay . vertico-directory-tidy)
+    :config (setq vertico-cycle t)
+    ;; Prefix current candidate with arrow
+    (advice-add #'vertico--format-candidate :around
+                (lambda (orig cand prefix suffix index _start)
+                  (setq cand (funcall orig cand prefix suffix index _start))
+                  (concat
+                   (if (= vertico--index index)
+                       (propertize "» " 'face 'vertico-current)
+                     "  ")
+                   cand)))
     :bind (:map vertico-map
                 ("C-j" . vertico-next)
                 ("C-k" . vertico-previous)))
@@ -717,6 +687,8 @@
            ("C-S-f" . consult-find)))
 
   (use-package marginalia
+    :custom
+    (marginalia-max-relative-age 0)
     ;; The :init configuration is always executed (Not lazy!)
     ;; Must be in the :init section of use-package such that the mode gets
     ;; enabled right away. Note that this forces loading the package.
@@ -739,6 +711,7 @@
     (corfu-auto-prefix 2)
     (corfu-auto-delay 0.25)
     (corfu-scroll-margin 4)
+    (corfu-preview-current nil)
     ;; Enable Corfu globally.
     ;; This is recommended since Dabbrev can be used globally (M-/).
     ;; See also `corfu-excluded-modes'.
@@ -952,11 +925,11 @@ Start from the beginning of buffer otherwise."
     :bind (("M-<f1>". neotree-current-file)))
 
   (use-package imenu-list
-               :config (setq imenu-list-position 'left
-                             imenu-list-size 36
-                             imenu-list-focus-after-activation t)
-                       (my-add-hooks '(imenu-list-major-mode-hook) #'turn-on-evil-mode)
-               :bind (("M-<f2>" . imenu-list-smart-toggle)))
+    :config (setq imenu-list-position 'left
+                  imenu-list-size 36
+                  imenu-list-focus-after-activation t)
+    (my-add-hooks '(imenu-list-major-mode-hook) #'turn-on-evil-mode)
+    :bind (("M-<f2>" . imenu-list-smart-toggle)))
 
   (use-package eyebrowse
     :diminish eyebrowse-mode
@@ -1020,6 +993,52 @@ Start from the beginning of buffer otherwise."
     (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
   (use-package tree-sitter-langs
     :config (require 'tree-sitter-langs))
+
+  (use-package pdf-tools
+    :defer t
+    :commands (pdf-view-mode pdf-tools-install)
+    :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
+    :magic ("%PDF" . pdf-view-mode)
+    :config
+    (pdf-tools-install :no-query)
+    (setq-default pdf-view-display-size 'fit-page)
+    ;; :hook ((pdf-view-mode-hook . (lambda () (display-line-numbers-mode -1)))
+    ;;        (pdf-view-mode-hook . (lambda () (blink-cursor-mode -1)))
+    ;;        (pdf-view-mode-hook . pdf-tools-enable-minor-modes)
+    ;;        (pdf-view-mode-hook . pdf-misc-size-indication-minor-mode))
+    :bind (:map pdf-view-mode-map
+                ;; From Spacemacs
+                ;; Navigation
+                ("j"  . pdf-view-next-line-or-next-page)
+                ("k"  . pdf-view-previous-line-or-previous-page)
+                ("l"  . image-forward-hscroll)
+                ("h"  . image-backward-hscroll)
+                ("J"  . pdf-view-next-page)
+                ("K"  . pdf-view-previous-page)
+                ("u"  . pdf-view-scroll-down-or-previous-page)
+                ("d"  . pdf-view-scroll-up-or-next-page)
+                ("0"  . image-bol)
+                ("$"  . image-eol)
+                ;; Scale/Fit
+                ("W"  . pdf-view-fit-width-to-window)
+                ("H"  . pdf-view-fit-height-to-window)
+                ("P"  . pdf-view-fit-page-to-window)
+                ("m"  . pdf-view-set-slice-using-mouse)
+                ("b"  . pdf-view-set-slice-from-bounding-box)
+                ("R"  . pdf-view-reset-slice)
+                ("zr" . pdf-view-scale-reset)
+                ;; Actions
+                ("s"  . pdf-occur)
+                ("O"  . pdf-outline)
+                ("p"  . pdf-misc-print-document)
+                ("o"  . pdf-links-action-perform)
+                ("r"  . pdf-view-revert-buffer)
+                ("n"  . pdf-view-midnight-minor-mode))
+    )
+
+  (use-package pdf-view-restore
+    :after pdf-tools
+    :hook (pdf-view-mode . pdf-view-restore-mode))
 
   ;; TODO Remove Hydra and just use which-key
   ;; Hydras
@@ -1234,19 +1253,19 @@ Start from the beginning of buffer otherwise."
     :init
     ;; do not allow the cursor in the minibuffer prompt
     (setq ;; enable recursive minibuffers
-          enable-recursive-minibuffers t
-          ;; completion ignores case
-          completion-ignore-case t
-          ;; TAB cycle if there are only few candidates
-          completion-cycle-threshold 5
-          ;; Do not allow the cursor in the minibuffer prompt
-          minibuffer-prompt-properties '(read-only t cursor-intangible t face minibuffer-prompt)
-          read-file-name-completion-ignore-case t
-          ;; allow Emacs to resize mini windows
-          resize-mini-windows t
-          ;; Enable indentation+completion using the TAB key.
-          ;; `completion-at-point' is often bound to M-TAB.
-          tab-always-indent 'complete)
+     enable-recursive-minibuffers t
+     ;; completion ignores case
+     completion-ignore-case t
+     ;; TAB cycle if there are only few candidates
+     completion-cycle-threshold 5
+     ;; Do not allow the cursor in the minibuffer prompt
+     minibuffer-prompt-properties '(read-only t cursor-intangible t face minibuffer-prompt)
+     read-file-name-completion-ignore-case t
+     ;; allow Emacs to resize mini windows
+     resize-mini-windows t
+     ;; Enable indentation+completion using the TAB key.
+     ;; `completion-at-point' is often bound to M-TAB.
+     tab-always-indent 'complete)
     (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
 
     ;; Add prompt indicator to `completing-read-multiple'.
