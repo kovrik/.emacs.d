@@ -704,9 +704,12 @@
   (use-package savehist
     :init (savehist-mode))
 
-  (use-package consult)
+  (use-package consult
+    :bind (("\C-s"  . consult-line)
+           ("M-s o" . consult-line-multi)
+           ("C-S-f" . consult-find)))
+
   (use-package marginalia
-    ;; Either bind `marginalia-cycle` globally or only in the minibuffer
     :bind (("M-A" . marginalia-cycle)
            :map minibuffer-local-map
            ("M-A" . marginalia-cycle))
@@ -778,12 +781,6 @@
     (add-to-list 'completion-at-point-functions #'cape-dabbrev)
     (add-to-list 'completion-at-point-functions #'cape-keyword)
     (add-to-list 'completion-at-point-functions #'cape-symbol))
-
-  (use-package swiper
-    :demand t
-    :bind (("\C-s"    . swiper-isearch)
-           ("M-s o"   . swiper-multi)
-           ("C-S-f"   . swiper-all)))
 
   (use-package projectile
     :diminish projectile-mode
@@ -1029,12 +1026,12 @@ Start from the beginning of buffer otherwise."
                 "
   Find
   -----
-  _h_: at point         _f_: file      _F_: function   _s_: swiper
+  _h_: at point         _f_: file      _F_: function   _s_: line
   _k_: function on key  _v_: variabl   _l_: library    _g_: ripgrep
   "
                 ("h"   my-find-thing-at-point)
                 ("F"   find-function)
-                ("s"   swiper-isearch)
+                ("s"   consult-line)
                 ("f"   find-file)
                 ("k"   find-function-on-key)
                 ("v"   find-variable)
