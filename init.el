@@ -413,6 +413,8 @@
   (electric-pair-mode t)
 
   (use-package lsp-mode
+    :custom
+    (lsp-completion-provider :none)
     :config
     (use-package lsp-treemacs)
     (add-hook 'clojure-mode-hook 'lsp)
@@ -420,6 +422,9 @@
     (add-hook 'clojurec-mode-hook 'lsp)
     (setq lsp-lens-enable t
           lsp-signature-auto-activate nil)
+    ;; Use orderless completion style with lsp-capf instead of the default lsp-passthrough.
+    (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+          '(orderless))
     :bind (:map lsp-mode-map
                 ("C-S-h" . lsp-find-definition)
                 ("C-."   . lsp-find-definition)))
@@ -744,6 +749,16 @@
                 ([backtab] . corfu-previous)
                 ("<escape>" . corfu-quit)
                 ("<return>" . corfu-insert)))
+
+  (use-package kind-icon
+    :after corfu
+    :custom
+    (kind-icon-use-icons t)
+    (kind-icon-default-face 'corfu-default)
+    (kind-icon-blend-background nil)
+    (kind-icon-blend-frac 0.08)
+    :config
+    (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
   ;; Add extensions
   (use-package cape
