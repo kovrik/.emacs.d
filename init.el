@@ -428,6 +428,10 @@
     ;; Use orderless completion style with lsp-capf instead of the default lsp-passthrough.
     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
           '(orderless))
+    (defun corfu-lsp-setup ()
+      (setq-local completion-styles '(orderless)
+                  completion-category-defaults nil))
+    (add-hook 'lsp-mode-hook #'corfu-lsp-setup)
     :bind (:map lsp-mode-map
                 ("C-S-h" . lsp-find-definition)
                 ("C-."   . lsp-find-definition)))
