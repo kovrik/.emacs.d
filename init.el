@@ -412,6 +412,9 @@
                               (?\" . ?\")))
   (electric-pair-mode t)
 
+  (use-package yasnippet
+    :config (yas-global-mode 1))
+
   (use-package lsp-mode
     :custom
     (lsp-completion-provider :none)
@@ -818,6 +821,7 @@ Use `find-file' otherwise."
     :defer t
     :config (progn
               (use-package org-bullets
+                :defer t
                 :config (progn
                           (defun my-org-bullets-on () (org-bullets-mode 1))
                           (add-hook 'org-mode-hook #'my-org-bullets-on)))
