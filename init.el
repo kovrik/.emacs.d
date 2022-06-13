@@ -178,7 +178,8 @@
   (bind-keys ([escape]   . keyboard-quit)
              ("RET"      . newline-and-indent)
              ("C-M-l"    . indent-region)
-             ("<f5>"     . (lambda () (interactive) (find-file user-init-file))))
+             ("<f5>"     . (lambda () (interactive) (find-file user-init-file)))
+             ("C-x f"    . find-file))
 
   (load custom-file :noerror :nomessage)
 
@@ -547,8 +548,7 @@
                   geiser-debug-jump-to-debug-p nil))
 
   (use-package racket-mode
-    :defer t
-    :config (add-hook 'racket-mode-hook #'company-quickhelp--disable))
+    :defer t)
 
   (use-package rainbow-delimiters
     :config (progn
@@ -560,36 +560,6 @@
                               scheme-mode-hook
                               racket-mode-hook)
                             #'rainbow-delimiters-mode)))
-
-  ;; Slime
-  ;; (use-package slime
-  ;;   :defer t
-  ;;   :config (progn
-  ;;             (setq byte-compile-warnings '(cl-functions))
-  ;;             (load (expand-file-name "~/.quicklisp/slime-helper.el"))
-  ;;             (setq inferior-lisp-program "sbcl")
-  ;;             (slime-setup '(slime-fancy slime-company slime-asdf slime-indentation slime-sbcl-exts slime-scratch))
-  ;;             (setq lisp-indent-function 'common-lisp-indent-function)
-  ;;             (setq common-lisp-style-default "modern"))
-  ;;   :bind (:map slime-mode-map
-  ;;               ("C-h" . slime-describe-symbol)
-  ;;               ("C-S-h" . slime-describe-symbol)))
-
-  ;; (use-package slime-company
-  ;;   :after (slime company)
-  ;;   :ensure t
-  ;;   :config (setq slime-company-completion 'fuzzy
-  ;;                 slime-company-after-completion 'slime-company-just-one-space)
-  ;;   ;; We redefine this function to call SLIME-COMPANY-DOC-MODE in the buffer
-  ;;   (defun slime-show-description (string package)
-  ;;     (let ((bufname (slime-buffer-name :description)))
-  ;;       (slime-with-popup-buffer (bufname :package package
-  ;;                                         :connection t
-  ;;                                         :select slime-description-autofocus)
-  ;;                                (when (string= bufname "*slime-description*")
-  ;;                                  (with-current-buffer bufname (slime-company-doc-mode)))
-  ;;                                (princ string)
-  ;;                                (goto-char (point-min))))))
 
   ;; SLY
   (use-package sly-quicklisp
@@ -621,29 +591,6 @@
                               clojure-mode-hook
                               common-lisp-lisp-mode-hook
                               racket-mode-hook) #'highlight-quoted-mode)))
-
-  ;; (use-package evil-leader
-  ;;   :defer nil
-  ;;   :ensure t
-  ;;   :config (progn
-  ;;             (global-evil-leader-mode)
-  ;;             (evil-leader/set-leader "<SPC>")
-  ;;             (evil-leader/set-key
-  ;;               "s" 'evil-search-highlight-persist-remove-all
-  ;;               ;; toggle
-  ;;               "t l" 'linum-mode
-  ;;               ;; find
-  ;;               "f f" 'counsel-find-file
-  ;;               "f s" 'swiper-isearch
-  ;;               ;; helpful
-  ;;               "h ?" 'help-for-help
-  ;;               "h k" 'helpful-key
-  ;;               "h f" 'helpful-function
-  ;;               "h s" 'helpful-symbol
-  ;;               "h v" 'helpful-variable
-  ;;               "h ." 'helpful-at-point
-  ;;               ;; open
-  ;;               "o t" 'vterm)))
 
   (use-package anzu :config (global-anzu-mode +1))
 
@@ -735,8 +682,6 @@
               (define-key minibuffer-local-must-match-map [escape]      'minibuffer-keyboard-quit)
               (define-key minibuffer-local-isearch-map    [escape]      'minibuffer-keyboard-quit)
               (define-key evil-insert-state-map           [escape]      'evil-normal-state)
-              (define-key evil-insert-state-map           (kbd "C-n")   'company-complete)
-              (define-key evil-insert-state-map           (kbd "C-SPC") 'company-complete)
               (bind-keys :map evil-normal-state-map
                          ([next]   . evil-scroll-down)
                          ([prior]  . evil-scroll-up)
@@ -763,9 +708,9 @@
   (use-package evil-collection
     :after evil
     :ensure t
-    :config (evil-collection-init '(cider company compile debug diff-hl diff-mode dired
+    :config (evil-collection-init '(cider compile debug diff-hl diff-mode dired
                                     doc-view ediff eldoc elisp-mode elisp-refs eshell
-                                    geiser ibugger imenu imenu-list ivy log-view magit
+                                    geiser ibugger imenu imenu-list log-view magit
                                     org pdf scheme sly typescript-mode vdiff vterm vundo
                                     which-key)))
 
@@ -785,122 +730,117 @@
                           ielm-mode-hook)
                         #'turn-on-eldoc-mode))
 
-  ;; (use-package vertico
-  ;;              :init
-  ;;              (vertico-mode)
-
-  ;;              ;; Different scroll margin
-  ;;              ;; (setq vertico-scroll-margin 0)
-
-  ;;              ;; Show more candidates
-  ;;              ;; (setq vertico-count 20)
-
-  ;;              ;; Grow and shrink the Vertico minibuffer
-  ;;              ;; (setq vertico-resize t)
-
-  ;;              ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
-  ;;              ;; (setq vertico-cycle t)
-  ;;              )
-
-  ;; (use-package savehist
-  ;;   :init (savehist-mode))
-
-  ;; (use-package consult)
-  ;; (use-package marginalia
-  ;;              ;; Either bind `marginalia-cycle` globally or only in the minibuffer
-  ;;              :bind (("M-A" . marginalia-cycle)
-  ;;                     :map minibuffer-local-map
-  ;;                     ("M-A" . marginalia-cycle))
-
-  ;;              ;; The :init configuration is always executed (Not lazy!)
-  ;;              :init
-
-  ;;              ;; Must be in the :init section of use-package such that the mode gets
-  ;;              ;; enabled right away. Note that this forces loading the package.
-  ;;              (marginalia-mode))
-  ;; (use-package prescient)
-  ;; ;; (use-package ivy-prescient)
-  ;; ;; (use-package company-prescient)
-  ;; (use-package selectrum-prescient)
-  ;; (use-package selectrum
-  ;; :config (selectrum-mode +1)
-  ;; (selectrum-prescient-mode +1))
   ;; TODO embark?
 
-  (use-package prescient
-    :config (progn
-              (use-package ivy-prescient :config (ivy-prescient-mode))
-              (use-package company-prescient :config (company-prescient-mode))))
+  (use-package vertico
+    :custom-face (vertico-current ((t (:inherit hl-line :weight bold))))
+    :config (setq vertico-cycle t)
+    :init (vertico-mode)
+    :bind (:map vertico-map
+                ("C-j" . vertico-next)
+                ("C-k" . vertico-previous)))
+
+  (use-package savehist
+    :init (savehist-mode))
+
+  ;; A few more useful configurations...
+  (use-package emacs
+    :init
+    ;; Add prompt indicator to `completing-read-multiple'.
+    ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+    (defun crm-indicator (args)
+      (cons (format "[CRM%s] %s"
+                    (replace-regexp-in-string
+                     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                     crm-separator)
+                    (car args))
+            (cdr args)))
+    (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+    ;; Do not allow the cursor in the minibuffer prompt
+    (setq minibuffer-prompt-properties
+          '(read-only t cursor-intangible t face minibuffer-prompt))
+    (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+    ;; Enable recursive minibuffers
+    (setq enable-recursive-minibuffers t))
+
+  (use-package consult)
+  (use-package marginalia
+    ;; Either bind `marginalia-cycle` globally or only in the minibuffer
+    :bind (("M-A" . marginalia-cycle)
+           :map minibuffer-local-map
+           ("M-A" . marginalia-cycle))
+
+    ;; The :init configuration is always executed (Not lazy!)
+    :init
+    ;; Must be in the :init section of use-package such that the mode gets
+    ;; enabled right away. Note that this forces loading the package.
+    (marginalia-mode))
+  ;; Optionally use the `orderless' completion style.
+  (use-package orderless
+    :init
+    ;; Configure a custom style dispatcher (see the Consult wiki)
+    ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
+    ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+    (setq completion-styles '(orderless basic)
+          completion-category-defaults nil
+          completion-category-overrides '((file (styles partial-completion)))))
+
+  (use-package corfu
+    :custom
+    (corfu-cycle t)
+    ;; Recommended: Enable Corfu globally.
+    ;; This is recommended since Dabbrev can be used globally (M-/).
+    ;; See also `corfu-excluded-modes'.
+    :init
+    (global-corfu-mode)
+    :config
+    :bind (:map corfu-map
+                ("TAB"     . corfu-next)
+                ([tab]     . corfu-next)
+                ("C-j"     . corfu-next)
+                ("S-TAB"   . corfu-previous)
+                ("C-k"     . corfu-previous)
+                ([backtab] . corfu-previous)))
+
+  (use-package corfu-doc
+    :config (add-hook 'corfu-mode-hook #'corfu-doc-mode))
+
+  ;; A few more useful configurations...
+  (use-package emacs
+    :init
+    ;; TAB cycle if there are only few candidates
+    (setq completion-cycle-threshold 5)
+    ;; Enable indentation+completion using the TAB key.
+    ;; `completion-at-point' is often bound to M-TAB.
+    (setq tab-always-indent 'complete))
+
+  ;; Add extensions
+  (use-package cape
+    ;; Bind dedicated completion commands
+    ;; Alternative prefix keys: C-c p, M-p, M-+, ...
+    :bind (("C-c p p" . completion-at-point) ;; capf
+           ("C-c p t" . complete-tag)        ;; etags
+           ("C-c p d" . cape-dabbrev)        ;; or dabbrev-completion
+           ("C-c p h" . cape-history)
+           ("C-c p f" . cape-file)
+           ("C-c p k" . cape-keyword)
+           ("C-c p s" . cape-symbol)
+           ("C-c p l" . cape-line))
+    :init
+    ;; Add `completion-at-point-functions', used by `completion-at-point'.
+    (add-to-list 'completion-at-point-functions #'cape-file)
+    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+    (add-to-list 'completion-at-point-functions #'cape-keyword)
+    (add-to-list 'completion-at-point-functions #'cape-symbol)
+    (add-to-list 'completion-at-point-functions #'cape-line))
 
   (use-package swiper
     :demand t
-    :diminish ivy-mode
-    :config (progn
-              (use-package ivy
-                :custom-face (ivy-current-match ((t (:inherit 'hl-line))))
-                :config (progn
-                          (setq ivy-re-builders-alist '((swiper . ivy--regex-plus)
-                                                        (t      . ivy--regex-plus)))
-                          (setq ivy-use-virtual-buffers t
-                                ivy-display-style 'plain
-                                ivy-initial-inputs-alist nil
-                                ivy-count-format "")
-                          (defun my-ivy-page-up (&optional arg)
-                            (interactive "p")
-                            (ivy-previous-line ivy-height))
-                          (defun my-ivy-page-down (&optional arg)
-                            (interactive "p")
-                            (ivy-next-line ivy-height))
-                          (bind-keys :map ivy-minibuffer-map
-                                     ([escape] . minibuffer-keyboard-quit)
-                                     ([next]   . my-ivy-page-down)
-                                     ("C-f"    . my-ivy-page-down)
-                                     ([prior]  . my-ivy-page-up)
-                                     ("C-b"    . my-ivy-page-up)
-                                     ("C-k"    . ivy-previous-line)
-                                     ("C-j"    . ivy-next-line))
-                          (ivy-mode 1)))
-              (use-package counsel
-                :config  (setq counsel-grep-base-command "rg -i -M 120 --no-heading --line-number --color never %s %s"
-                               counsel-describe-function-function #'helpful-callable
-                               counsel-describe-variable-function #'helpful-variable))
-              (use-package ivy-rich
-                :config (ivy-rich-mode 1)
-                (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)))
     :bind (("\C-s"    . swiper-isearch)
            ("M-s o"   . swiper-multi)
-           ("C-S-f"   . swiper-all)
-           ("C-c C-r" . ivy-resume)
-           ("M-x"     . counsel-M-x)
-           ("C-x f"   . counsel-find-file)
-           ("C-x C-f" . counsel-find-file)
-           ("C-x C-b" . ivy-switch-buffer)
-           ("<f1> f"  . counsel-describe-function)
-           ("<f1> v"  . counsel-describe-variable)
-           ("<f1> l"  . counsel-load-library)
-           ("C-c g"   . counsel-git)
-           ("C-c j"   . counsel-git-grep)
-           ("C-c k"   . counsel-ag)
-           ("C-x l"   . counsel-locate)))
-
-  ;; (use-package ace-window
-  ;;              :ensure t
-  ;;              :defer 1
-  ;;              :config
-  ;;              (set-face-attribute 'aw-leading-char-face nil :foreground "deep sky blue" :weight 'bold :height 3.0)
-  ;;              (set-face-attribute 'aw-mode-line-face nil :inherit 'mode-line-buffer-id :foreground "lawn green")
-  ;;              (setq aw-keys '(?a ?s ?d ?f ?j ?k ?l)
-  ;;                    aw-dispatch-always t
-  ;;                    aw-dispatch-alist '((?x aw-delete-window "Ace - Delete Window")
-  ;;                                        (?c aw-swap-window "Ace - Swap Window")
-  ;;                                        (?n aw-flip-window)
-  ;;                                        (?v aw-split-window-vert "Ace - Split Vert Window")
-  ;;                                        (?h aw-split-window-horz "Ace - Split Horz Window")
-  ;;                                        (?m delete-other-windows "Ace - Maximize Window")
-  ;;                                        (?g delete-other-windows)
-  ;;                                        (?b balance-windows)
-  ;;                                        (?u (lambda () (progn (winner-undo) (setq this-command 'winner-undo))))
-  ;;                                        (?r winner-redo))))
+           ("C-S-f"   . swiper-all)))
 
   (use-package projectile
     :diminish projectile-mode
@@ -920,7 +860,6 @@ Otherwise run projectile-find-file."
                     (projectile-find-file))))
 
               (setq projectile-keymap-prefix (kbd "C-c p")
-                    projectile-completion-system 'ivy
                     projectile-enable-caching t
                     projectile-switch-project-action 'my-projectile-switch-to-project)
               (when (eq system-type 'windows-nt)
@@ -930,33 +869,14 @@ Otherwise run projectile-find-file."
 
               (defun my-find-file ()
                 "If currently in a project, then use Projectile to fuzzy find a file.
-Use Counsel otherwise."
+Use `find-file' otherwise."
                 (interactive)
                 (require 'projectile)
                 (if (projectile-project-p)
                     (projectile-find-file)
-                  (counsel-find-file))))
+                  (find-file))))
     :bind (("C-S-p" . projectile-switch-project)
            ("C-S-n" . my-find-file)))
-
-  (use-package company
-    :diminish company-mode
-    :config (progn
-              (use-package company-quickhelp
-                :config (progn (setq company-quickhelp-delay 0.7)
-                               (company-quickhelp-mode 1)))
-              (use-package company-flx
-                :config (with-eval-after-load 'company
-                          (company-flx-mode +1)))
-              (setq company-show-numbers t
-                    company-idle-delay 0.7
-                    company-minimum-prefix-length 3
-                    company-require-match 'never
-                    company-dabbrev-downcase nil
-                    company-dabbrev-ignore-case t
-                    company-selection-wrap-around t
-                    company-transformers '(company-sort-by-occurrence))
-              (add-hook 'after-init-hook 'global-company-mode)))
 
   (use-package org
     :defer t
@@ -1147,12 +1067,6 @@ Start from the beginning of buffer otherwise."
     :config (progn
               (setq solidity-flycheck-solc-checker-active t
                     solidity-flycheck-solium-checker-active t)))
-  (use-package company-solidity
-    :config (progn
-              (add-hook 'solidity-mode-hook
-                        (lambda () (set (make-local-variable 'company-backends)
-                                        (append '((company-solidity company-capf company-dabbrev-code))
-                                                company-backends))))))
 
   ;; FIXME Setup grammars
   (use-package tree-sitter
@@ -1172,19 +1086,17 @@ Start from the beginning of buffer otherwise."
                 "
   Find
   -----
-  _h_: at point         _f_: file      _F_: function   _s_: swiper   _g_: grep
-  _k_: function on key  _v_: variabl   _l_: library    _a_: ag
+  _h_: at point         _f_: file      _F_: function   _s_: swiper
+  _k_: function on key  _v_: variabl   _l_: library    _g_: ripgrep
   "
                 ("h"   my-find-thing-at-point)
                 ("F"   find-function)
                 ("s"   swiper-isearch)
-                ("f"   counsel-find-file)
+                ("f"   find-file)
                 ("k"   find-function-on-key)
                 ("v"   find-variable)
                 ("l"   find-library)
-                ("a"   counsel-ag)
-                ("g"   counsel-grep)
-
+                ("g"   consult-ripgrep)
                 ("q"   nil "quit" :color blue))
 
               (defhydra hydra-ediff (:color blue :hint nil)
@@ -1211,9 +1123,9 @@ Start from the beginning of buffer otherwise."
                 "
   Describe
   --------- "
-                ("v" counsel-describe-variable "variable")
-                ("f" counsel-describe-function "function")
-                ("F" counsel-describe-face "face")
+                ("v" describe-variable "variable")
+                ("f" describe-function "function")
+                ("F" describe-face "face")
                 ("k" describe-key "key")
                 ("q" nil "quit"))
 
@@ -1229,7 +1141,7 @@ Start from the beginning of buffer otherwise."
                 ("L" eval-last-sexp-print-value "last s-expression and print value  ")
                 ("d" eval-defun "defun / function")
                 ("f" eval-defun "defun / function")
-                ("q"   nil "quit" :color blue))
+                ("q" nil "quit" :color blue))
 
               (defhydra hydra-window
                 (:hint nil)
@@ -1256,7 +1168,7 @@ Start from the beginning of buffer otherwise."
 
                 ("p" previous-buffer)
                 ("n" next-buffer)
-                ("b" counsel-ibuffer :color blue)
+                ("b" ibuffer :color blue)
                 ("w" ace-window :color blue)
                 ("R" revert-buffer :color blue)
 
@@ -1284,7 +1196,7 @@ Start from the beginning of buffer otherwise."
   _b_: switch buffer  _B_: bury buffer
   _k_: kill buffer    _SPC_: previous buffer
   "
-                ("b" ivy-switch-buffer)
+                ("b" switch-to-buffer)
                 ("k" kill-buffer)
                 ("B" bury-buffer)
                 ("SPC" previous-buffer)
@@ -1294,24 +1206,22 @@ Start from the beginning of buffer otherwise."
                 "
   Describe                           ^^^^^^                             Goto         ^^ View
   -----------------------------------------------------------------------------------------------------
-  _b_: bindings             _k_:   key                   _s_:   symbol               _e_: *Messages*    _a_: apropos
-  _c_: key-briefly          _K_:   Key (info)            _S_:   Symbol (info)        _i_: info manual   _l_: lossage
+  _b_: bindings             _k_:   key                   _s_:   symbol               _e_: *Messages*
+  _c_: key-briefly          _K_:   Key (info)            _S_:   Symbol (info)        _i_: info manual
   _C_: coding system        _L_:   Language environment  _C-s_: syntax table         _._: local help
-  _d_: documentation        _m_:   mode                  _v_:   variable
-  _E_: Emacs...             _p_:   package (by topic)    _V_:   Variable (counsel)
-  _f_: function             _P_:   Package (by name)     _w_:   whereis (func->keys)
+  _d_: documentation        _m_:   mode                  _v_:   variable             _l_: lossage
+  _E_: Emacs...             _p_:   package (by topic)    _w_:   whereis (func->keys)
+  _f_: function             _P_:   Package (by name)
   _F_: Function (info)      _C-p_: external package
   _I_: key input method                                           ^^^^^^                 _q_: quit
   "
-                ("?"   counsel-hydra-heads)
-                ("a"   counsel-apropos-thing-at-point)
                 ("b"   describe-bindings)
                 ("c"   describe-key-briefly)
                 ("C"   describe-coding-system)
                 ("d"   apropos-documentation)
                 ("e"   view-echo-area-messages)
                 ("E"   hydra-metahelp-emacs-menu/body)
-                ("f"   counsel-describe-function)
+                ("f"   describe-function)
                 ("F"   Info-goto-emacs-command-node)
                 ("i"   info)
                 ("I"   describe-input-method)
@@ -1328,7 +1238,6 @@ Start from the beginning of buffer otherwise."
                 ("S"   info-lookup-symbol)
                 ("C-s" describe-syntax)
                 ("v"   describe-variable)
-                ("V"   counsel-describe-variable)
                 ("w"   where-is)
                 ("."   display-local-help))
 
@@ -1340,7 +1249,6 @@ Start from the beginning of buffer otherwise."
   _c_: copying      _F_: FAQ           _i_: info manual
   _d_: debuging     _G_: GNU           _t_: tutorial
   "
-                ("?" counsel-hydra-heads)
                 ("a" about-emacs)
                 ("c" describe-copying)
                 ("d" view-emacs-debugging)
@@ -1372,9 +1280,9 @@ Start from the beginning of buffer otherwise."
                 ("u"   vundo)
                 ("P"   hydra-project/body)
                 ("D"   hydra-ediff/body)
-                ("x"   counsel-M-x)
+                ("x"   M-x)
                 ("b"   hydra-buffers/body)
-                ("."   counsel-find-file)
+                ("."   find-file)
                 ("q"   nil "quit")))
     :bind (("M-SPC" . hydra-common-commands/body)))
 
