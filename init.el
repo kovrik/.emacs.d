@@ -3,21 +3,20 @@
 ;;; Commentary:
 ;;; Code:
 (let ((file-name-handler-alist nil)
-      (gc-cons-threshold (* 100 1024 1024))
-      (gc-cons-percentage 0.6)
       (read-process-output-max 10000000)
       (debug-on-error t)
       (debug-on-quit t))
 
   (add-hook 'emacs-startup-hook
-            (lambda () (message (concat "Emacs startup time: " (emacs-init-time)))))
+            (lambda ()
+              (message (format "Emacs startup time %s with %d garbage collections"
+                               (emacs-init-time)
+                               gcs-done))))
 
   (defun my-message-with-timestamp (old-func fmt-string &rest args)
     "Prepend current timestamp (with microsecond precision) to a message"
-    (if (and fmt-string (> (length fmt-string) 0))
-        (apply old-func
-               (concat (format-time-string "[%F %T.%3N] ") fmt-string)
-               args)))
+    (if (> (length fmt-string) 0)
+        (apply old-func (concat (format-time-string "[%F %T.%3N] ") fmt-string) args)))
 
   (advice-add 'message :around #'my-message-with-timestamp)
 
@@ -46,20 +45,21 @@
 
   (require 'bind-key)
   (require 'uniquify)
-  (use-package queue)
-  (use-package browse-kill-ring)
-  (use-package dash)
-  (use-package epl)
-  (use-package f)
-  (use-package fold-dwim)
-  (use-package fringe-helper)
-  (use-package goto-chg)
-  (use-package highlight)
-  (use-package highlight-escape-sequences)
-  (use-package idle-highlight-mode)
-  (use-package markdown-mode)
-  (use-package pkg-info)
+  (use-package gcmh :config (gcmh-mode 1))
   (use-package s)
+  (use-package queue)
+  (use-package f)
+  (use-package dash)
+  ;; (use-package browse-kill-ring)
+  ;; (use-package epl)
+  ;; (use-package fold-dwim)
+  ;; (use-package fringe-helper)
+  ;; (use-package goto-chg)
+  ;; (use-package highlight)
+  ;; (use-package highlight-escape-sequences)
+  ;; (use-package idle-highlight-mode)
+  ;; (use-package markdown-mode)
+  ;; (use-package pkg-info)
 
   ;; Globals
   ;; UTF-8 Everywhere
@@ -225,6 +225,7 @@
   ;;   (doom-themes-org-config))
 
   (use-package modus-themes
+    :defer nil
     ;; load the theme files before enabling a theme
     :init (modus-themes-load-themes)
     :custom (modus-themes-italic-constructs nil)
@@ -278,9 +279,9 @@
   (use-package bug-hunter :defer t)
   (use-package command-log-mode :defer t)
   (use-package restclient :defer t)
-  (use-package iedit)
+  (use-package iedit :defer t)
   (use-package rg :config (rg-enable-default-bindings))
-  (use-package wgrep)
+  (use-package wgrep :defer t)
   (use-package ranger :defer t)
   (use-package rainbow-mode :defer t :diminish rainbow-mode)
   (use-package focus :defer t)
@@ -288,6 +289,7 @@
   (use-package request :defer t)
 
   (use-package which-key
+    :defer t
     :init (which-key-mode)
     :config (which-key-setup-minibuffer))
 
@@ -311,6 +313,7 @@
     (auto-dim-other-buffers-mode t))
 
   (use-package helpful
+    :defer t
     :config (progn
               (global-set-key (kbd "C-h f") #'helpful-callable)
               (global-set-key (kbd "C-h v") #'helpful-variable)
@@ -319,6 +322,7 @@
               (global-set-key (kbd "C-h .") #'helpful-at-point)))
 
   (use-package diff-hl
+    :defer t
     :hook ((magit-pre-refresh-hook . diff-hl-magit-pre-refresh)
            (magit-post-refresh . diff-hl-magit-post-refresh))
     :config (progn
@@ -354,6 +358,7 @@
                 ("C-x v r" . diff-hl-revert-hunk)))
 
   (use-package hl-todo
+    :defer t
     :hook (prog-mode . hl-todo-mode)
     :config (setq hl-todo-highlight-punctuation ":"
                   hl-todo-keyword-faces `(("TODO"       warning bold)
@@ -364,6 +369,7 @@
                                           ("DEPRECATED" font-lock-doc-face bold))))
 
   (use-package find-func
+    :defer t
     :config (defun my-find-thing-at-point ()
               "Find directly thing (var or func) at point in current window."
               (interactive)
@@ -385,9 +391,11 @@
   (electric-pair-mode t)
 
   (use-package yasnippet
+    :defer t
     :config (yas-global-mode 1))
 
   (use-package lsp-mode
+    :defer t
     :custom
     (lsp-completion-provider :none)
     :config
@@ -409,13 +417,17 @@
                 ("C-."   . lsp-find-definition)))
 
   (use-package lsp-ui
+    :defer t
     :ensure t
     :commands lsp-ui-mode)
 
   (use-package lsp-java
+    :defer t
     :config (add-hook 'java-mode-hook 'lsp))
 
-  (use-package flycheck-clj-kondo :ensure t)
+  (use-package flycheck-clj-kondo
+    :defer t
+    :ensure t)
 
   (use-package clojure-mode
     :defer  t
@@ -454,6 +466,7 @@
                 ("C-M-x" . cider-eval-defun-at-point)))
 
   (use-package js2-mode
+    :defer t
     :straight nil
     :mode (rx ".js" eos)
     :custom
@@ -465,12 +478,14 @@
     (js2-mode-show-strict-warnings nil))
 
   (use-package rjsx-mode
+    :defer t
     :mode (rx (or ".jsx" (and "components/" (* anything) ".js")) eos)
     :hook
     (rjsx-mode . (lambda () (setq me/pretty-print-function #'sgml-pretty-print)))
     (rjsx-mode . sgml-electric-tag-pair-mode))
 
   (use-package typescript-mode
+    :defer t
     :init
     (define-derived-mode typescript-tsx-mode typescript-mode "TSX")
     (add-to-list 'auto-mode-alist `(,(rx ".tsx" eos) . typescript-tsx-mode))
@@ -503,9 +518,11 @@
 
   ;; SLY
   (use-package sly-quicklisp
+    :defer t
     :after sly)
 
   (use-package sly
+    :defer t
     :config (setq sly-lisp-implementations
                   `((sbcl ("/usr/local/bin/sbcl" "--noinform" "--no-linedit") :coding-system utf-8-unix)
                     (abcl ("/usr/local/bin/abcl" "--noinform" "--no-linedit") :coding-system utf-8-unix) ))
@@ -516,6 +533,7 @@
   (provide 'init-sly)
 
   (use-package adjust-parens
+    :defer t
     :config (progn
               (my-add-hooks '(emacs-lisp-mode-hook
                               clojure-mode-hook
@@ -526,15 +544,18 @@
                 ("<backtab>" . lisp-dedent-adjust-parens)))
 
   (use-package highlight-quoted
+    :defer t
     :config (progn
               (my-add-hooks '(emacs-lisp-mode-hook
                               clojure-mode-hook
                               common-lisp-lisp-mode-hook
                               racket-mode-hook) #'highlight-quoted-mode)))
 
-  (use-package anzu :config (global-anzu-mode +1))
+  (use-package anzu
+    :config (global-anzu-mode +1))
 
   (use-package vundo
+    :defer t
     :commands (vundo)
     :straight (vundo :type git :host github :repo "casouri/vundo")
     :config
@@ -557,12 +578,14 @@
   (with-eval-after-load 'evil (evil-define-key 'normal 'global (kbd "C-M-u") 'vundo))
 
   (use-package undo-fu
+    :defer t
     :config
     (global-unset-key (kbd "C-z"))
     (global-set-key (kbd "C-z")   'undo-fu-only-undo)
     (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
 
   (use-package evil
+    :defer nil
     :init (setq evil-undo-system 'undo-fu)
     :config (progn
               (use-package evil-anzu)
@@ -673,6 +696,7 @@
   ;; TODO embark?
 
   (use-package vertico
+    :defer t
     :init (vertico-mode)
     :custom-face (vertico-current ((t (:inherit hl-line :weight bold))))
     ;; Correct file path when changed
@@ -693,14 +717,17 @@
                 ("C-k" . vertico-previous)))
 
   (use-package savehist
+    :defer t
     :init (savehist-mode))
 
   (use-package consult
+    :defer t
     :bind (("\C-s"  . consult-line)
            ("M-s o" . consult-line-multi)
            ("C-S-f" . consult-find)))
 
   (use-package marginalia
+    :defer t
     :custom
     (marginalia-max-relative-age 0)
     ;; The :init configuration is always executed (Not lazy!)
@@ -713,12 +740,14 @@
            ("M-A" . marginalia-cycle)))
 
   (use-package orderless
+    :defer t
     :init
     (setq completion-styles '(orderless basic)
           completion-category-defaults nil
           completion-category-overrides '((file (styles partial-completion)))))
 
   (use-package corfu
+    :defer t
     :custom
     (corfu-cycle t)
     (corfu-auto nil)
@@ -744,6 +773,7 @@
                 ("<return>" . corfu-insert)))
 
   (use-package kind-icon
+    :defer t
     :after corfu
     :custom
     (kind-icon-use-icons t)
@@ -773,6 +803,7 @@
     (add-to-list 'completion-at-point-functions #'cape-symbol))
 
   (use-package projectile
+    :defer t
     :diminish projectile-mode
     :config (progn
               (defun my-projectile-switch-to-project ()
@@ -939,6 +970,7 @@ Start from the beginning of buffer otherwise."
     :bind (("M-<f1>". neotree-current-file)))
 
   (use-package imenu-list
+    :defer t
     :config (setq imenu-list-position 'left
                   imenu-list-size 36
                   imenu-list-focus-after-activation t)
@@ -946,6 +978,7 @@ Start from the beginning of buffer otherwise."
     :bind (("M-<f2>" . imenu-list-smart-toggle)))
 
   (use-package eyebrowse
+    :defer t
     :diminish eyebrowse-mode
     ;; :pin melpa-stable
     :config (progn
@@ -993,14 +1026,17 @@ Start from the beginning of buffer otherwise."
               (shackle-mode t)))
 
   ;; Solidity
-  (use-package solidity-mode)
+  (use-package solidity-mode
+    :defer t)
   (use-package solidity-flycheck
+    :defer t
     :config (progn
               (setq solidity-flycheck-solc-checker-active t
                     solidity-flycheck-solium-checker-active t)))
 
   ;; FIXME Setup grammars
   (use-package tree-sitter
+    :defer t
     :config (require 'tree-sitter)
     (require 'tree-sitter-hl)
     (global-tree-sitter-mode)
@@ -1057,6 +1093,7 @@ Start from the beginning of buffer otherwise."
   ;; TODO Remove Hydra and just use which-key
   ;; Hydras
   (use-package hydra
+    :defer t
     :config (progn
               (defhydra hydra-find
                 (:color blue :hint nil)
@@ -1271,7 +1308,7 @@ Start from the beginning of buffer otherwise."
      ;; completion ignores case
      completion-ignore-case t
      ;; TAB cycle if there are only few candidates
-     completion-cycle-threshold 5
+     completion-cycle-threshold 0
      ;; Do not allow the cursor in the minibuffer prompt
      minibuffer-prompt-properties '(read-only t cursor-intangible t face minibuffer-prompt)
      read-file-name-completion-ignore-case t
@@ -1340,8 +1377,6 @@ Start from the beginning of buffer otherwise."
       jit-lock-defer-time 0.05
       debug-on-error nil
       debug-on-quit nil
-      gc-cons-threshold (* 1 1024 1024)
-      gc-cons-percentage 0.1
       read-process-output-max (* 1024 1024))
 (provide 'init)
 ;;; init.el ends here
