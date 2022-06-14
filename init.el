@@ -5,8 +5,21 @@
 (let ((file-name-handler-alist nil)
       (gc-cons-threshold (* 100 1024 1024))
       (gc-cons-percentage 0.6)
+      (read-process-output-max 10000000)
       (debug-on-error t)
       (debug-on-quit t))
+
+  (add-hook 'emacs-startup-hook
+            (lambda () (message (concat "Emacs startup time: " (emacs-init-time)))))
+
+  (defun my-message-with-timestamp (old-func fmt-string &rest args)
+    "Prepend current timestamp (with microsecond precision) to a message"
+    (if (and fmt-string (> (length fmt-string) 0))
+        (apply old-func
+               (concat (format-time-string "[%F %T.%3N] ") fmt-string)
+               args)))
+
+  (advice-add 'message :around #'my-message-with-timestamp)
 
   (defadvice load (before debug-log activate)
     (message "Advice: now loading: '%s'" (ad-get-arg 0)))
