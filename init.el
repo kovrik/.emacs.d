@@ -582,9 +582,9 @@
                     evil-default-cursor   t
                     evil-want-C-u-scroll  t
                     evil-want-C-w-delete  t
-                    evil-insert-state-cursor '(bar "blue")
-                    evil-visual-state-cursor '(box "magenta")
-                    evil-normal-state-cursor '(box "pink"))
+                    evil-normal-state-cursor '(box "purple")
+                    evil-insert-state-cursor '(bar "purple")
+                    evil-visual-state-cursor '(box "green"))
               ;; treat symbol as a word
               (defalias #'forward-evil-word #'forward-evil-symbol)
               ;; kill buffer, but don't close window
@@ -666,14 +666,15 @@
     :hook (rfn-eshadow-update-overlay . vertico-directory-tidy)
     :config (setq vertico-cycle t)
     ;; Prefix current candidate with arrow
-    (advice-add #'vertico--format-candidate :around
-                (lambda (orig cand prefix suffix index _start)
-                  (setq cand (funcall orig cand prefix suffix index _start))
-                  (concat
-                   (if (= vertico--index index)
-                       (propertize "» " 'face 'vertico-current)
-                     "  ")
-                   cand)))
+    (defun prefix-current-candidate-with-arrow (orig cand prefix suffix index _start)
+      (setq cand (funcall orig cand prefix suffix index _start))
+      (concat
+       (if (and (= vertico--index index))
+           (propertize "> " 'face 'vertico-current)
+         "  ")
+       cand))
+    (advice-remove #'vertico--format-candidate #'prefix-current-candidate-with-arrow)
+    (advice-add #'vertico--format-candidate :around #'prefix-current-candidate-with-arrow)
     :bind (:map vertico-map
                 ("C-j" . vertico-next)
                 ("C-k" . vertico-previous)))
