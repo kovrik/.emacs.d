@@ -228,6 +228,8 @@
   (use-package focus :defer t)
   (use-package flx)
   (use-package request :defer t)
+  (use-package vlf :config (require 'vlf-setup))
+  (use-package logview)
 
   (use-package async
     :demand t
