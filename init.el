@@ -1,17 +1,34 @@
-;;; -*- lexical-binding: t; -*-
+;;; -*- lexical-binding: t; no-byte-compile: t; mode: emacs-lisp; coding:utf-8; fill-column: 80 -*-
 ;;; init.el --- kovrik's Emacs config
 ;;; Commentary:
 ;;; Code:
+(setq packages-loaded 0)
 (let ((file-name-handler-alist nil)
       (read-process-output-max 10000000)
+      (gc-cons-threshold most-positive-fixnum)
+      (gc-cons-percentage 0.6)
       (debug-on-error t)
       (debug-on-quit t))
 
+  (defmacro k-time (&rest body)
+    "Measure and return the time it takes evaluating BODY."
+    `(let ((time (current-time)))
+       ,@body
+       (float-time (time-since time))))
+
+  ;; When idle for 15sec run the GC no matter what.
+  (defvar k-gc-timer
+    (run-with-idle-timer 15 t
+                         (lambda ()
+                           (message "Garbage Collector has run for %.06fsec"
+                                    (k-time (garbage-collect))))))
+
   (add-hook 'emacs-startup-hook
             (lambda ()
-              (message (format "Emacs startup time %s with %d garbage collections"
+              (message (format "Emacs startup time %s with %d garbage collections. Packages loaded: %d"
                                (emacs-init-time)
-                               gcs-done))))
+                               gcs-done
+                               packages-loaded))))
 
   (defun my-message-with-timestamp (old-func fmt-string &rest args)
     "Prepend current timestamp (with microsecond precision) to a message"
@@ -21,9 +38,16 @@
   (advice-add 'message :around #'my-message-with-timestamp)
 
   (defadvice load (before debug-log activate)
+    (setq packages-loaded (+ packages-loaded 1))
     (message "Advice: now loading: '%s'" (ad-get-arg 0)))
 
   ;; Package management
+  (customize-set-variable 'package-enable-at-startup nil)
+  (advice-add #'package--ensure-init-file :override #'ignore)
+  ;; Do not allow loading from the package cache (same reason).
+  (customize-set-variable 'package-quickstart nil)
+  ;; don't add that `custom-set-variables' block to my init.el!
+  (setq package--init-file-ensured t)
 
   ;; Straight
   (setq straight-check-for-modifications nil)
@@ -45,21 +69,8 @@
 
   (require 'bind-key)
   (require 'uniquify)
-  (use-package gcmh :config (gcmh-mode 1))
-  (use-package s)
-  (use-package queue)
   (use-package f)
-  (use-package dash)
-  ;; (use-package browse-kill-ring)
-  ;; (use-package epl)
-  ;; (use-package fold-dwim)
-  ;; (use-package fringe-helper)
-  ;; (use-package goto-chg)
-  ;; (use-package highlight)
-  ;; (use-package highlight-escape-sequences)
-  ;; (use-package idle-highlight-mode)
-  ;; (use-package markdown-mode)
-  ;; (use-package pkg-info)
+  (use-package gcmh :config (gcmh-mode 1))
 
   ;; Globals
   ;; UTF-8 Everywhere
@@ -104,13 +115,14 @@
                 bidi-inhibit-bpa t)
 
   (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
+        initial-major-mode 'fundamental-mode
         inhibit-startup-message t
         inhibit-startup-screen t
         inhibit-startup-echo-area-message t
         initial-scratch-message nil
         frame-inhibit-implied-resize t
         ;; nicer scrolling
-        scroll-margin 0
+        scroll-margin 5
         scroll-conservatively 100000
         scroll-preserve-screen-position 1
         ;; move by logical lines rather than visual lines (better for macros)
@@ -154,8 +166,6 @@
         create-lockfiles nil
         ;; make-backup-files nil
         ;; vc-make-backup-files nil
-        ;; disable package
-        package-enable-at-startup nil
         ;; show parent parentheses
         show-paren-delay 0
         show-paren-style 'parenthesis
@@ -203,6 +213,22 @@
     (dolist (hook hooks)
       (add-hook hook function)))
 
+  ;; One-line packages
+  (use-package s)
+  (use-package dash)
+  (use-package queue)
+  (use-package bug-hunter :defer t)
+  (use-package command-log-mode :defer t)
+  (use-package restclient :defer t)
+  (use-package iedit :defer t)
+  (use-package rg :config (rg-enable-default-bindings))
+  (use-package wgrep :defer t)
+  (use-package ranger :defer t)
+  (use-package rainbow-mode :defer t :diminish rainbow-mode)
+  (use-package focus :defer t)
+  (use-package flx)
+  (use-package request :defer t)
+
   (use-package async
     :demand t
     :init (dired-async-mode 1)
@@ -220,9 +246,9 @@
     :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
     :init (all-the-icons-completion-mode))
 
-  ;; (use-package doom-themes
-  ;;   :config (load-theme 'doom-opera-light t)
-  ;;   (doom-themes-org-config))
+  ;;  (use-package doom-themes
+  ;;    :config (load-theme 'doom-opera-light t)
+  ;;    (doom-themes-org-config))
 
   (use-package modus-themes
     :defer nil
@@ -239,9 +265,10 @@
 
   (use-package doom-modeline
     :ensure t
-    :init (doom-modeline-mode 1)
-    :config (setq doom-modeline-minor-modes nil)
-    (add-hook 'pdf-view-mode-hook #'doom-modeline-set-pdf-modeline))
+    :config (setq doom-modeline-minor-modes nil
+                  doom-modeline-height 20)
+    (add-hook 'pdf-view-mode-hook #'doom-modeline-set-pdf-modeline)
+    :hook (after-init . doom-modeline-mode))
 
   ;; PATH
   (use-package exec-path-from-shell
@@ -274,19 +301,6 @@
       (add-to-list 'default-frame-alist `(font . ,(concat (font-get my-font :name) "-" (number-to-string (font-get my-font :size)))))
       (when (eq system-type 'darwin)
         (setq mac-allow-anti-aliasing t))))
-
-  ;; One-line packages
-  (use-package bug-hunter :defer t)
-  (use-package command-log-mode :defer t)
-  (use-package restclient :defer t)
-  (use-package iedit :defer t)
-  (use-package rg :config (rg-enable-default-bindings))
-  (use-package wgrep :defer t)
-  (use-package ranger :defer t)
-  (use-package rainbow-mode :defer t :diminish rainbow-mode)
-  (use-package focus :defer t)
-  (use-package flx)
-  (use-package request :defer t)
 
   (use-package which-key
     :defer t
@@ -1377,6 +1391,8 @@ Start from the beginning of buffer otherwise."
       jit-lock-defer-time 0.05
       debug-on-error nil
       debug-on-quit nil
+      gc-cons-threshold (* 10 1024 1024)
+      gc-cons-percentage 0.1
       read-process-output-max (* 1024 1024))
 (provide 'init)
 ;;; init.el ends here
