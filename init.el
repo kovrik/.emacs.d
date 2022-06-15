@@ -95,6 +95,20 @@
   ;; avoid resizing
   (customize-set-variable 'even-window-sizes nil)
 
+  ;; Fonts
+  (let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name) (font-family-list))))
+                             (list (font-spec :name "JetBrains Mono" :size 11)
+                                   (font-spec :name "Monaco"         :size 11)
+                                   (font-spec :name "Roboto Mono"    :size 11)
+                                   (font-spec :name "Fira Code"      :size 11)
+                                   (font-spec :name "Meslo LG S"     :size 11)
+                                   (font-spec :name "Consolas"       :size 11)))))
+    (when my-font
+      (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
+      (add-to-list 'default-frame-alist `(font . ,(concat (font-get my-font :name) "-" (number-to-string (font-get my-font :size)))))
+      (when (eq system-type 'darwin)
+        (setq mac-allow-anti-aliasing t))))
+
   (setq-default indent-tabs-mode nil
                 tab-width 2
                 ;; Silence warnings for redefinition
@@ -290,19 +304,26 @@
               ;; (setenv "ITERM_SHELL_INTEGRATION_INSTALLED" nil)
               (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)))
 
-  ;; Fonts
-  (let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name) (font-family-list))))
-                             (list (font-spec :name "JetBrains Mono" :size 11)
-                                   (font-spec :name "Monaco"         :size 11)
-                                   (font-spec :name "Roboto Mono"    :size 11)
-                                   (font-spec :name "Fira Code"      :size 11)
-                                   (font-spec :name "Meslo LG S"     :size 11)
-                                   (font-spec :name "Consolas"       :size 11)))))
-    (when my-font
-      (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
-      (add-to-list 'default-frame-alist `(font . ,(concat (font-get my-font :name) "-" (number-to-string (font-get my-font :size)))))
-      (when (eq system-type 'darwin)
-        (setq mac-allow-anti-aliasing t))))
+  (use-package view
+    :config
+    (defun View-goto-line-last (&optional line)
+      "goto last line"
+      (interactive "P")
+      (goto-line (line-number-at-pos (point-max))))
+
+    (define-key view-mode-map (kbd "e") 'View-scroll-half-page-forward)
+    (define-key view-mode-map (kbd "u") 'View-scroll-half-page-backward)
+
+    ;; less like
+    (define-key view-mode-map (kbd "N") 'View-search-last-regexp-backward)
+    (define-key view-mode-map (kbd "?") 'View-search-regexp-backward?)
+    (define-key view-mode-map (kbd "g") 'View-goto-line)
+    (define-key view-mode-map (kbd "G") 'View-goto-line-last)
+    ;; vi/w3m like
+    (define-key view-mode-map (kbd "h") 'backward-char)
+    (define-key view-mode-map (kbd "j") 'next-line)
+    (define-key view-mode-map (kbd "k") 'previous-line)
+    (define-key view-mode-map (kbd "l") 'forward-char))
 
   (use-package which-key
     :defer t
