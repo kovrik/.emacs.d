@@ -2,7 +2,7 @@
 ;;; init.el --- kovrik's Emacs config
 ;;; Commentary:
 ;;; Code:
-(setq packages-loaded 0)
+(setq packages-loaded-at-startup '())
 (let ((file-name-handler-alist nil)
       (read-process-output-max 10000000)
       (gc-cons-threshold most-positive-fixnum)
@@ -25,21 +25,38 @@
 
   (add-hook 'emacs-startup-hook
             (lambda ()
-              (message (format "Emacs startup time %s with %d garbage collections. Packages loaded: %d"
+              (message "\n")
+              (message (format "Emacs startup time %s with %d garbage collections. Loaded %d packages: %s"
                                (emacs-init-time)
                                gcs-done
-                               packages-loaded))))
+                               (length packages-loaded-at-startup)
+                               (concat "\n\t- " (mapconcat #'identity packages-loaded-at-startup "\n\t- "))))
+              (message "Happy hacking!")))
+
+  (defvar my-timestamp-regex
+    (rx line-start "["
+        (repeat 4 digit) "-"
+        (repeat 2 digit) "-"
+        (repeat 2 digit) space
+        (repeat 2 digit) ":"
+        (repeat 2 digit) ":"
+        (repeat 2 digit) "."
+        (repeat 3 digit) "]")
+    "Regex that matches timestamps like [2022-06-16 15:19:52.046]")
 
   (defun my-message-with-timestamp (old-func fmt-string &rest args)
     "Prepend current timestamp (with microsecond precision) to a message"
-    (if (> (length fmt-string) 0)
+    (if (and (> (length fmt-string) 0)
+             ;; do not append timestamp if it's already there
+             (not  (string-match-p my-timestamp-regex fmt-string)))
         (apply old-func (concat (format-time-string "[%F %T.%3N] ") fmt-string) args)))
 
   (advice-add 'message :around #'my-message-with-timestamp)
 
   (defadvice load (before debug-log activate)
-    (setq packages-loaded (+ packages-loaded 1))
-    (message "Advice: now loading: '%s'" (ad-get-arg 0)))
+    (let ((package-name (ad-get-arg 0)))
+      (push package-name packages-loaded-at-startup)
+      (message "Loading: '%s'" package-name)))
 
   ;; Package management
   (customize-set-variable 'package-enable-at-startup nil)
@@ -105,7 +122,9 @@
                                    (font-spec :name "Consolas"       :size 11)))))
     (when my-font
       (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
-      (add-to-list 'default-frame-alist `(font . ,(concat (font-get my-font :name) "-" (number-to-string (font-get my-font :size)))))
+      (add-to-list 'default-frame-alist `(font . ,(concat (font-get my-font :name)
+                                                          "-"
+                                                          (number-to-string (font-get my-font :size)))))
       (when (eq system-type 'darwin)
         (setq mac-allow-anti-aliasing t))))
 
