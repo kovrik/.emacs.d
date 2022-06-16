@@ -778,6 +778,10 @@
 
   (use-package consult
     :defer t
+    :config (use-package consult-lsp
+              :bind (("M-<f3>" . consult-lsp-diagnostics)
+                     ("M-<f4>" . consult-lsp-symbols)
+                     ("M-<f5>" . consult-lsp-file-symbols)))
     :bind (("\C-s"  . consult-line)
            ("M-s o" . consult-line-multi)
            ("C-S-f" . consult-find)))
