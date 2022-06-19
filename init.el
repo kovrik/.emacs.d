@@ -722,7 +722,12 @@
                               nrepl-connected-hook)
                             #'my-evil-off)
               (with-eval-after-load 'term (evil-set-initial-state 'term-mode 'insert))
-              (with-eval-after-load 'vterm (evil-set-initial-state 'vterm-mode 'insert))))
+              (with-eval-after-load 'vterm (evil-set-initial-state 'vterm-mode 'insert)))
+    :bind (("<f12>" . evil-local-mode)
+           :map evil-normal-state-map
+           ("C-e" . move-end-of-line)
+           :map evil-visual-state-map
+           ("C-e" . move-end-of-line)))
 
   (use-package evil-collection
     :after evil
@@ -928,8 +933,7 @@ Use `find-file' otherwise."
                                                                        (sql        . t))))
     :bind (("\C-cl" . org-store-link)
            ("\C-ca" . org-agenda)
-           ("\C-cb" . org-iswitchb)
-           ("<f12>" . org-agenda)))
+           ("\C-cb" . org-iswitchb)))
 
   (use-package magit
     :defer t
