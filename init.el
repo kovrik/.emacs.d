@@ -18,10 +18,7 @@
 
   ;; When idle for 15sec run the GC no matter what.
   (defvar k-gc-timer
-    (run-with-idle-timer 15 t
-                         (lambda ()
-                           (message "Garbage Collector has run for %.06fsec"
-                                    (k-time (garbage-collect))))))
+    (run-with-idle-timer 15 t (lambda () (garbage-collect))))
 
   (add-hook 'emacs-startup-hook
             (lambda ()
