@@ -349,6 +349,7 @@
   (use-package vterm
     :defer t
     :custom (vterm-install t)
+    :commands multi-vterm
     :hook (vterm-mode . evil-emacs-state)
     (vterm-copy-mode . evil-normal-in-vterm-copy-mode)
     :config
