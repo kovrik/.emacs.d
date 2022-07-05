@@ -351,7 +351,9 @@
     :custom (vterm-install t)
     :hook (vterm-mode . evil-emacs-state)
     (vterm-copy-mode . evil-normal-in-vterm-copy-mode)
-    :config (add-hook 'vterm-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
+    :config
+    (use-package multi-vterm :ensure t)
+    (add-hook 'vterm-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
     (setq vterm-max-scrollback 10000)
     (advice-add #'vterm--redraw :after (lambda (&rest args) (evil-refresh-cursor evil-state)))
     (defun evil-normal-in-vterm-copy-mode ()
