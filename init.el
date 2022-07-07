@@ -219,6 +219,7 @@
   (global-hl-line-mode 1)
   (global-so-long-mode 1)
   (winner-mode)
+  (repeat-mode 1)
   (blink-cursor-mode -1)
   ;; (pixel-scroll-mode)
   (fset 'yes-or-no-p 'y-or-n-p)
