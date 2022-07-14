@@ -113,15 +113,11 @@
   (let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name) (font-family-list))))
                              (list (font-spec :name "JetBrains Mono" :size 11)
                                    (font-spec :name "Monaco"         :size 11)
-                                   (font-spec :name "Roboto Mono"    :size 11)
-                                   (font-spec :name "Fira Code"      :size 11)
                                    (font-spec :name "Meslo LG S"     :size 11)
                                    (font-spec :name "Consolas"       :size 11)))))
     (when my-font
       (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
-      (add-to-list 'default-frame-alist `(font . ,(concat (font-get my-font :name)
-                                                          "-"
-                                                          (number-to-string (font-get my-font :size)))))
+      (set-frame-font my-font)
       (when (eq system-type 'darwin)
         (setq mac-allow-anti-aliasing t))))
 
