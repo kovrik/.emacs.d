@@ -358,7 +358,9 @@
       (if (bound-and-true-p vterm-copy-mode)
           (evil-normal-state)
         (evil-emacs-state)))
-    :bind (:map vterm-mode-map ("C-y" . vterm-yank)))
+    :bind (:map vterm-mode-map
+                ("C-y" . vterm-yank)
+                ("C-v" . vterm-yank)))
 
   (use-package auto-dim-other-buffers
     :config
@@ -508,11 +510,11 @@
                 ;; :pin melpa-stable
                 :defer t)
               (use-package clojure-mode-extra-font-locking)
-              (use-package flycheck-clojure
-                ;; :pin melpa-stable
-                :config (progn
-                          (flycheck-clojure-setup)
-                          (setq flycheck-checkers (delete 'clojure-cider-typed flycheck-checkers))))
+              ;; (use-package flycheck-clojure
+              ;;   ;; :pin melpa-stable
+              ;;   :config (progn
+              ;;             (flycheck-clojure-setup)
+              ;;             (setq flycheck-checkers (delete 'clojure-cider-typed flycheck-checkers))))
               (add-hook 'clojure-mode-hook #'flycheck-mode)
               (add-hook 'clojure-mode-hook #'turn-on-eldoc-mode)
               (add-hook 'cider-mode-hook   #'turn-on-eldoc-mode)
