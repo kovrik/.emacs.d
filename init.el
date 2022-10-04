@@ -257,6 +257,7 @@
   (use-package request :defer t)
   (use-package vlf :config (require 'vlf-setup))
   (use-package logview)
+  (use-package simpleclip :config (progn (simpleclip-mode 1)))
 
   (use-package async
     :demand t
@@ -719,6 +720,7 @@
                     evil-default-cursor   t
                     evil-want-C-u-scroll  t
                     evil-want-C-w-delete  t
+                    evil-search-module 'evil-search
                     evil-normal-state-cursor '(box "purple")
                     evil-insert-state-cursor '(bar "purple")
                     evil-visual-state-cursor '(box "green"))
