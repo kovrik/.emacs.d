@@ -195,7 +195,6 @@
         ;; show parent parentheses
         show-paren-delay 0
         show-paren-style 'parenthesis
-        undo-tree-history-directory-alist `(("." . ,(concat user-emacs-directory "undo")))
         custom-file (concat user-emacs-directory "custom.el"))
 
   ;; make ibuffer the default buffer lister.
@@ -257,7 +256,7 @@
   (use-package request :defer t)
   (use-package vlf :config (require 'vlf-setup))
   (use-package logview)
-  (use-package simpleclip :config (progn (simpleclip-mode 1)))
+  (use-package simpleclip :config (simpleclip-mode 1))
 
   (use-package async
     :demand t
@@ -445,10 +444,6 @@
                               (?\[ . ?\])
                               (?\" . ?\")))
   (electric-pair-mode t)
-
-  (use-package yasnippet
-    :defer t
-    :config (yas-global-mode 1))
 
   (use-package lsp-mode
     :defer t
@@ -688,7 +683,7 @@
 
   (use-package evil
     :defer nil
-    :init (setq evil-undo-system 'undo-fu)
+    :init (setq evil-undo-system 'undo-redo)
     :config (progn
               (use-package evil-anzu)
               (use-package evil-org :defer t)
@@ -697,10 +692,6 @@
               (use-package evil-visualstar :config (global-evil-visualstar-mode))
               (use-package evil-search-highlight-persist
                 :config (global-evil-search-highlight-persist t))
-              ;; (use-package evil-matchit
-              ;;   :config (my-add-hooks '(nxml-mode-hook
-              ;;                           html-mode-hook
-              ;;                           web-mode-hook) #'evil-matchit-mode))
               (use-package evil-commentary
                 :config (progn
                           (defun my-comment-line-and-go-to-next ()
@@ -756,7 +747,8 @@
                          ("k"      . evil-previous-visual-line)
                          ("C-y"    . evil-paste-after)
                          ("SPC"    . hydra-common-commands/body))
-              (bind-keys :map evil-visual-state-map ("SPC" . hydra-common-commands/body))
+              (bind-keys :map evil-visual-state-map
+                         ("SPC" . hydra-common-commands/body))
               (my-add-hooks '(help-mode-hook prog-mode-hook text-mode-hook pdf-view-mode-hook) #'evil-local-mode)
               (defun my-evil-off ()
                 "Turn 'evil-mode' off and change cursor type to bar."
@@ -800,8 +792,6 @@
                           lisp-interaction-mode-hook
                           ielm-mode-hook)
                         #'turn-on-eldoc-mode))
-
-  ;; TODO embark?
 
   (use-package vertico
     :defer t
@@ -854,7 +844,7 @@
   (use-package orderless
     :defer t
     :init
-    (setq completion-styles '(orderless basic)
+    (setq completion-styles '(orderless flex)
           completion-category-defaults nil
           completion-category-overrides '((file (styles partial-completion)))))
 
@@ -874,6 +864,7 @@
     (global-corfu-mode)
     :config (use-package corfu-doc
               :config (add-hook 'corfu-mode-hook #'corfu-doc-mode))
+    (set-face-attribute 'corfu-default nil :height 0.9)
     :bind (:map corfu-map
                 ("TAB"     . corfu-next)
                 ([tab]     . corfu-next)
