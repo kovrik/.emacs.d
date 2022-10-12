@@ -123,6 +123,7 @@
 
   (setq-default indent-tabs-mode nil
                 tab-width 2
+                x-select-enable-clipboard t
                 ;; Silence warnings for redefinition
                 ad-redefinition-action 'accept
                 ;; Hide the cursor in inactive windows
@@ -621,12 +622,12 @@
   (use-package sly
     :defer t
     :config (setq sly-lisp-implementations
-                  `((sbcl ("/usr/local/bin/sbcl" "--noinform" "--no-linedit") :coding-system utf-8-unix)
-                    (abcl ("/usr/local/bin/abcl" "--noinform" "--no-linedit") :coding-system utf-8-unix) ))
+                  `((roswell ("ros" "-L" "sbcl" "-Q" "-l" "~/.sbclrc" "run")  :coding-system utf-8-unix)
+                    (sbcl    ("/usr/local/bin/sbcl" "--noinform" "--no-linedit") :coding-system utf-8-unix)
+                    (abcl    ("/usr/local/bin/abcl" "--noinform" "--no-linedit") :coding-system utf-8-unix)))
     (evil-set-initial-state 'sly-mrepl-mode 'emacs)
     :bind (:map sly-mode-map
                 ("C-S-h" . sly-describe-symbol)))
-
   (provide 'init-sly)
 
   (use-package adjust-parens
@@ -711,6 +712,7 @@
                     evil-default-cursor   t
                     evil-want-C-u-scroll  t
                     evil-want-C-w-delete  t
+                    evil-want-minibuffer  t
                     evil-search-module 'evil-search
                     evil-normal-state-cursor '(box "purple")
                     evil-insert-state-cursor '(bar "purple")
