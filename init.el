@@ -386,7 +386,7 @@
     :hook (find-file    . diff-hl-mode)
     :hook (vc-dir-mode  . diff-hl-dir-mode)
     :hook (dired-mode   . diff-hl-dired-mode)
-    :hook (diff-hl-mode . diff-hl-flydiff-mode)
+    ;; :hook (diff-hl-mode . diff-hl-flydiff-mode)
     :config (defun diff-hl-next-hunk-cycle (&optional backward)
               "Go to the beginning of the next (previous if BACKWARD) hunk in the current buffer."
               (interactive)
@@ -409,8 +409,7 @@
       (diff-hl-next-hunk-cycle t))
 
     (setq vc-git-diff-switches '("--histogram")
-          diff-hl-flydiff-delay 0.5
-          diff-hl-show-staged-changes nil)
+          diff-hl-flydiff-delay 0.5)
     (global-diff-hl-mode t)
     (diff-hl-margin-mode t)
     :bind (:map diff-hl-mode-map
@@ -632,7 +631,7 @@
                   `((roswell ("ros" "-L" "sbcl" "-Q" "-l" "~/.sbclrc" "run")  :coding-system utf-8-unix)
                     (sbcl    ("/usr/local/bin/sbcl" "--noinform" "--no-linedit") :coding-system utf-8-unix)
                     (abcl    ("/usr/local/bin/abcl" "--noinform" "--no-linedit") :coding-system utf-8-unix)))
-    (evil-set-initial-state 'sly-mrepl-mode 'emacs)
+    (evil-set-initial-state 'sly-mrepl-mode 'normal)
     :bind (:map sly-mode-map
                 ("C-S-h" . sly-describe-symbol)))
   (provide 'init-sly)
