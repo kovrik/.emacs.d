@@ -383,9 +383,9 @@
     :defer t
     :hook ((magit-pre-refresh-hook . diff-hl-magit-pre-refresh)
            (magit-post-refresh . diff-hl-magit-post-refresh))
-    :hook (find-file    . diff-hl-mode)
-    :hook (vc-dir-mode  . diff-hl-dir-mode)
-    :hook (dired-mode   . diff-hl-dired-mode)
+    ;; :hook (find-file    . diff-hl-mode)
+    ;; :hook (vc-dir-mode  . diff-hl-dir-mode)
+    ;; :hook (dired-mode   . diff-hl-dired-mode)
     ;; :hook (diff-hl-mode . diff-hl-flydiff-mode)
     :config (defun diff-hl-next-hunk-cycle (&optional backward)
               "Go to the beginning of the next (previous if BACKWARD) hunk in the current buffer."
@@ -631,7 +631,7 @@
                   `((roswell ("ros" "-L" "sbcl" "-Q" "-l" "~/.sbclrc" "run")  :coding-system utf-8-unix)
                     (sbcl    ("/usr/local/bin/sbcl" "--noinform" "--no-linedit") :coding-system utf-8-unix)
                     (abcl    ("/usr/local/bin/abcl" "--noinform" "--no-linedit") :coding-system utf-8-unix)))
-    (evil-set-initial-state 'sly-mrepl-mode 'normal)
+    (add-hook 'sly-mrepl-mode-hook #'turn-off-evil-mode)
     :bind (:map sly-mode-map
                 ("C-S-h" . sly-describe-symbol)))
   (provide 'init-sly)
