@@ -383,31 +383,36 @@
     :defer t
     :hook ((magit-pre-refresh-hook . diff-hl-magit-pre-refresh)
            (magit-post-refresh . diff-hl-magit-post-refresh))
-    :config (progn
-              (defun diff-hl-next-hunk-cycle (&optional backward)
-                "Go to the beginning of the next (previous if BACKWARD) hunk in the current buffer."
-                (interactive)
-                (condition-case err
-                    (diff-hl-next-hunk backward)
-                  (error
-                   (let ((pos (point)))
-                     (if backward
-                         (end-of-buffer)
-                       (beginning-of-buffer))
-                     (condition-case err
-                         (diff-hl-next-hunk backward)
-                       (error
-                        (goto-char pos)
-                        (user-error "No more hunks found")))))))
+    :hook (find-file    . diff-hl-mode)
+    :hook (vc-dir-mode  . diff-hl-dir-mode)
+    :hook (dired-mode   . diff-hl-dired-mode)
+    :hook (diff-hl-mode . diff-hl-flydiff-mode)
+    :config (defun diff-hl-next-hunk-cycle (&optional backward)
+              "Go to the beginning of the next (previous if BACKWARD) hunk in the current buffer."
+              (interactive)
+              (condition-case err
+                  (diff-hl-next-hunk backward)
+                (error
+                 (let ((pos (point)))
+                   (if backward
+                       (end-of-buffer)
+                     (beginning-of-buffer))
+                   (condition-case err
+                       (diff-hl-next-hunk backward)
+                     (error
+                      (goto-char pos)
+                      (user-error "No more hunks found")))))))
 
-              (defun diff-hl-previous-hunk-cycle (&optional backward)
-                "Go to the beginning of the previous (next if BACKWARD) hunk in the current buffer."
-                (interactive)
-                (diff-hl-next-hunk-cycle t))
+    (defun diff-hl-previous-hunk-cycle (&optional backward)
+      "Go to the beginning of the previous (next if BACKWARD) hunk in the current buffer."
+      (interactive)
+      (diff-hl-next-hunk-cycle t))
 
-              (bind-keys )
-              (global-diff-hl-mode t)
-              (diff-hl-margin-mode t))
+    (setq vc-git-diff-switches '("--histogram")
+          diff-hl-flydiff-delay 0.5
+          diff-hl-show-staged-changes nil)
+    (global-diff-hl-mode t)
+    (diff-hl-margin-mode t)
     :bind (:map diff-hl-mode-map
                 ("C-x v n" . diff-hl-next-hunk-cycle)
                 ("C-x v j" . diff-hl-next-hunk-cycle)
