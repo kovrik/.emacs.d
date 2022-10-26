@@ -20,6 +20,7 @@
   (defvar k-gc-timer
     (run-with-idle-timer 15 t (lambda () (garbage-collect))))
 
+  (add-hook 'window-setup-hook 'toggle-frame-maximized t)
   (add-hook 'emacs-startup-hook
             (lambda ()
               (message "\n")
@@ -260,12 +261,6 @@
   (use-package vlf :config (require 'vlf-setup))
   (use-package logview)
   (use-package simpleclip :config (simpleclip-mode 1))
-  (use-package dashboard :ensure t
-    :config (setq dashboard-items '((recents  . 5)
-                                    (projects . 5))
-                  dashboard-center-content t)
-    (dashboard-setup-startup-hook))
-
   (use-package async
     :demand t
     :init (dired-async-mode 1)
