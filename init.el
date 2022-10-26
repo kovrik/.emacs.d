@@ -688,6 +688,15 @@
     (global-set-key (kbd "C-z")   'undo-fu-only-undo)
     (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
 
+  (use-package lispy
+    :ensure t
+    :config
+    (add-hook 'emacs-lisp-mode-hook (lambda () (lispy-mode 1)))
+    (add-hook 'lisp-mode-hook (lambda () (lispy-mode 1)))
+    :hook ((emacs-lisp-mode . lispy-mode)
+           (lisp-mode . lispy-mode)
+           (common-lisp-mode . lispy-mode)))
+
   (use-package evil
     :defer nil
     :init (setq evil-undo-system 'undo-redo)
@@ -699,6 +708,9 @@
               (use-package evil-visualstar :config (global-evil-visualstar-mode))
               (use-package evil-search-highlight-persist
                 :config (global-evil-search-highlight-persist t))
+              (use-package lispyville
+                :ensure t
+                :hook (lispy-mode . lispyville-mode))
               (use-package evil-commentary
                 :config (progn
                           (defun my-comment-line-and-go-to-next ()
