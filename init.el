@@ -608,8 +608,9 @@
   (use-package sly
     :defer t
     :config (setq sly-lisp-implementations
-                  `((roswell ("ros" "-L" "sbcl" "-Q" "-l" "~/.sbclrc" "run")  :coding-system utf-8-unix)
-                    (sbcl    ("/usr/local/bin/sbcl" "--noinform" "--no-linedit") :coding-system utf-8-unix)
+                  `(
+                    ;; (roswell ("ros" "-L" "sbcl" "-Q" "-l" "~/.sbclrc" "--core" "~/roswell.core-for-sly" "run")  :coding-system utf-8-unix)
+                    (sbcl    ("/usr/local/bin/sbcl" "--noinform" "--no-linedit" "--core" "~/sbcl.core-for-sly" "run") :coding-system utf-8-unix)
                     (abcl    ("/usr/local/bin/abcl" "--noinform" "--no-linedit") :coding-system utf-8-unix)))
     (add-hook 'sly-mrepl-mode-hook #'turn-off-evil-mode)
     :bind (:map sly-mode-map
