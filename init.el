@@ -583,8 +583,15 @@
 
   (use-package geiser
     :defer t
-    :config (setq geiser-debug-show-debug-p nil
-                  geiser-debug-jump-to-debug-p nil))
+    :config
+    (use-package geiser-chibi)
+    (use-package geiser-chicken)
+    (use-package geiser-gambit)
+    (use-package geiser-guile)
+    (use-package geiser-kawa)
+    (use-package geiser-racket)
+    (setq geiser-debug-show-debug-p nil
+          geiser-debug-jump-to-debug-p nil))
 
   (use-package racket-mode
     :defer t)
