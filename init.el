@@ -31,26 +31,6 @@
                                (concat "\n\t- " (mapconcat #'identity packages-loaded-at-startup "\n\t- "))))
               (message "Happy hacking!")))
 
-  (defvar my-timestamp-regex
-    (rx line-start "["
-        (repeat 4 digit) "-"
-        (repeat 2 digit) "-"
-        (repeat 2 digit) space
-        (repeat 2 digit) ":"
-        (repeat 2 digit) ":"
-        (repeat 2 digit) "."
-        (repeat 3 digit) "]")
-    "Regex that matches timestamps like [2022-06-16 15:19:52.046]")
-
-  (defun my-message-with-timestamp (old-func fmt-string &rest args)
-    "Prepend current timestamp (with microsecond precision) to a message"
-    (if (and (> (length fmt-string) 0)
-             ;; do not append timestamp if it's already there
-             (not  (string-match-p my-timestamp-regex fmt-string)))
-        (apply old-func (concat (format-time-string "[%F %T.%3N] ") fmt-string) args)))
-
-  (advice-add 'message :around #'my-message-with-timestamp)
-
   (defadvice load (before debug-log activate)
     (let ((package-name (ad-get-arg 0)))
       (push package-name packages-loaded-at-startup)
