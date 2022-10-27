@@ -693,6 +693,10 @@
     :config
     (add-hook 'emacs-lisp-mode-hook (lambda () (lispy-mode 1)))
     (add-hook 'lisp-mode-hook (lambda () (lispy-mode 1)))
+    (defun conditionally-enable-lispy ()
+      (when (eq this-command 'eval-expression)
+        (lispy-mode 1)))
+    (add-hook 'minibuffer-setup-hook 'conditionally-enable-lispy)
     :hook ((emacs-lisp-mode . lispy-mode)
            (lisp-mode . lispy-mode)
            (common-lisp-mode . lispy-mode)))
@@ -839,11 +843,24 @@
     :init (savehist-mode))
 
   (use-package consult
-    :defer t
+    :defer nil
     :config (use-package consult-lsp
               :bind (("M-<f3>" . consult-lsp-diagnostics)
                      ("M-<f4>" . consult-lsp-symbols)
                      ("M-<f5>" . consult-lsp-file-symbols)))
+    (defun consult-line-evil-history (&rest _)
+      "Add latest `consult-line' search pattern to the evil search history ring.
+This only works with orderless and for the first component of the search."
+      (when (and ;; (bound-and-true-p evil-mode)
+             (eq evil-search-module 'evil-search))
+        (let ((pattern (car (orderless-pattern-compiler (car consult--line-history)))))
+          (add-to-history 'regexp-search-ring pattern regexp-search-ring-max)
+          (add-to-history 'evil-ex-search-history pattern)
+          (setq evil-ex-search-pattern (list pattern t t))
+          (setq evil-ex-search-direction 'forward)
+          (when evil-ex-search-persistent-highlight
+            (evil-ex-search-activate-highlight evil-ex-search-pattern)))))
+    (advice-add #'consult-line :after #'consult-line-evil-history)
     :bind (("\C-s"  . consult-line)
            ("M-s o" . consult-line-multi)
            ("C-S-f" . consult-find)))
@@ -1205,8 +1222,7 @@ Start from the beginning of buffer otherwise."
                 ("p"  . pdf-misc-print-document)
                 ("o"  . pdf-links-action-perform)
                 ("r"  . pdf-view-revert-buffer)
-                ("n"  . pdf-view-midnight-minor-mode))
-    )
+                ("n"  . pdf-view-midnight-minor-mode)))
 
   (use-package pdf-view-restore
     :after pdf-tools
@@ -1412,7 +1428,10 @@ Start from the beginning of buffer otherwise."
                 ("e"   hydra-eval/body)
                 ("w"   hydra-window/body)
                 ("d"   hydra-describe/body)
-                ("SPC" evil-search-highlight-persist-remove-all)
+                ("SPC" (lambda ()
+                         (interactive)
+                         (evil-ex-nohighlight)
+                         (evil-search-highlight-persist-remove-all)))
                 ("u"   vundo)
                 ("P"   hydra-project/body)
                 ("D"   hydra-ediff/body)
