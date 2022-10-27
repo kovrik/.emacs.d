@@ -1506,11 +1506,8 @@ Start from the beginning of buffer otherwise."
     (interactive)
     (switch-to-buffer (generate-new-buffer-name "*scratch*")))
 
-  (defun emacs-quit ()
-    "Quit Emacs."
-    (interactive)
-    (kill-emacs))
-  )
+  (defun quit-emacs () "Quit Emacs." (interactive) (kill-emacs))
+  (defalias 'exit-emacs 'quit-emacs))
 
 ;; Allow font-lock-mode to do background parsing and restore some settings
 (setq jit-lock-stealth-time 1
