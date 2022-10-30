@@ -10,6 +10,10 @@
       (debug-on-error t)
       (debug-on-quit t))
 
+  ;; Use viper-mode as a fallback in case we fail to init evil
+  (setq viper-mode t)
+  (require 'viper)
+
   (defmacro k-time (&rest body)
     "Measure and return the time it takes evaluating BODY."
     `(let ((time (current-time)))
@@ -692,7 +696,8 @@
 
   (use-package evil
     :defer nil
-    :init (setq evil-undo-system 'undo-redo)
+    :init (viper-go-away)
+    (setq evil-undo-system 'undo-redo)
     :config (progn
               (use-package evil-anzu)
               (use-package evil-org :defer t)
