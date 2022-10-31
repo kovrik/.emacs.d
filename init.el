@@ -37,7 +37,7 @@
 
   (defadvice load (before debug-log activate)
     (let ((package-name (ad-get-arg 0)))
-      (push package-name packages-loaded-at-startup)
+      (push (replace-regexp-in-string "^.*/" "" package-name) packages-loaded-at-startup)
       (message "Loading: '%s'" package-name)))
 
   ;; Package management
