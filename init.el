@@ -250,6 +250,8 @@
     :init (dired-async-mode 1)
     :config (async-bytecomp-package-mode 1)
     (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil))))
+  (use-package mode-minder
+    :straight (mode-minder :type git :host github :repo "jdtsmith/mode-minder"))
 
   (use-package all-the-icons
     :if (display-graphic-p)
