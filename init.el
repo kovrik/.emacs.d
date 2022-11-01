@@ -117,8 +117,8 @@
                 auto-save-list-file-prefix nil
                 find-file-visit-truename t
                 mode-require-final-newline nil
-                major-mode 'text-mode
                 pdf-view-display-size 'fit-page
+                major-mode 'text-mode
                 fringes-outside-margins nil
                 indicate-buffer-boundaries nil
                 indicate-empty-lines nil
@@ -127,7 +127,6 @@
                 bidi-inhibit-bpa t)
 
   (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
-        initial-major-mode 'fundamental-mode
         inhibit-startup-message t
         inhibit-startup-screen t
         inhibit-startup-echo-area-message t
@@ -1500,7 +1499,8 @@ Start from the beginning of buffer otherwise."
   (defun new-scratch-buffer ()
     "Creates a new scratch buffer."
     (interactive)
-    (switch-to-buffer (generate-new-buffer-name "*scratch*")))
+    (switch-to-buffer (generate-new-buffer-name "*scratch*"))
+    (text-mode))
 
   (defun quit-emacs () "Quit Emacs." (interactive) (kill-emacs))
   (defalias 'exit-emacs 'quit-emacs))
