@@ -232,11 +232,6 @@
     (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
     (add-hook 'window-setup-hook 'toggle-frame-maximized t)
 
-    (defun my-add-hooks (hooks function)
-      "For each hook in HOOKS list bind FUNCTION."
-      (dolist (hook hooks)
-        (add-hook hook function)))
-
     ;; Add prompt indicator to `completing-read-multiple'.
     ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
     (defun crm-indicator (args)
@@ -320,8 +315,6 @@
     :init (dired-async-mode 1)
     :config (async-bytecomp-package-mode 1)
     (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil))))
-  (use-package mode-minder
-    :straight (mode-minder :type git :host github :repo "jdtsmith/mode-minder"))
 
   (use-package all-the-icons
     :if (display-graphic-p)
@@ -676,15 +669,13 @@
     :defer t)
 
   (use-package rainbow-delimiters
-    :config (progn
-              (setq rainbow-delimiters-max-face-count 9
-                    rainbow-delimiters-outermost-only-face-count 8)
-              (my-add-hooks '(emacs-lisp-mode-hook
-                              clojure-mode-hook
-                              lisp-mode-hook
-                              scheme-mode-hook
-                              racket-mode-hook)
-                            #'rainbow-delimiters-mode)))
+    :config (setq rainbow-delimiters-max-face-count 9
+                  rainbow-delimiters-outermost-only-face-count 8)
+    :hook ((emacs-lisp-mode . rainbow-delimiters-mode)
+           (clojure-mode . rainbow-delimiters-mode)
+           (lisp-mode . rainbow-delimiters-mode)
+           (scheme-mode . rainbow-delimiters-mode)
+           (racket-mode . rainbow-delimiters-mode)))
 
   ;; SLY
   (use-package sly-quicklisp
@@ -703,24 +694,22 @@
                 ("C-S-h" . sly-describe-symbol)))
   (provide 'init-sly)
 
-  (use-package adjust-parens
-    :defer t
-    :config (progn
-              (my-add-hooks '(emacs-lisp-mode-hook
-                              clojure-mode-hook
-                              common-lisp-lisp-mode-hook
-                              racket-mode-hook) #'adjust-parens-mode))
-    :bind (:map adjust-parens-mode-map
-                ("TAB" . lisp-indent-adjust-parens)
-                ("<backtab>" . lisp-dedent-adjust-parens)))
+  ;; (use-package adjust-parens
+  ;;   :defer t
+  ;;   :hook ((emacs-lisp-mode . adjust-parens-mode)
+  ;;          (clojure-mode . adjust-parens-mode)
+  ;;          (lisp-mode . adjust-parens-mode)
+  ;;          (racket-mode . adjust-parens-mode))
+  ;;   :bind (:map adjust-parens-mode-map
+  ;;               ("TAB" . lisp-indent-adjust-parens)
+  ;;               ("<backtab>" . lisp-dedent-adjust-parens)))
 
   (use-package highlight-quoted
     :defer t
-    :config (progn
-              (my-add-hooks '(emacs-lisp-mode-hook
-                              clojure-mode-hook
-                              common-lisp-lisp-mode-hook
-                              racket-mode-hook) #'highlight-quoted-mode)))
+    :hook ((emacs-lisp-mode . highlight-quoted-mode)
+           (clojure-mode . highlight-quoted-mode)
+           (lisp-mode . highlight-quoted-mode)
+           (racket-mode . highlight-quoted-mode)))
 
   (use-package anzu
     :config (global-anzu-mode +1))
@@ -842,24 +831,26 @@
                          ("SPC"    . hydra-common-commands/body))
               (bind-keys :map evil-visual-state-map
                          ("SPC" . hydra-common-commands/body))
-              (my-add-hooks '(help-mode-hook prog-mode-hook text-mode-hook pdf-view-mode-hook) #'evil-local-mode)
               (defun my-evil-off ()
                 "Turn 'evil-mode' off and change cursor type to bar."
                 (interactive)
                 (turn-off-evil-mode)
                 (setq cursor-type 'bar))
-              ;; Disable evil-mode in some major modes
-              (my-add-hooks '(magit-mode-hook
-                              erc-mode-hook
-                              nrepl-connected-hook)
-                            #'my-evil-off)
               (with-eval-after-load 'term (evil-set-initial-state 'term-mode 'insert))
               (with-eval-after-load 'vterm (evil-set-initial-state 'vterm-mode 'insert)))
     :bind (("<f12>" . evil-local-mode)
            :map evil-normal-state-map
            ("C-e" . move-end-of-line)
            :map evil-visual-state-map
-           ("C-e" . move-end-of-line)))
+           ("C-e" . move-end-of-line))
+    :hook ((help-mode . evil-local-mode)
+           (prog-mode . evil-local-mode)
+           (text-mode . evil-local-mode)
+           (pdf-view-mode . evil-local-mode)
+           ;; Disable evil-mode in some major modes
+           (magit-mode . my-evil-off)
+           (erc-mode . my-evil-off)
+           (nrepl-connected . my-evil-off)))
 
   (use-package evil-collection
     :after evil
@@ -881,10 +872,9 @@
   (use-package eldoc
     :diminish eldoc-mode
     :commands turn-on-eldoc-mode
-    :init (my-add-hooks '(emacs-lisp-mode-hook
-                          lisp-interaction-mode-hook
-                          ielm-mode-hook)
-                        #'turn-on-eldoc-mode))
+    :hook ((emacs-lisp-mode . turn-on-eldoc-mode)
+           (lisp-interaction-mode . turn-on-eldoc-mode)
+           (ielm-mode . turn-on-eldoc-mode)))
 
   (use-package vertico
     :defer t
@@ -1182,8 +1172,8 @@ Start from the beginning of buffer otherwise."
     :config (setq imenu-list-position 'left
                   imenu-list-size 36
                   imenu-list-focus-after-activation t)
-    (my-add-hooks '(imenu-list-major-mode-hook) #'turn-on-evil-mode)
-    :bind (("M-<f2>" . imenu-list-smart-toggle)))
+    :bind (("M-<f2>" . imenu-list-smart-toggle))
+    :hook (imenu-list-major-mode . turn-on-evil-mode))
 
   (use-package eyebrowse
     :defer t
