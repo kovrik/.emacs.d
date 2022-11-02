@@ -23,8 +23,6 @@
   ;; When idle for 15sec run the GC no matter what.
   (defvar k-gc-timer
     (run-with-idle-timer 15 t (lambda () (garbage-collect))))
-
-  (add-hook 'window-setup-hook 'toggle-frame-maximized t)
   (add-hook 'emacs-startup-hook
             (lambda ()
               (message "\n")
@@ -68,165 +66,237 @@
 
   (require 'bind-key)
   (require 'uniquify)
-  (use-package f)
-  (use-package gcmh :config (gcmh-mode 1))
 
-  ;; Globals
-  ;; UTF-8 Everywhere
-  (prefer-coding-system 'utf-8)
-  (set-language-environment "UTF-8")
-  (set-default-coding-systems 'utf-8)
-  (set-terminal-coding-system 'utf-8)
-  (set-keyboard-coding-system 'utf-8)
-  (setq locale-coding-system 'utf-8)
-  (set-selection-coding-system 'utf-8)
+  (use-package emacs
+    :config
+    ;; Globals
+    ;; UTF-8 Everywhere
+    (prefer-coding-system 'utf-8)
+    (set-language-environment "UTF-8")
+    (set-default-coding-systems 'utf-8)
+    (set-terminal-coding-system 'utf-8)
+    (set-keyboard-coding-system 'utf-8)
+    (setq locale-coding-system 'utf-8)
+    (set-selection-coding-system 'utf-8)
 
-  (when window-system
-    (tooltip-mode    -1)
-    (tool-bar-mode   -1)
-    (menu-bar-mode    t)
-    (scroll-bar-mode -1)
-    (toggle-horizontal-scroll-bar -1))
+    (when window-system
+      (tooltip-mode    -1)
+      (tool-bar-mode   -1)
+      (menu-bar-mode    t)
+      (scroll-bar-mode -1)
+      (toggle-horizontal-scroll-bar -1))
 
-  (customize-set-variable 'display-buffer-base-action
-                          '((display-buffer-reuse-window display-buffer-same-window)
-                            (reusable-frames . t)))
-  ;; avoid resizing
-  (customize-set-variable 'even-window-sizes nil)
+    (customize-set-variable 'display-buffer-base-action
+                            '((display-buffer-reuse-window display-buffer-same-window)
+                              (reusable-frames . t)))
+    ;; avoid resizing
+    (customize-set-variable 'even-window-sizes nil)
 
-  ;; Fonts
-  (let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name) (font-family-list))))
-                             (list (font-spec :name "JetBrains Mono" :size 11)
-                                   (font-spec :name "Monaco"         :size 11)
-                                   (font-spec :name "Meslo LG S"     :size 11)
-                                   (font-spec :name "Consolas"       :size 11)))))
-    (when my-font
-      (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
-      (set-frame-font my-font)
-      (when (eq system-type 'darwin)
-        (setq mac-allow-anti-aliasing t))))
+    ;; Fonts
+    (let ((my-font (cl-find-if (lambda (f) (and f (member (font-get f :name) (font-family-list))))
+                               (list (font-spec :name "JetBrains Mono" :size 11)
+                                     (font-spec :name "Monaco"         :size 11)
+                                     (font-spec :name "Meslo LG S"     :size 11)
+                                     (font-spec :name "Consolas"       :size 11)))))
+      (when my-font
+        (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
+        (set-frame-font my-font)
+        (when (eq system-type 'darwin)
+          (setq mac-allow-anti-aliasing t))))
 
-  (setq-default indent-tabs-mode nil
-                tab-width 2
-                x-select-enable-clipboard t
-                ;; Silence warnings for redefinition
-                ad-redefinition-action 'accept
-                ;; Hide the cursor in inactive windows
-                cursor-in-non-selected-windows nil
-                ;; Prevent tracking for auto-saves
-                auto-save-list-file-prefix nil
-                find-file-visit-truename t
-                mode-require-final-newline nil
-                pdf-view-display-size 'fit-page
-                major-mode 'text-mode
-                fringes-outside-margins nil
-                indicate-buffer-boundaries nil
-                indicate-empty-lines nil
-                overflow-newline-into-fringe t
-                bidi-paragraph-direction 'left-to-right
-                bidi-inhibit-bpa t)
+    (setq-default indent-tabs-mode nil
+                  tab-width 2
+                  cursor-type 'bar
+                  ;; Silence warnings for redefinition
+                  ad-redefinition-action 'accept
+                  ;; Hide the cursor in inactive windows
+                  cursor-in-non-selected-windows nil
+                  ;; Prevent tracking for auto-saves
+                  auto-save-list-file-prefix nil
+                  find-file-visit-truename t
+                  mode-require-final-newline nil
+                  pdf-view-display-size 'fit-page
+                  major-mode 'text-mode
+                  fringes-outside-margins nil
+                  indicate-buffer-boundaries nil
+                  indicate-empty-lines nil
+                  overflow-newline-into-fringe t
+                  bidi-paragraph-direction 'left-to-right
+                  bidi-inhibit-bpa t)
 
-  (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
-        inhibit-startup-message t
-        inhibit-startup-screen t
-        inhibit-startup-echo-area-message t
-        initial-scratch-message nil
-        frame-inhibit-implied-resize t
-        ;; nicer scrolling
-        scroll-margin 5
-        scroll-conservatively 100000
-        scroll-preserve-screen-position 1
-        ;; move by logical lines rather than visual lines (better for macros)
-        line-move-visual nil
-        sentence-end-double-space nil
-        ring-bell-function 'ignore
-        use-dialog-box nil
-        visible-bell nil
-        confirm-kill-emacs #'yes-or-no-p
-        ;; enable external-bound copy-pasting
-        select-enable-clipboard t
-        save-interprogram-paste-before-kill t
-        ;; potentially speed up cursor operations
-        auto-window-vscroll nil
-        pdf-view-use-scaling 1
-        uniquify-buffer-name-style 'forward
-        evil-want-keybinding nil
-        show-trailing-whitespace t
-        ns-use-srgb-colorspace nil
-        ;; remove the warnings from the GnuTLS library when using HTTPS
-        gnutls-min-prime-bits 4096
-        tab-always-indent 'complete
-        search-default-mode #'char-fold-to-regexp
-        coding-system-for-read 'utf-8
-        coding-system-for-write 'utf-8
-        ;; Always load newest byte code
-        load-prefer-newer t
-        ;; warn when opening files bigger than 200MB
-        large-file-warning-threshold 200000000
-        ;; Also auto refresh dired, but be quiet about it
-        global-auto-revert-non-file-buffers t
-        auto-revert-verbose nil
-        ;; Version control
-        version-control t
-        ;; delete excess backup versions silently
-        delete-old-versions t
-        ;; don't ask for confirmation when opening symlinked file
-        vc-follow-symlinks t
-        ;; do not create backup files
-        ;; auto-save-default nil
-        create-lockfiles nil
-        ;; make-backup-files nil
-        ;; vc-make-backup-files nil
-        ;; show parent parentheses
-        show-paren-delay 0
-        show-paren-style 'parenthesis
-        custom-file (concat user-emacs-directory "custom.el"))
+    (setq backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
+          inhibit-startup-message t
+          inhibit-startup-screen t
+          inhibit-startup-echo-area-message t
+          initial-scratch-message nil
+          frame-inhibit-implied-resize t
+          ;; nicer scrolling
+          scroll-margin 5
+          scroll-conservatively 100000
+          scroll-preserve-screen-position 1
+          ;; move by logical lines rather than visual lines (better for macros)
+          line-move-visual nil
+          sentence-end-double-space nil
+          ring-bell-function 'ignore
+          use-dialog-box nil
+          visible-bell nil
+          confirm-kill-emacs #'yes-or-no-p
+          ;; enable external-bound copy-pasting
+          select-enable-clipboard t
+          save-interprogram-paste-before-kill t
+          ;; potentially speed up cursor operations
+          auto-window-vscroll nil
+          pdf-view-use-scaling 1
+          uniquify-buffer-name-style 'forward
+          evil-want-keybinding nil
+          show-trailing-whitespace t
+          ns-use-srgb-colorspace nil
+          ;; remove the warnings from the GnuTLS library when using HTTPS
+          gnutls-min-prime-bits 4096
+          tab-always-indent 'complete
+          search-default-mode #'char-fold-to-regexp
+          coding-system-for-read 'utf-8
+          coding-system-for-write 'utf-8
+          ;; Always load newest byte code
+          load-prefer-newer t
+          ;; warn when opening files bigger than 200MB
+          large-file-warning-threshold 200000000
+          ;; Also auto refresh dired, but be quiet about it
+          global-auto-revert-non-file-buffers t
+          auto-revert-verbose nil
+          ;; Version control
+          version-control t
+          ;; delete excess backup versions silently
+          delete-old-versions t
+          ;; don't ask for confirmation when opening symlinked file
+          vc-follow-symlinks t
+          ;; do not create backup files
+          ;; auto-save-default nil
+          create-lockfiles nil
+          ;; make-backup-files nil
+          ;; vc-make-backup-files nil
+          ;; show parent parentheses
+          show-paren-delay 0
+          show-paren-style 'parenthesis
+          ;; enable recursive minibuffers
+          enable-recursive-minibuffers t
+          ;; completion ignores case
+          completion-ignore-case t
+          ;; TAB cycle if there are only few candidates
+          completion-cycle-threshold 0
+          ;; Do not allow the cursor in the minibuffer prompt
+          minibuffer-prompt-properties '(read-only t cursor-intangible t face minibuffer-prompt)
+          read-file-name-completion-ignore-case t
+          ;; allow Emacs to resize mini windows
+          resize-mini-windows t
+          ;; Enable indentation+completion using the TAB key.
+          ;; `completion-at-point' is often bound to M-TAB.
+          tab-always-indent 'complete
+          custom-file (concat user-emacs-directory "custom.el"))
 
-  ;; make ibuffer the default buffer lister.
-  (defalias 'list-buffers 'ibuffer)
-  (defalias 'xml-pretty-print 'sgml-pretty-print)
-  (defalias 'first 'car)
-  (defalias 'second 'cadr)
-  (defalias 'third 'caddr)
-  (defalias 'when-not 'unless)
-  (defalias 'word-count 'count-words)
-  (defalias 'yes-or-no-p 'y-or-n-p)
-  (fringe-mode nil)
-  (column-number-mode 1)
-  (desktop-save-mode)
-  (global-font-lock-mode)
-  ;; hl-line
-  (global-hl-line-mode 1)
-  (global-so-long-mode 1)
-  (winner-mode)
-  (repeat-mode 1)
-  (blink-cursor-mode -1)
-  ;; (pixel-scroll-mode)
-  (fset 'yes-or-no-p 'y-or-n-p)
-  (put 'narrow-to-defun  'disabled nil)
-  (put 'narrow-to-page   'disabled nil)
-  (put 'narrow-to-region 'disabled nil)
-  (when (fboundp 'windmove-default-keybindings)
-    (windmove-default-keybindings))
-  (global-unset-key (kbd "<f2>"))
-  (global-unset-key (kbd "<f3>"))
-  (bind-keys ([escape]   . keyboard-quit)
-             ("RET"      . newline-and-indent)
-             ("C-M-l"    . indent-region)
-             ("<f5>"     . (lambda () (interactive) (find-file user-init-file)))
-             ("C-x f"    . find-file))
+    ;; make ibuffer the default buffer lister.
+    (defalias 'list-buffers 'ibuffer)
+    (defalias 'xml-pretty-print 'sgml-pretty-print)
+    (defalias 'first 'car)
+    (defalias 'second 'cadr)
+    (defalias 'third 'caddr)
+    (defalias 'when-not 'unless)
+    (defalias 'word-count 'count-words)
+    (defalias 'yes-or-no-p 'y-or-n-p)
+    (fringe-mode nil)
+    (column-number-mode 1)
+    (desktop-save-mode)
+    (global-font-lock-mode)
+    ;; hl-line
+    (global-hl-line-mode 1)
+    (global-so-long-mode 1)
+    (winner-mode)
+    (repeat-mode 1)
+    (blink-cursor-mode -1)
+    ;; (pixel-scroll-mode)
+    (fset 'yes-or-no-p 'y-or-n-p)
+    (put 'narrow-to-defun  'disabled nil)
+    (put 'narrow-to-page   'disabled nil)
+    (put 'narrow-to-region 'disabled nil)
+    (when (fboundp 'windmove-default-keybindings)
+      (windmove-default-keybindings))
+    (global-unset-key (kbd "<f2>"))
+    (global-unset-key (kbd "<f3>"))
 
-  (load custom-file :noerror :nomessage)
+    (load custom-file :noerror :nomessage)
 
-  ;; Delete trailing whitespace on save
-  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+    ;; Delete trailing whitespace on save
+    (add-hook 'before-save-hook 'delete-trailing-whitespace)
+    ;; do not allow the cursor in the minibuffer prompt
+    (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+    (add-hook 'window-setup-hook 'toggle-frame-maximized t)
 
-  (defun my-add-hooks (hooks function)
-    "For each hook in HOOKS list bind FUNCTION."
-    (dolist (hook hooks)
-      (add-hook hook function)))
+    (defun my-add-hooks (hooks function)
+      "For each hook in HOOKS list bind FUNCTION."
+      (dolist (hook hooks)
+        (add-hook hook function)))
+
+    ;; Add prompt indicator to `completing-read-multiple'.
+    ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+    (defun crm-indicator (args)
+      (cons (format "[CRM%s] %s"
+                    (replace-regexp-in-string
+                     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                     crm-separator)
+                    (car args))
+            (cdr args)))
+    (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+    (defun my-hsplit-last-buffer (prefix)
+      "Split the window horizontally and display the previous buffer.  Args: PREFIX."
+      (interactive "p")
+      (split-window-vertically)
+      (other-window 1 nil)
+      (when (= prefix 1)
+        (set-buffer-major-mode (switch-to-buffer (generate-new-buffer "*new*"))))
+      (text-mode))
+
+    (defun my-vsplit-last-buffer (prefix)
+      "Split the window vertically and display the previous buffer.  Args: PREFIX."
+      (interactive "p")
+      (split-window-horizontally)
+      (other-window 1 nil)
+      (when (= prefix 1)
+        (set-buffer-major-mode (switch-to-buffer (generate-new-buffer "*new*"))))
+      (text-mode))
+
+    (defun my-align-repeat (start end regexp)
+      "Repeat alignment with respect to the given regular expression.  Args: START END REGEXP."
+      (interactive "r\nsAlign regexp: ")
+      (align-regexp start end (concat "\\(\\s-*\\)" regexp) 1 1 t))
+
+    (defun new-scratch-buffer ()
+      "Creates a new scratch buffer."
+      (interactive)
+      (switch-to-buffer (generate-new-buffer-name "*scratch*"))
+      (text-mode))
+
+    (defun quit-emacs () "Quit Emacs." (interactive) (kill-emacs))
+    (defalias 'exit-emacs 'quit-emacs)
+
+    (bind-keys ("C-x 2"    . my-hsplit-last-buffer)
+               ("C-x -"    . my-hsplit-last-buffer)
+               ("C-x -"    . my-hsplit-last-buffer)
+               ("C-x C-\-" . my-hsplit-last-buffer)
+               ("C-x _"    . my-hsplit-last-buffer)
+               ("C-x 3"    . my-vsplit-last-buffer)
+               ("C-x \\"   . my-vsplit-last-buffer)
+               ("C-x C-\\" . my-vsplit-last-buffer)
+               ("C-x |"    . my-vsplit-last-buffer)
+               ([escape]   . keyboard-quit)
+               ("RET"      . newline-and-indent)
+               ("C-M-l"    . indent-region)
+               ("<f5>"     . (lambda () (interactive) (find-file user-init-file)))
+               ("C-x f"    . find-file)))
 
   ;; One-line packages
+  (use-package f)
+  (use-package gcmh :config (gcmh-mode 1))
   (use-package s)
   (use-package dash)
   (use-package queue)
@@ -267,15 +337,18 @@
   ;;    :config (load-theme 'doom-opera-light t)
   ;;    (doom-themes-org-config))
 
-  (use-package modus-themes
-    :defer nil
-    ;; load the theme files before enabling a theme
-    :init (modus-themes-load-themes)
-    :custom (modus-themes-italic-constructs nil)
-    (modus-themes-bold-constructs nil)
-    (modus-themes-region '(accented bg-only no-extend))
-    ;; OR (modus-themes-load-vivendi)
-    :config (modus-themes-load-operandi))
+  ;; (use-package modus-themes
+  ;;   :defer nil
+  ;;   ;; load the theme files before enabling a theme
+  ;;   :init (modus-themes-load-themes)
+  ;;   :custom (modus-themes-italic-constructs nil)
+  ;;   (modus-themes-bold-constructs nil)
+  ;;   (modus-themes-region '(accented bg-only no-extend))
+  ;;   ;; OR (modus-themes-load-vivendi)
+  ;;   :config (modus-themes-load-operandi))
+
+  (use-package ef-themes
+    :config (ef-themes-select 'ef-cyprus))
 
   (use-package solaire-mode
     :config (solaire-global-mode +1))
@@ -335,7 +408,7 @@
     :defer t
     :custom (vterm-install t)
     :commands multi-vterm
-    :hook (vterm-mode . evil-emacs-state)
+    :hook (vterm-mode . evil-normal-state)
     (vterm-copy-mode . evil-normal-in-vterm-copy-mode)
     :config
     (use-package multi-vterm :ensure t)
@@ -1436,75 +1509,6 @@ Start from the beginning of buffer otherwise."
                 ("q"   nil "quit")))
     :bind (("M-SPC" . hydra-common-commands/body)))
 
-  (use-package emacs
-    :init
-    ;; do not allow the cursor in the minibuffer prompt
-    (setq ;; enable recursive minibuffers
-     enable-recursive-minibuffers t
-     ;; completion ignores case
-     completion-ignore-case t
-     ;; TAB cycle if there are only few candidates
-     completion-cycle-threshold 0
-     ;; Do not allow the cursor in the minibuffer prompt
-     minibuffer-prompt-properties '(read-only t cursor-intangible t face minibuffer-prompt)
-     read-file-name-completion-ignore-case t
-     ;; allow Emacs to resize mini windows
-     resize-mini-windows t
-     ;; Enable indentation+completion using the TAB key.
-     ;; `completion-at-point' is often bound to M-TAB.
-     tab-always-indent 'complete)
-    (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
-
-    ;; Add prompt indicator to `completing-read-multiple'.
-    ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
-    (defun crm-indicator (args)
-      (cons (format "[CRM%s] %s"
-                    (replace-regexp-in-string
-                     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-                     crm-separator)
-                    (car args))
-            (cdr args)))
-    (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
-    (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
-
-  ;; Misc
-  (progn
-    (defun my-hsplit-last-buffer (prefix)
-      "Split the window horizontally and display the previous buffer.  Args: PREFIX."
-      (interactive "p")
-      (split-window-vertically)
-      (other-window 1 nil)
-      (when (= prefix 1) (set-buffer-major-mode (switch-to-buffer (generate-new-buffer "*new*")))))
-    (defun my-vsplit-last-buffer (prefix)
-      "Split the window vertically and display the previous buffer.  Args: PREFIX."
-      (interactive "p")
-      (split-window-horizontally)
-      (other-window 1 nil)
-      (when (= prefix 1) (set-buffer-major-mode (switch-to-buffer (generate-new-buffer "*new*")))))
-    (bind-keys ("C-x 2"    . my-hsplit-last-buffer)
-               ("C-x -"    . my-hsplit-last-buffer)
-               ("C-x -"    . my-hsplit-last-buffer)
-               ("C-x C-\-" . my-hsplit-last-buffer)
-               ("C-x _"    . my-hsplit-last-buffer)
-               ("C-x 3"    . my-vsplit-last-buffer)
-               ("C-x \\"   . my-vsplit-last-buffer)
-               ("C-x C-\\" . my-vsplit-last-buffer)
-               ("C-x |"    . my-vsplit-last-buffer)))
-
-  (defun my-align-repeat (start end regexp)
-    "Repeat alignment with respect to the given regular expression.  Args: START END REGEXP."
-    (interactive "r\nsAlign regexp: ")
-    (align-regexp start end (concat "\\(\\s-*\\)" regexp) 1 1 t))
-
-  (defun new-scratch-buffer ()
-    "Creates a new scratch buffer."
-    (interactive)
-    (switch-to-buffer (generate-new-buffer-name "*scratch*"))
-    (text-mode))
-
-  (defun quit-emacs () "Quit Emacs." (interactive) (kill-emacs))
-  (defalias 'exit-emacs 'quit-emacs))
-
 ;; Allow font-lock-mode to do background parsing and restore some settings
 (setq jit-lock-stealth-time 1
       jit-lock-chunk-size 1000
@@ -1513,6 +1517,6 @@ Start from the beginning of buffer otherwise."
       debug-on-quit nil
       gc-cons-threshold (* 10 1024 1024)
       gc-cons-percentage 0.1
-      read-process-output-max (* 1024 1024))
+      read-process-output-max (* 1024 1024)))
 (provide 'init)
 ;;; init.el ends here
