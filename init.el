@@ -356,21 +356,19 @@
 
   ;; PATH
   (use-package exec-path-from-shell
-    :config (progn
-              (when (memq window-system '(mac ns))
-                (exec-path-from-shell-initialize))
-              (when (eq 'windows-nt system-type)
-                (setq exec-path (append (parse-colon-path (getenv "PATH"))
-                                        (parse-colon-path (getenv "USERPROFILE")) exec-path)))))
+    :config (when (memq window-system '(mac ns))
+              (exec-path-from-shell-initialize))
+    (when (eq 'windows-nt system-type)
+      (setq exec-path (append (parse-colon-path (getenv "PATH"))
+                              (parse-colon-path (getenv "USERPROFILE")) exec-path))))
 
   (use-package shell
-    :config (progn
-              (when (eq 'windows-nt system-type)
-                (setq shell-file-name "bash"))
-              (setq explicit-bash.exe-args '("--noediting" "--login" "-i"))
-              (setenv "SHELL" shell-file-name)
-              ;; (setenv "ITERM_SHELL_INTEGRATION_INSTALLED" nil)
-              (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m)))
+    :config (when (eq 'windows-nt system-type)
+              (setq shell-file-name "bash"))
+    (setq explicit-bash.exe-args '("--noediting" "--login" "-i"))
+    (setenv "SHELL" shell-file-name)
+    ;; (setenv "ITERM_SHELL_INTEGRATION_INSTALLED" nil)
+    (add-hook 'comint-output-filter-functions 'comint-strip-ctrl-m))
 
   (use-package view
     :config
@@ -424,12 +422,12 @@
 
   (use-package helpful
     :defer t
-    :config (progn
-              (global-set-key (kbd "C-h f") #'helpful-callable)
-              (global-set-key (kbd "C-h v") #'helpful-variable)
-              (global-set-key (kbd "C-h k") #'helpful-key)
-              (global-set-key (kbd "C-h C") #'helpful-command)
-              (global-set-key (kbd "C-h .") #'helpful-at-point)))
+    :config
+    (global-set-key (kbd "C-h f") #'helpful-callable)
+    (global-set-key (kbd "C-h v") #'helpful-variable)
+    (global-set-key (kbd "C-h k") #'helpful-key)
+    (global-set-key (kbd "C-h C") #'helpful-command)
+    (global-set-key (kbd "C-h .") #'helpful-at-point))
 
   (use-package diff-hl
     :defer t
@@ -558,35 +556,30 @@
 
   (use-package clojure-mode
     :defer  t
-    ;; :pin melpa-stable
-    :config (progn
-              (require 'flycheck-clj-kondo)
-              (use-package cider
-                ;; :pin melpa-stable
-                :defer t)
-              (use-package clojure-mode-extra-font-locking)
-              ;; (use-package flycheck-clojure
-              ;;   ;; :pin melpa-stable
-              ;;   :config (progn
-              ;;             (flycheck-clojure-setup)
-              ;;             (setq flycheck-checkers (delete 'clojure-cider-typed flycheck-checkers))))
-              (add-hook 'clojure-mode-hook #'flycheck-mode)
-              (add-hook 'clojure-mode-hook #'turn-on-eldoc-mode)
-              (add-hook 'cider-mode-hook   #'turn-on-eldoc-mode)
-              (setq nrepl-log-messages           t
-                    nrepl-hide-special-buffers   t
-                    cider-prefer-local-resources t
-                    cider-repl-popup-stacktraces t
-                    cider-popup-stacktraces      nil)
-              (dolist (mode '(clojure-mode
-                              clojurec-mode
-                              clojurescript-mode
-                              clojurex-mode))
-                (add-to-list 'lsp-language-id-configuration `(,mode . "clojure")))
-              (defun cider-find-var-no-prompt ()
-                "cider-find-var at point without prompt"
-                (interactive)
-                (cider-find-var t nil)))
+    :config (require 'flycheck-clj-kondo)
+    (use-package cider
+      :defer t)
+    (use-package clojure-mode-extra-font-locking)
+    ;; (use-package flycheck-clojure
+    ;;   :config (flycheck-clojure-setup)
+    ;;           (setq flycheck-checkers (delete 'clojure-cider-typed flycheck-checkers)))
+    (add-hook 'clojure-mode-hook #'flycheck-mode)
+    (add-hook 'clojure-mode-hook #'turn-on-eldoc-mode)
+    (add-hook 'cider-mode-hook   #'turn-on-eldoc-mode)
+    (setq nrepl-log-messages           t
+          nrepl-hide-special-buffers   t
+          cider-prefer-local-resources t
+          cider-repl-popup-stacktraces t
+          cider-popup-stacktraces      nil)
+    (dolist (mode '(clojure-mode
+                    clojurec-mode
+                    clojurescript-mode
+                    clojurex-mode))
+      (add-to-list 'lsp-language-id-configuration `(,mode . "clojure")))
+    (defun cider-find-var-no-prompt ()
+      "cider-find-var at point without prompt"
+      (interactive)
+      (cider-find-var t nil))
     :bind (:map clojure-mode-map
                 ("C-h"   . cider-doc)
                 ("C-S-h" . cider-doc)
@@ -613,13 +606,13 @@
     (setq rustic-format-on-save t)
     (add-hook 'rustic-mode-hook 'rk/rustic-mode-hook))
 
-(defun rk/rustic-mode-hook ()
-  ;; so that run C-c C-c C-r works without having to confirm, but don't try to
-  ;; save rust buffers that are not file visiting. Once
-  ;; https://github.com/brotzeit/rustic/issues/253 has been resolved this should
-  ;; no longer be necessary.
-  (when buffer-file-name
-    (setq-local buffer-save-without-query t)))
+  (defun rk/rustic-mode-hook ()
+    ;; so that run C-c C-c C-r works without having to confirm, but don't try to
+    ;; save rust buffers that are not file visiting. Once
+    ;; https://github.com/brotzeit/rustic/issues/253 has been resolved this should
+    ;; no longer be necessary.
+    (when buffer-file-name
+      (setq-local buffer-save-without-query t)))
 
   (use-package js2-mode
     :defer t
@@ -762,82 +755,80 @@
     :defer nil
     :init (viper-go-away)
     (setq evil-undo-system 'undo-redo)
-    :config (progn
-              (use-package evil-anzu)
-              (use-package evil-org :defer t)
-              (use-package evil-numbers)
-              (use-package evil-surround   :config (global-evil-surround-mode 1))
-              (use-package evil-visualstar :config (global-evil-visualstar-mode))
-              (use-package evil-search-highlight-persist
-                :config (global-evil-search-highlight-persist t))
-              (use-package lispyville
-                :ensure t
-                :hook (lispy-mode . lispyville-mode))
-              (use-package evil-commentary
-                :config (progn
-                          (defun my-comment-line-and-go-to-next ()
-                            "Comment current line and go to next."
-                            (interactive)
-                            (evil-commentary-line (line-beginning-position)
-                                                  (line-end-position)
-                                                  'line)
-                            (evil-next-line))
-                          (define-key evil-motion-state-map (kbd "gc") 'evil-commentary)
-                          (bind-key "C-/" 'my-comment-line-and-go-to-next)
-                          (bind-key "C-/" 'evil-commentary evil-visual-state-map)
-                          (evil-commentary-mode)))
-              ;; Emacs keys in INSERT mode
-              (setcdr evil-insert-state-map nil)
-              (setq evil-move-cursor-back t
-                    evil-default-cursor   t
-                    evil-want-C-u-scroll  t
-                    evil-want-C-w-delete  t
-                    evil-want-minibuffer  t
-                    evil-search-module 'evil-search
-                    evil-normal-state-cursor '(box "purple")
-                    evil-insert-state-cursor '(bar "purple")
-                    evil-visual-state-cursor '(box "green"))
-              ;; treat symbol as a word
-              (defalias #'forward-evil-word #'forward-evil-symbol)
-              ;; kill buffer, but don't close window
-              (evil-ex-define-cmd "q[uit]" 'kill-this-buffer)
-              (evil-ex-define-cmd "ls"     'ibuffer-list-buffers)
-              ;; ESC quits
-              (defun minibuffer-keyboard-quit ()
-                "Abort recursive edit.
+    :config (use-package evil-anzu)
+    (use-package evil-org :defer t)
+    (use-package evil-numbers)
+    (use-package evil-surround   :config (global-evil-surround-mode 1))
+    (use-package evil-visualstar :config (global-evil-visualstar-mode))
+    (use-package evil-search-highlight-persist
+      :config (global-evil-search-highlight-persist t))
+    (use-package lispyville
+      :ensure t
+      :hook (lispy-mode . lispyville-mode))
+    (use-package evil-commentary
+      :config (defun my-comment-line-and-go-to-next ()
+                "Comment current line and go to next."
+                (interactive)
+                (evil-commentary-line (line-beginning-position)
+                                      (line-end-position)
+                                      'line)
+                (evil-next-line))
+      (define-key evil-motion-state-map (kbd "gc") 'evil-commentary)
+      (bind-key "C-/" 'my-comment-line-and-go-to-next)
+      (bind-key "C-/" 'evil-commentary evil-visual-state-map)
+      (evil-commentary-mode))
+    ;; Emacs keys in INSERT mode
+    (setcdr evil-insert-state-map nil)
+    (setq evil-move-cursor-back t
+          evil-default-cursor   t
+          evil-want-C-u-scroll  t
+          evil-want-C-w-delete  t
+          evil-want-minibuffer  t
+          evil-search-module 'evil-search
+          evil-normal-state-cursor '(box "purple")
+          evil-insert-state-cursor '(bar "purple")
+          evil-visual-state-cursor '(box "green"))
+    ;; treat symbol as a word
+    (defalias #'forward-evil-word #'forward-evil-symbol)
+    ;; kill buffer, but don't close window
+    (evil-ex-define-cmd "q[uit]" 'kill-this-buffer)
+    (evil-ex-define-cmd "ls"     'ibuffer-list-buffers)
+    ;; ESC quits
+    (defun minibuffer-keyboard-quit ()
+      "Abort recursive edit.
                In Delete Selection mode, if the mark is active, just deactivate it;
                then it takes a second \\[keyboard-quit] to abort the minibuffer."
-                (interactive)
-                (if (and delete-selection-mode transient-mark-mode mark-active)
-                    (setq deactivate-mark  t)
-                  (when (get-buffer "*Completions*")
-                    (delete-windows-on "*Completions*"))
-                  (abort-recursive-edit)))
-              (global-set-key                             [escape]      'evil-exit-emacs-state)
-              (define-key evil-visual-state-map           [escape]      'keyboard-quit)
-              (define-key minibuffer-local-map            [escape]      'minibuffer-keyboard-quit)
-              (define-key minibuffer-local-ns-map         [escape]      'minibuffer-keyboard-quit)
-              (define-key minibuffer-local-completion-map [escape]      'minibuffer-keyboard-quit)
-              (define-key minibuffer-local-must-match-map [escape]      'minibuffer-keyboard-quit)
-              (define-key minibuffer-local-isearch-map    [escape]      'minibuffer-keyboard-quit)
-              (define-key evil-insert-state-map           [escape]      'evil-normal-state)
-              (bind-keys :map evil-normal-state-map
-                         ([next]   . evil-scroll-down)
-                         ([prior]  . evil-scroll-up)
-                         ([escape] . keyboard-quit)
-                         ("j"      . evil-next-visual-line)
-                         ("k"      . evil-previous-visual-line)
-                         ("C-y"    . evil-paste-after)
-                         ("SPC"    . hydra-common-commands/body))
-              (bind-keys :map evil-visual-state-map
-                         ("SPC" . hydra-common-commands/body))
-              (defun my-evil-off ()
-                "Turn 'evil-mode' off and change cursor type to bar."
-                (interactive)
-                (turn-off-evil-mode)
-                (setq cursor-type 'bar))
-              (with-eval-after-load 'term (evil-set-initial-state 'term-mode 'insert))
-              (with-eval-after-load 'vterm (evil-set-initial-state 'vterm-mode 'insert)))
+      (interactive)
+      (if (and delete-selection-mode transient-mark-mode mark-active)
+          (setq deactivate-mark  t)
+        (when (get-buffer "*Completions*")
+          (delete-windows-on "*Completions*"))
+        (abort-recursive-edit)))
+    (global-set-key                             [escape]      'evil-exit-emacs-state)
+    (define-key evil-visual-state-map           [escape]      'keyboard-quit)
+    (define-key minibuffer-local-map            [escape]      'minibuffer-keyboard-quit)
+    (define-key minibuffer-local-ns-map         [escape]      'minibuffer-keyboard-quit)
+    (define-key minibuffer-local-completion-map [escape]      'minibuffer-keyboard-quit)
+    (define-key minibuffer-local-must-match-map [escape]      'minibuffer-keyboard-quit)
+    (define-key minibuffer-local-isearch-map    [escape]      'minibuffer-keyboard-quit)
+    (define-key evil-insert-state-map           [escape]      'evil-normal-state)
+    (bind-keys :map evil-normal-state-map
+               ([next]   . evil-scroll-down)
+               ([prior]  . evil-scroll-up)
+               ([escape] . keyboard-quit)
+               ("j"      . evil-next-visual-line)
+               ("k"      . evil-previous-visual-line)
+               ("C-y"    . evil-paste-after)
+               ("SPC"    . hydra-common-commands/body))
+    (bind-keys :map evil-visual-state-map
+               ("SPC" . hydra-common-commands/body))
+    (defun my-evil-off ()
+      "Turn 'evil-mode' off and change cursor type to bar."
+      (interactive)
+      (turn-off-evil-mode)
+      (setq cursor-type 'bar))
+    (with-eval-after-load 'term (evil-set-initial-state 'term-mode 'insert))
+    (with-eval-after-load 'vterm (evil-set-initial-state 'vterm-mode 'insert))
     :bind (("<f12>" . evil-local-mode)
            :map evil-normal-state-map
            ("C-e" . move-end-of-line)
@@ -856,10 +847,10 @@
     :after evil
     :ensure t
     :config (evil-collection-init '(cider compile debug diff-hl diff-mode dired
-                                    doc-view ediff eldoc elisp-mode elisp-refs eshell
-                                    geiser ibugger imenu imenu-list log-view magit
-                                    org pdf scheme sly typescript-mode vdiff vterm vundo
-                                    which-key)))
+                                          doc-view ediff eldoc elisp-mode elisp-refs eshell
+                                          geiser ibugger imenu imenu-list log-view magit
+                                          org pdf scheme sly typescript-mode vdiff vterm vundo
+                                          which-key)))
 
   (use-package dired
     :straight (:type built-in)
@@ -1004,118 +995,112 @@ This only works with orderless and for the first component of the search."
   (use-package projectile
     :defer t
     :diminish projectile-mode
-    :config (progn
-              (defun my-projectile-switch-to-project ()
-                "My switch-to-project action for projectile.
+    :config (defun my-projectile-switch-to-project ()
+              "My switch-to-project action for projectile.
 If project is a git-project, then run magit-status.
 Otherwise run projectile-find-file."
-                (interactive)
-                (let ((pr (projectile-project-root))
-                      (git-projects (cl-remove-if
-                                     (lambda (p) (or (file-remote-p p)
-                                                     (not (file-directory-p (concat p "/.git/")))))
-                                     (mapcar 'expand-file-name projectile-known-projects))))
-                  (if (member pr git-projects)
-                      (magit-status pr)
-                    (projectile-find-file))))
+              (interactive)
+              (let ((pr (projectile-project-root))
+                    (git-projects (cl-remove-if
+                                   (lambda (p) (or (file-remote-p p)
+                                                   (not (file-directory-p (concat p "/.git/")))))
+                                   (mapcar 'expand-file-name projectile-known-projects))))
+                (if (member pr git-projects)
+                    (magit-status pr)
+                  (projectile-find-file))))
 
-              (setq projectile-keymap-prefix (kbd "C-c p")
-                    projectile-enable-caching t
-                    projectile-switch-project-action 'my-projectile-switch-to-project)
-              (when (eq system-type 'windows-nt)
-                (setq projectile-indexing-method 'alien
-                      projectile-enable-caching  nil))
-              (projectile-global-mode)
+    (setq projectile-keymap-prefix (kbd "C-c p")
+          projectile-enable-caching t
+          projectile-switch-project-action 'my-projectile-switch-to-project)
+    (when (eq system-type 'windows-nt)
+      (setq projectile-indexing-method 'alien
+            projectile-enable-caching  nil))
+    (projectile-global-mode)
 
-              (defun my-find-file ()
-                "If currently in a project, then use Projectile to fuzzy find a file.
+    (defun my-find-file ()
+      "If currently in a project, then use Projectile to fuzzy find a file.
 Use `find-file' otherwise."
-                (interactive)
-                (require 'projectile)
-                (if (projectile-project-p)
-                    (projectile-find-file)
-                  (find-file))))
+      (interactive)
+      (require 'projectile)
+      (if (projectile-project-p)
+          (projectile-find-file)
+        (find-file)))
     :bind (("C-S-p" . projectile-switch-project)
            ("C-S-n" . my-find-file)))
 
   (use-package org
     :defer t
-    :config (progn
-              (use-package org-bullets
-                :defer t
-                :config (progn
-                          (defun my-org-bullets-on () (org-bullets-mode 1))
-                          (add-hook 'org-mode-hook #'my-org-bullets-on)))
-              (setq org-edit-src-content-indentation 0
-                    org-src-preserve-indentation t
-                    org-src-tab-acts-natively t
-                    org-src-fontify-natively t
-                    org-src-preserve-indentation t
-                    org-startup-indented t
-                    org-confirm-babel-evaluate nil
-                    org-log-done 'time
-                    org-enforce-todo-dependencies t
-                    org-enforce-todo-checkbox-dependencies t
-                    org-catch-invisible-edits 'error
-                    org-babel-clojure-backend 'cider
-                    org-agenda-files (cl-remove-if-not 'file-exists-p '("~/org/todo.org")))
-              (set-face-attribute 'org-level-1 nil :height 1.0)
-              (org-babel-do-load-languages 'org-babel-load-languages '((emacs-lisp . t)
-                                                                       (java       . t)
-                                                                       (clojure    . t)
-                                                                       (scheme     . t)
-                                                                       (sql        . t))))
+    :config (use-package org-bullets
+              :defer t
+              :config (defun my-org-bullets-on () (org-bullets-mode 1))
+              (add-hook 'org-mode-hook #'my-org-bullets-on))
+    (setq org-edit-src-content-indentation 0
+          org-src-preserve-indentation t
+          org-src-tab-acts-natively t
+          org-src-fontify-natively t
+          org-src-preserve-indentation t
+          org-startup-indented t
+          org-confirm-babel-evaluate nil
+          org-log-done 'time
+          org-enforce-todo-dependencies t
+          org-enforce-todo-checkbox-dependencies t
+          org-catch-invisible-edits 'error
+          org-babel-clojure-backend 'cider
+          org-agenda-files (cl-remove-if-not 'file-exists-p '("~/org/todo.org")))
+    (set-face-attribute 'org-level-1 nil :height 1.0)
+    (org-babel-do-load-languages 'org-babel-load-languages '((emacs-lisp . t)
+                                                             (java       . t)
+                                                             (clojure    . t)
+                                                             (scheme     . t)
+                                                             (sql        . t)))
     :bind (("\C-cl" . org-store-link)
            ("\C-ca" . org-agenda)
            ("\C-cb" . org-iswitchb)))
 
   (use-package magit
     :defer t
-    ;; :pin melpa
-    :config (progn
-              (use-package magit-popup)
-              (setenv "GIT_ASKPASS" "git-gui--askpass")
-              ;; Don't want to view changes every time before commit
-              (setq magit-status-buffer-switch-function 'switch-to-buffer
-                    magit-commit-show-diff nil
-                    magit-diff-options '("--ignore-all-space")
-                    magit-diff-refine-hunk t
-                    magit-log-arguments '("--decorate" "--graph" "--color" "-n80")
-                    magit-log-cutoff-length 80
-                    magit-display-buffer-function 'display-buffer
-                    git-commit-finish-query-functions '())
+    :config (use-package magit-popup)
+    (setenv "GIT_ASKPASS" "git-gui--askpass")
+    ;; Don't want to view changes every time before commit
+    (setq magit-status-buffer-switch-function 'switch-to-buffer
+          magit-commit-show-diff nil
+          magit-diff-options '("--ignore-all-space")
+          magit-diff-refine-hunk t
+          magit-log-arguments '("--decorate" "--graph" "--color" "-n80")
+          magit-log-cutoff-length 80
+          magit-display-buffer-function 'display-buffer
+          git-commit-finish-query-functions '())
 
-              (with-eval-after-load 'transient
-                (transient-bind-q-to-quit))
+    (with-eval-after-load 'transient
+      (transient-bind-q-to-quit))
 
-              (defun my-magit-checkout-current-file (arg)
-                (let ((f (magit-current-file)))
-                  (if f
-                      (magit-run-git-async "checkout" arg f)
-                    (user-error "No file selected!"))))
+    (defun my-magit-checkout-current-file (arg)
+      (let ((f (magit-current-file)))
+        (if f
+            (magit-run-git-async "checkout" arg f)
+          (user-error "No file selected!"))))
 
-              (defun my-magit-checkout-ours ()
-                (interactive)
-                (my-magit-checkout-current-file "--ours"))
+    (defun my-magit-checkout-ours ()
+      (interactive)
+      (my-magit-checkout-current-file "--ours"))
 
-              (defun my-magit-checkout-theirs ()
-                (interactive)
-                (my-magit-checkout-current-file "--theirs")))
+    (defun my-magit-checkout-theirs ()
+      (interactive)
+      (my-magit-checkout-current-file "--theirs"))
     :bind (("C-x g" . magit-status)))
 
   (use-package ediff
     :defer t
-    :config (progn
-              (setq ediff-window-setup-function 'ediff-setup-windows-plain
-                    ediff-split-window-function 'split-window-horizontally
-                    ediff-diff-options          "-w")
-              ;; Restore window layout
-              (defun my-toggle-ediff-wide-display ()
-                "Turn off wide-display mode (if was enabled) before quitting ediff."
-                (when ediff-wide-display-p
-                  (ediff-toggle-wide-display)))
-              (add-hook 'ediff-cleanup-hook 'my-toggle-ediff-wide-display)
-              (add-hook 'ediff-quit-hook    'winner-undo)))
+    :config (setq ediff-window-setup-function 'ediff-setup-windows-plain
+                  ediff-split-window-function 'split-window-horizontally
+                  ediff-diff-options          "-w")
+    ;; Restore window layout
+    (defun my-toggle-ediff-wide-display ()
+      "Turn off wide-display mode (if was enabled) before quitting ediff."
+      (when ediff-wide-display-p
+        (ediff-toggle-wide-display)))
+    (add-hook 'ediff-cleanup-hook 'my-toggle-ediff-wide-display)
+    (add-hook 'ediff-quit-hook    'winner-undo))
 
   (use-package eshell
     :defer t
@@ -1133,38 +1118,35 @@ Use `find-file' otherwise."
 
   (use-package web-mode
     :defer t
-    ;; :pin melpa-stable
-    :config (progn (add-to-list 'auto-mode-alist '("\\.html?\\'"   . web-mode))
-                   (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))))
+    :config (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode)))
 
   (use-package flycheck
     :defer t
-    :config (progn
-              (use-package flycheck-pos-tip
-                :config (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
-              (setq-default flycheck-emacs-lisp-load-path 'inherit)
-              (defun my-flycheck-next-error-cycle ()
-                "Go to next flycheck error if exists.
+    :config (use-package flycheck-pos-tip
+              :config (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
+    (setq-default flycheck-emacs-lisp-load-path 'inherit)
+    (defun my-flycheck-next-error-cycle ()
+      "Go to next flycheck error if exists.
 Start from the beginning of buffer otherwise."
-                (interactive)
-                (let ((pos (flycheck-next-error-pos 1 nil)))
-                  (if pos
-                      (goto-char pos)
-                    (flycheck-next-error-function 1 t))))
-              (define-key flycheck-mode-map (kbd "<f2>") #'my-flycheck-next-error-cycle)
-              (define-key flycheck-mode-map (kbd "<f3>") #'flycheck-list-errors)))
+      (interactive)
+      (let ((pos (flycheck-next-error-pos 1 nil)))
+        (if pos
+            (goto-char pos)
+          (flycheck-next-error-function 1 t))))
+    (define-key flycheck-mode-map (kbd "<f2>") #'my-flycheck-next-error-cycle)
+    (define-key flycheck-mode-map (kbd "<f3>") #'flycheck-list-errors))
 
   (use-package neotree
     :defer t
-    :config (progn
-              (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
-              (define-key neotree-mode-map (kbd "<tab>") #'neotree-enter)
-              (defun neotree-current-file ()
-                "Opens current file in Neotree. If current buffer is a Neotree buffer then closes it."
-                (interactive)
-                (if (eq major-mode 'neotree-mode)
-                    (neotree-toggle)
-                  (neotree-find (buffer-file-name)))))
+    :config (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+    (define-key neotree-mode-map (kbd "<tab>") #'neotree-enter)
+    (defun neotree-current-file ()
+      "Opens current file in Neotree. If current buffer is a Neotree buffer then closes it."
+      (interactive)
+      (if (eq major-mode 'neotree-mode)
+          (neotree-toggle)
+        (neotree-find (buffer-file-name))))
     :bind (("M-<f1>". neotree-current-file)))
 
   (use-package imenu-list
@@ -1178,12 +1160,10 @@ Start from the beginning of buffer otherwise."
   (use-package eyebrowse
     :defer t
     :diminish eyebrowse-mode
-    ;; :pin melpa-stable
-    :config (progn
-              (eyebrowse-mode t)
-              (eyebrowse-setup-evil-keys)
-              (setq eyebrowse-new-workspace t
-                    eyebrowse-close-window-config-prompt t))
+    :config (eyebrowse-mode t)
+    (eyebrowse-setup-evil-keys)
+    (setq eyebrowse-new-workspace t
+          eyebrowse-close-window-config-prompt t)
     :bind (("C-1"  . eyebrowse-switch-to-window-config-1)
            ("C-2"  . eyebrowse-switch-to-window-config-2)
            ("C-3"  . eyebrowse-switch-to-window-config-3)
@@ -1196,41 +1176,39 @@ Start from the beginning of buffer otherwise."
            ("C-0"  . eyebrowse-switch-to-window-config-0)))
 
   (use-package shackle
-    :config (progn
-              (setq shackle-lighter ""
-                    shackle-rules '(("\\`\\*magit.*?\\*\\'"   :regexp t :same t :inhibit-window-quit t)
-                                    (compilation-mode         :same t :inhibit-window-quit t)
-                                    (erc-mode                 :same t :inhibit-window-quit t)
-                                    (proced-mode              :same t :inhibit-window-quit t)
-                                    (help-mode                :same t :inhibit-window-quit t)
-                                    (ibuffer-mode             :same t :inhibit-window-quit t)
-                                    (slime-mode               :popup  t
-                                                              :align 'below
-                                                              :ratio 0.33)
-                                    (sly-mode                 :popup  t
-                                                              :align 'below
-                                                              :ratio 0.33)
-                                    (inferior-lisp-mode       :popup  t
-                                                              :align 'below
-                                                              :ratio 0.33)
-                                    (flycheck-error-list-mode :popup  t
-                                                              :align 'below
-                                                              :ratio 0.33
-                                                              :select t)
-                                    ("\\`\\*diff-hl\\*.*?\\'" :regexp t
-                                                              :popup  t
-                                                              :align 'below
-                                                              :ratio 0.33)))
-              (shackle-mode t)))
+    :config (setq shackle-lighter ""
+                  shackle-rules '(("\\`\\*magit.*?\\*\\'"   :regexp t :same t :inhibit-window-quit t)
+                                  (compilation-mode         :same t :inhibit-window-quit t)
+                                  (erc-mode                 :same t :inhibit-window-quit t)
+                                  (proced-mode              :same t :inhibit-window-quit t)
+                                  (help-mode                :same t :inhibit-window-quit t)
+                                  (ibuffer-mode             :same t :inhibit-window-quit t)
+                                  (slime-mode               :popup  t
+                                                            :align 'below
+                                                            :ratio 0.33)
+                                  (sly-mode                 :popup  t
+                                                            :align 'below
+                                                            :ratio 0.33)
+                                  (inferior-lisp-mode       :popup  t
+                                                            :align 'below
+                                                            :ratio 0.33)
+                                  (flycheck-error-list-mode :popup  t
+                                                            :align 'below
+                                                            :ratio 0.33
+                                                            :select t)
+                                  ("\\`\\*diff-hl\\*.*?\\'" :regexp t
+                                   :popup  t
+                                   :align 'below
+                                   :ratio 0.33)))
+    (shackle-mode t))
 
   ;; Solidity
   (use-package solidity-mode
     :defer t)
   (use-package solidity-flycheck
     :defer t
-    :config (progn
-              (setq solidity-flycheck-solc-checker-active t
-                    solidity-flycheck-solium-checker-active t)))
+    :config (setq solidity-flycheck-solc-checker-active t
+                  solidity-flycheck-solium-checker-active t))
 
   ;; FIXME Setup grammars
   (use-package tree-sitter
@@ -1291,72 +1269,71 @@ Start from the beginning of buffer otherwise."
   ;; Hydras
   (use-package hydra
     :defer t
-    :config (progn
-              (defhydra hydra-find
-                (:color blue :hint nil)
-                "
+    :config (defhydra hydra-find
+              (:color blue :hint nil)
+              "
   Find
   -----
   _h_: at point         _f_: file      _F_: function   _s_: line
   _k_: function on key  _v_: variabl   _l_: library    _g_: ripgrep
   "
-                ("h"   my-find-thing-at-point)
-                ("F"   find-function)
-                ("s"   consult-line)
-                ("f"   find-file)
-                ("k"   find-function-on-key)
-                ("v"   find-variable)
-                ("l"   find-library)
-                ("g"   consult-ripgrep)
-                ("q"   nil "quit" :color blue))
+              ("h"   my-find-thing-at-point)
+              ("F"   find-function)
+              ("s"   consult-line)
+              ("f"   find-file)
+              ("k"   find-function-on-key)
+              ("v"   find-variable)
+              ("l"   find-library)
+              ("g"   consult-ripgrep)
+              ("q"   nil "quit" :color blue))
 
-              (defhydra hydra-ediff (:color blue :hint nil)
-                "
+    (defhydra hydra-ediff (:color blue :hint nil)
+      "
   ^Buffers              Files               VC                Ediff regions
   ----------------------------------------------------------------------------------
   _b_: buffers           _f_: files (_=_)        _r_: revisions      _l_: linewise
   _B_: Buffers (3-way)   _F_: Files (3-way)                      _w_: wordwise
                        _c_: current file
   "
-                ("b" ediff-buffers)
-                ("B" ediff-buffers3)
-                ("=" ediff-files)
-                ("f" ediff-files)
-                ("F" ediff-files3)
-                ("c" ediff-current-file)
-                ("r" ediff-revision)
-                ("l" ediff-regions-linewise)
-                ("w" ediff-regions-wordwise)
-                ("q" nil "quit"))
+      ("b" ediff-buffers)
+      ("B" ediff-buffers3)
+      ("=" ediff-files)
+      ("f" ediff-files)
+      ("F" ediff-files3)
+      ("c" ediff-current-file)
+      ("r" ediff-revision)
+      ("l" ediff-regions-linewise)
+      ("w" ediff-regions-wordwise)
+      ("q" nil "quit"))
 
-              (defhydra hydra-describe
-                (:exit t :columns 2)
-                "
+    (defhydra hydra-describe
+      (:exit t :columns 2)
+      "
   Describe
   --------- "
-                ("v" describe-variable "variable")
-                ("f" describe-function "function")
-                ("F" describe-face "face")
-                ("k" describe-key "key")
-                ("q" nil "quit"))
+      ("v" describe-variable "variable")
+      ("f" describe-function "function")
+      ("F" describe-face "face")
+      ("k" describe-key "key")
+      ("q" nil "quit"))
 
-              (defhydra hydra-eval
-                (:exit t :columns 2)
-                "
+    (defhydra hydra-eval
+      (:exit t :columns 2)
+      "
   Evaluate
   --------- "
-                ("r" eval-region "region")
-                ("b" eval-buffer "buffer")
-                ("e" eval-expression "S-expression")
-                ("l" eval-last-sexp "last s-expression")
-                ("L" eval-last-sexp-print-value "last s-expression and print value  ")
-                ("d" eval-defun "defun / function")
-                ("f" eval-defun "defun / function")
-                ("q" nil "quit" :color blue))
+      ("r" eval-region "region")
+      ("b" eval-buffer "buffer")
+      ("e" eval-expression "S-expression")
+      ("l" eval-last-sexp "last s-expression")
+      ("L" eval-last-sexp-print-value "last s-expression and print value  ")
+      ("d" eval-defun "defun / function")
+      ("f" eval-defun "defun / function")
+      ("q" nil "quit" :color blue))
 
-              (defhydra hydra-window
-                (:hint nil)
-                "
+    (defhydra hydra-window
+      (:hint nil)
+      "
   Split     Delete     Switch Window   Buffers        Winner
   --------------------------------------------------------------
   _\\_: vert   _c_: close   _h_: left         _p_: previous    _u_: undo
@@ -1366,55 +1343,55 @@ Start from the beginning of buffer otherwise."
                                        _R_: revert-buffer
   "
 
-                ("-" split-window-below)
-                ("\\" split-window-right)
+      ("-" split-window-below)
+      ("\\" split-window-right)
 
-                ("c" delete-window)
-                ("o" delete-other-windows)
+      ("c" delete-window)
+      ("o" delete-other-windows)
 
-                ("h" windmove-left)
-                ("j" windmove-down)
-                ("k" windmove-up)
-                ("l" windmove-right)
+      ("h" windmove-left)
+      ("j" windmove-down)
+      ("k" windmove-up)
+      ("l" windmove-right)
 
-                ("p" previous-buffer)
-                ("n" next-buffer)
-                ("b" ibuffer :color blue)
-                ("w" ace-window :color blue)
-                ("R" revert-buffer :color blue)
+      ("p" previous-buffer)
+      ("n" next-buffer)
+      ("b" ibuffer :color blue)
+      ("w" ace-window :color blue)
+      ("R" revert-buffer :color blue)
 
-                ("u" winner-undo)
-                ("r" winner-redo)
+      ("u" winner-undo)
+      ("r" winner-redo)
 
-                ("q" nil "quit"))
+      ("q" nil "quit"))
 
-              (defhydra hydra-project
-                (:color blue :hint nil)
-                "
+    (defhydra hydra-project
+      (:color blue :hint nil)
+      "
   Project
   --------
   _p_: projectile   _c_: compile
   "
-                ("p" projectile-switch-project)
-                ("c" compile)
-                ("q" nil "quit"))
+      ("p" projectile-switch-project)
+      ("c" compile)
+      ("q" nil "quit"))
 
-              (defhydra hydra-buffers
-                (:color blue :hint nil)
-                "
+    (defhydra hydra-buffers
+      (:color blue :hint nil)
+      "
   Buffers
   --------
   _b_: switch buffer  _B_: bury buffer
   _k_: kill buffer    _SPC_: previous buffer
   "
-                ("b" switch-to-buffer)
-                ("k" kill-buffer)
-                ("B" bury-buffer)
-                ("SPC" previous-buffer)
-                ("q" nil "quit"))
+      ("b" switch-to-buffer)
+      ("k" kill-buffer)
+      ("B" bury-buffer)
+      ("SPC" previous-buffer)
+      ("q" nil "quit"))
 
-              (defhydra hydra-metahelp-menu (:hint nil :exit t :foreign-keys warn)
-                "
+    (defhydra hydra-metahelp-menu (:hint nil :exit t :foreign-keys warn)
+      "
   Describe                           ^^^^^^                             Goto         ^^ View
   -----------------------------------------------------------------------------------------------------
   _b_: bindings             _k_:   key                   _s_:   symbol               _e_: *Messages*
@@ -1426,88 +1403,88 @@ Start from the beginning of buffer otherwise."
   _F_: Function (info)      _C-p_: external package
   _I_: key input method                                           ^^^^^^                 _q_: quit
   "
-                ("b"   describe-bindings)
-                ("c"   describe-key-briefly)
-                ("C"   describe-coding-system)
-                ("d"   apropos-documentation)
-                ("e"   view-echo-area-messages)
-                ("E"   hydra-metahelp-emacs-menu/body)
-                ("f"   describe-function)
-                ("F"   Info-goto-emacs-command-node)
-                ("i"   info)
-                ("I"   describe-input-method)
-                ("k"   describe-key)
-                ("K"   Info-goto-emacs-key-command-node)
-                ("l"   view-lossage)
-                ("L"   describe-language-environment)
-                ("m"   describe-mode)
-                ("p"   finder-by-keyword)
-                ("P"   describe-package)
-                ("C-p" view-external-packages)
-                ("q"   nil nil)
-                ("s"   describe-symbol)
-                ("S"   info-lookup-symbol)
-                ("C-s" describe-syntax)
-                ("v"   describe-variable)
-                ("w"   where-is)
-                ("."   display-local-help))
+      ("b"   describe-bindings)
+      ("c"   describe-key-briefly)
+      ("C"   describe-coding-system)
+      ("d"   apropos-documentation)
+      ("e"   view-echo-area-messages)
+      ("E"   hydra-metahelp-emacs-menu/body)
+      ("f"   describe-function)
+      ("F"   Info-goto-emacs-command-node)
+      ("i"   info)
+      ("I"   describe-input-method)
+      ("k"   describe-key)
+      ("K"   Info-goto-emacs-key-command-node)
+      ("l"   view-lossage)
+      ("L"   describe-language-environment)
+      ("m"   describe-mode)
+      ("p"   finder-by-keyword)
+      ("P"   describe-package)
+      ("C-p" view-external-packages)
+      ("q"   nil nil)
+      ("s"   describe-symbol)
+      ("S"   info-lookup-symbol)
+      ("C-s" describe-syntax)
+      ("v"   describe-variable)
+      ("w"   where-is)
+      ("."   display-local-help))
 
-              (defhydra hydra-metahelp-emacs-menu (:hint nil :exit t :foreign-keys warn)
-                "
+    (defhydra hydra-metahelp-emacs-menu (:hint nil :exit t :foreign-keys warn)
+      "
   Emacs
   ----------------------------------------------------------------------------------------
   _a_: about Emacs  _D_: Distribution  _h_: hello file     _n_: news            _T_: Todo          _q_: quit
   _c_: copying      _F_: FAQ           _i_: info manual
   _d_: debuging     _G_: GNU           _t_: tutorial
   "
-                ("a" about-emacs)
-                ("c" describe-copying)
-                ("d" view-emacs-debugging)
-                ("D" describe-distribution)
-                ("F" view-emacs-FAQ)
-                ("G" describe-gnu-project)
-                ("h" view-hello-file)
-                ("i" info-manual)
-                ("n" view-emacs-news)
-                ("q" nil nil)
-                ("t" help-with-tutorial)
-                ("m" view-order-anuals)
-                ("T" view-emacs-todo))
+      ("a" about-emacs)
+      ("c" describe-copying)
+      ("d" view-emacs-debugging)
+      ("D" describe-distribution)
+      ("F" view-emacs-FAQ)
+      ("G" describe-gnu-project)
+      ("h" view-hello-file)
+      ("i" info-manual)
+      ("n" view-emacs-news)
+      ("q" nil nil)
+      ("t" help-with-tutorial)
+      ("m" view-order-anuals)
+      ("T" view-emacs-todo))
 
-              (defhydra hydra-common-commands
-                (:color blue :hint nil)
-                "
+    (defhydra hydra-common-commands
+      (:color blue :hint nil)
+      "
 
   _h_:   help            _f_: find        _x_: execute  _._:   find file
   _P_:   project         _d_: describe    _D_: ediff    _SPC_: no highlight
   _b_:   buffers         _e_: evaluate    _w_: window
   "
-                ("h"   hydra-metahelp-menu/body)
-                ("f"   hydra-find/body)
-                ("e"   hydra-eval/body)
-                ("w"   hydra-window/body)
-                ("d"   hydra-describe/body)
-                ("SPC" (lambda ()
-                         (interactive)
-                         (evil-ex-nohighlight)
-                         (evil-search-highlight-persist-remove-all)))
-                ("u"   vundo)
-                ("P"   hydra-project/body)
-                ("D"   hydra-ediff/body)
-                ("x"   M-x)
-                ("b"   hydra-buffers/body)
-                ("."   find-file)
-                ("q"   nil "quit")))
+      ("h"   hydra-metahelp-menu/body)
+      ("f"   hydra-find/body)
+      ("e"   hydra-eval/body)
+      ("w"   hydra-window/body)
+      ("d"   hydra-describe/body)
+      ("SPC" (lambda ()
+               (interactive)
+               (evil-ex-nohighlight)
+               (evil-search-highlight-persist-remove-all)))
+      ("u"   vundo)
+      ("P"   hydra-project/body)
+      ("D"   hydra-ediff/body)
+      ("x"   M-x)
+      ("b"   hydra-buffers/body)
+      ("."   find-file)
+      ("q"   nil "quit"))
     :bind (("M-SPC" . hydra-common-commands/body)))
 
-;; Allow font-lock-mode to do background parsing and restore some settings
-(setq jit-lock-stealth-time 1
-      jit-lock-chunk-size 1000
-      jit-lock-defer-time 0.05
-      debug-on-error nil
-      debug-on-quit nil
-      gc-cons-threshold (* 10 1024 1024)
-      gc-cons-percentage 0.1
-      read-process-output-max (* 1024 1024)))
+  ;; Allow font-lock-mode to do background parsing and restore some settings
+  (setq jit-lock-stealth-time 1
+        jit-lock-chunk-size 1000
+        jit-lock-defer-time 0.05
+        debug-on-error nil
+        debug-on-quit nil
+        gc-cons-threshold (* 10 1024 1024)
+        gc-cons-percentage 0.1
+        read-process-output-max (* 1024 1024)))
 (provide 'init)
 ;;; init.el ends here
