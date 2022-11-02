@@ -191,6 +191,7 @@
           resize-mini-windows t
           ;; Enable indentation+completion using the TAB key.
           ;; `completion-at-point' is often bound to M-TAB.
+          dired-dwim-target t
           tab-always-indent 'complete
           custom-file (concat user-emacs-directory "custom.el"))
 
