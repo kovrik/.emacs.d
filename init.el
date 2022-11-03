@@ -838,6 +838,7 @@
            (prog-mode . evil-local-mode)
            (text-mode . evil-local-mode)
            (pdf-view-mode . evil-local-mode)
+           (neotree-mode . evil-local-mode)
            ;; Disable evil-mode in some major modes
            (magit-mode . my-evil-off)
            (erc-mode . my-evil-off)
