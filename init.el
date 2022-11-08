@@ -669,16 +669,6 @@
                 ("C-S-h" . sly-describe-symbol)))
   (provide 'init-sly)
 
-  ;; (use-package adjust-parens
-  ;;   :defer t
-  ;;   :hook ((emacs-lisp-mode . adjust-parens-mode)
-  ;;          (clojure-mode . adjust-parens-mode)
-  ;;          (lisp-mode . adjust-parens-mode)
-  ;;          (racket-mode . adjust-parens-mode))
-  ;;   :bind (:map adjust-parens-mode-map
-  ;;               ("TAB" . lisp-indent-adjust-parens)
-  ;;               ("<backtab>" . lisp-dedent-adjust-parens)))
-
   (use-package highlight-quoted
     :defer t
     :hook ((emacs-lisp-mode . highlight-quoted-mode)
@@ -1147,16 +1137,16 @@ Start from the beginning of buffer otherwise."
     (eyebrowse-setup-evil-keys)
     (setq eyebrowse-new-workspace t
           eyebrowse-close-window-config-prompt t)
-    :bind (("C-1"  . eyebrowse-switch-to-window-config-1)
-           ("C-2"  . eyebrowse-switch-to-window-config-2)
-           ("C-3"  . eyebrowse-switch-to-window-config-3)
-           ("C-4"  . eyebrowse-switch-to-window-config-4)
-           ("C-5"  . eyebrowse-switch-to-window-config-5)
-           ("C-6"  . eyebrowse-switch-to-window-config-6)
-           ("C-7"  . eyebrowse-switch-to-window-config-7)
-           ("C-8"  . eyebrowse-switch-to-window-config-8)
-           ("C-9"  . eyebrowse-switch-to-window-config-9)
-           ("C-0"  . eyebrowse-switch-to-window-config-0)))
+    :bind (("C-1" . eyebrowse-switch-to-window-config-1)
+           ("C-2" . eyebrowse-switch-to-window-config-2)
+           ("C-3" . eyebrowse-switch-to-window-config-3)
+           ("C-4" . eyebrowse-switch-to-window-config-4)
+           ("C-5" . eyebrowse-switch-to-window-config-5)
+           ("C-6" . eyebrowse-switch-to-window-config-6)
+           ("C-7" . eyebrowse-switch-to-window-config-7)
+           ("C-8" . eyebrowse-switch-to-window-config-8)
+           ("C-9" . eyebrowse-switch-to-window-config-9)
+           ("C-0" . eyebrowse-switch-to-window-config-0)))
 
   (use-package shackle
     :config (setq shackle-lighter ""
