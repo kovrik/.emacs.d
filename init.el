@@ -301,8 +301,7 @@
   (use-package all-the-icons
     :if (display-graphic-p)
     :config (use-package all-the-icons-dired
-              :defer t
-              :config (add-hook 'dired-mode-hook #'all-the-icons-dired-mode)))
+              :hook (dired-mode . all-the-icons-dired-mode)))
 
   (use-package all-the-icons-completion
     :after (marginalia all-the-icons)
