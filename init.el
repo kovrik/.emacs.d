@@ -10,6 +10,12 @@
       (debug-on-error t)
       (debug-on-quit t))
 
+  ;; Compile warnings
+  (setq native-comp-async-report-warnings-errors 'silent) ;; native-comp warning
+  (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
+
+  (setq idle-update-delay 1.0)
+
   ;; Use viper-mode as a fallback in case we fail to init evil
   (setq viper-mode t)
   (require 'viper)
@@ -100,9 +106,15 @@
                                      (font-spec :name "Consolas"       :size 11)))))
       (when my-font
         (message (format "Using %s %s font." (font-get my-font :name) (font-get my-font :size)))
-        (set-frame-font my-font)
-        (when (eq system-type 'darwin)
-          (setq mac-allow-anti-aliasing t))))
+        (set-frame-font my-font)))
+
+    (when (eq system-type 'darwin)
+      (setq mac-allow-anti-aliasing t
+            mac-command-modifier       'meta
+            mac-option-modifier         nil
+            mac-control-modifier       'control
+            mac-right-command-modifier 'super
+            mac-right-control-modifier 'hyper))
 
     (setq-default indent-tabs-mode nil
                   tab-width 2
@@ -153,6 +165,7 @@
           ns-use-srgb-colorspace nil
           ;; remove the warnings from the GnuTLS library when using HTTPS
           gnutls-min-prime-bits 4096
+          gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"
           tab-always-indent 'complete
           search-default-mode #'char-fold-to-regexp
           coding-system-for-read 'utf-8
@@ -173,7 +186,14 @@
           ;; do not create backup files
           ;; auto-save-default nil
           create-lockfiles nil
-          ;; make-backup-files nil
+          make-backup-files nil
+          ;; But in case the user does enable it, some sensible defaults:
+          version-control t     ; number each backup file
+          backup-by-copying t   ; instead of renaming current file (clobbers links)
+          delete-old-versions t ; clean up after itself
+          kept-old-versions 5
+          kept-new-versions 5
+          backup-directory-alist (list (cons "." (concat user-emacs-directory "backup/")))
           ;; vc-make-backup-files nil
           ;; show parent parentheses
           show-paren-delay 0
@@ -191,9 +211,16 @@
           resize-mini-windows t
           ;; Enable indentation+completion using the TAB key.
           ;; `completion-at-point' is often bound to M-TAB.
+          what-cursor-show-names t
           dired-dwim-target t
+          dired-kill-when-opening-new-dired-buffer t
           tab-always-indent 'complete
-          custom-file (concat user-emacs-directory "custom.el"))
+          reb-re-syntax 'string
+          custom-file (concat user-emacs-directory "custom.el")
+          electric-pair-pairs '((?\{ . ?\})
+                                (?\( . ?\))
+                                (?\[ . ?\])
+                                (?\" . ?\")))
 
     ;; make ibuffer the default buffer lister.
     (defalias 'list-buffers 'ibuffer)
@@ -214,6 +241,7 @@
     (winner-mode)
     (repeat-mode 1)
     (blink-cursor-mode -1)
+    (electric-pair-mode t)
     ;; (pixel-scroll-mode)
     (fset 'yes-or-no-p 'y-or-n-p)
     (put 'narrow-to-defun  'disabled nil)
@@ -349,7 +377,9 @@
   (use-package doom-modeline
     :ensure t
     :config (setq doom-modeline-minor-modes nil
-                  doom-modeline-height 20)
+                  doom-modeline-height 20
+                  doom-modeline-enable-word-count nil
+                  doom-modeline-modal-icon nil)
     (add-hook 'pdf-view-mode-hook #'doom-modeline-set-pdf-modeline)
     :hook (after-init . doom-modeline-mode))
 
@@ -494,12 +524,6 @@
                 ("C-h k" . find-function-on-key)
                 ("C-h v" . find-variable)
                 ("C-h l" . find-library)))
-
-  (setq electric-pair-pairs '((?\{ . ?\})
-                              (?\( . ?\))
-                              (?\[ . ?\])
-                              (?\" . ?\")))
-  (electric-pair-mode t)
 
   (use-package lsp-mode
     :defer t
@@ -719,13 +743,6 @@
     (define-key vundo-mode-map (kbd "RET")     #'vundo-confirm))
   (with-eval-after-load 'evil (evil-define-key 'normal 'global (kbd "C-M-u") 'vundo))
 
-  (use-package undo-fu
-    :defer t
-    :config
-    (global-unset-key (kbd "C-z"))
-    (global-set-key (kbd "C-z")   'undo-fu-only-undo)
-    (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
-
   (use-package lispy
     :init (setq lispy-key-theme '(special lispy))
     :ensure t
@@ -740,98 +757,107 @@
            (lisp-mode . lispy-mode)
            (common-lisp-mode . lispy-mode)))
 
-  (use-package evil
-    :defer nil
-    :init (viper-go-away)
-    (setq evil-undo-system 'undo-redo)
-    :config (use-package evil-anzu)
-    (use-package evil-org :defer t)
-    (use-package evil-numbers)
-    (use-package evil-surround   :config (global-evil-surround-mode 1))
-    (use-package evil-visualstar :config (global-evil-visualstar-mode))
-    (use-package evil-search-highlight-persist
-      :config (global-evil-search-highlight-persist t))
-    (use-package lispyville
-      :ensure t
-      :hook (lispy-mode . lispyville-mode))
-    (use-package evil-commentary
-      :config (defun my-comment-line-and-go-to-next ()
-                "Comment current line and go to next."
-                (interactive)
-                (evil-commentary-line (line-beginning-position)
-                                      (line-end-position)
-                                      'line)
-                (evil-next-line))
-      (define-key evil-motion-state-map (kbd "gc") 'evil-commentary)
-      (bind-key "C-/" 'my-comment-line-and-go-to-next)
-      (bind-key "C-/" 'evil-commentary evil-visual-state-map)
-      (evil-commentary-mode))
-    ;; Emacs keys in INSERT mode
-    (setcdr evil-insert-state-map nil)
-    (setq evil-move-cursor-back t
-          evil-default-cursor   t
-          evil-want-C-u-scroll  t
-          evil-want-C-w-delete  t
-          evil-want-minibuffer  t
-          evil-search-module 'evil-search
-          evil-normal-state-cursor '(box "purple")
-          evil-insert-state-cursor '(bar "purple")
-          evil-visual-state-cursor '(box "green"))
-    ;; treat symbol as a word
-    (defalias #'forward-evil-word #'forward-evil-symbol)
-    ;; kill buffer, but don't close window
-    (evil-ex-define-cmd "q[uit]" 'kill-this-buffer)
-    (evil-ex-define-cmd "ls"     'ibuffer-list-buffers)
-    ;; ESC quits
-    (defun minibuffer-keyboard-quit ()
-      "Abort recursive edit.
-               In Delete Selection mode, if the mark is active, just deactivate it;
-               then it takes a second \\[keyboard-quit] to abort the minibuffer."
-      (interactive)
-      (if (and delete-selection-mode transient-mark-mode mark-active)
-          (setq deactivate-mark  t)
-        (when (get-buffer "*Completions*")
-          (delete-windows-on "*Completions*"))
-        (abort-recursive-edit)))
-    (global-set-key                             [escape]      'evil-exit-emacs-state)
-    (define-key evil-visual-state-map           [escape]      'keyboard-quit)
-    (define-key minibuffer-local-map            [escape]      'minibuffer-keyboard-quit)
-    (define-key minibuffer-local-ns-map         [escape]      'minibuffer-keyboard-quit)
-    (define-key minibuffer-local-completion-map [escape]      'minibuffer-keyboard-quit)
-    (define-key minibuffer-local-must-match-map [escape]      'minibuffer-keyboard-quit)
-    (define-key minibuffer-local-isearch-map    [escape]      'minibuffer-keyboard-quit)
-    (define-key evil-insert-state-map           [escape]      'evil-normal-state)
-    (bind-keys :map evil-normal-state-map
-               ([next]   . evil-scroll-down)
-               ([prior]  . evil-scroll-up)
-               ([escape] . keyboard-quit)
-               ("j"      . evil-next-visual-line)
-               ("k"      . evil-previous-visual-line)
-               ("C-y"    . evil-paste-after)
-               ("SPC"    . hydra-common-commands/body))
-    (bind-keys :map evil-visual-state-map
-               ("SPC" . hydra-common-commands/body))
-    (defun my-evil-off ()
-      "Turn 'evil-mode' off and change cursor type to bar."
-      (interactive)
-      (turn-off-evil-mode)
-      (setq cursor-type 'bar))
-    (with-eval-after-load 'term (evil-set-initial-state 'term-mode 'insert))
-    (with-eval-after-load 'vterm (evil-set-initial-state 'vterm-mode 'insert))
-    :bind (("<f12>" . evil-local-mode)
-           :map evil-normal-state-map
-           ("C-e" . move-end-of-line)
-           :map evil-visual-state-map
-           ("C-e" . move-end-of-line))
-    :hook ((help-mode . evil-local-mode)
-           (prog-mode . evil-local-mode)
-           (text-mode . evil-local-mode)
-           (pdf-view-mode . evil-local-mode)
-           (neotree-mode . evil-local-mode)
-           ;; Disable evil-mode in some major modes
-           (magit-mode . my-evil-off)
-           (erc-mode . my-evil-off)
-           (nrepl-connected . my-evil-off)))
+
+   (use-package evil
+     :defer nil
+     :init (viper-go-away)
+     (setq evil-undo-system 'undo-redo)
+     :config (use-package evil-anzu)
+     (use-package evil-org :defer t)
+     (use-package evil-numbers)
+     (use-package evil-surround   :config (global-evil-surround-mode 1))
+     (use-package evil-visualstar :config (global-evil-visualstar-mode))
+     (use-package evil-search-highlight-persist
+       :config (global-evil-search-highlight-persist t))
+     (use-package lispyville
+       :ensure t
+       :hook (lispy-mode . lispyville-mode))
+     (use-package evil-commentary
+       :config (defun my-comment-line-and-go-to-next ()
+                 "Comment current line and go to next."
+                 (interactive)
+                 (evil-commentary-line (line-beginning-position)
+                                       (line-end-position)
+                                       'line)
+                 (evil-next-line))
+       (define-key evil-motion-state-map (kbd "gc") 'evil-commentary)
+       (bind-key "C-/" 'my-comment-line-and-go-to-next)
+       (bind-key "C-/" 'evil-commentary evil-visual-state-map)
+       (evil-commentary-mode))
+     ;; Emacs keys in INSERT mode
+     (setcdr evil-insert-state-map nil)
+     (setq evil-move-cursor-back t
+           evil-default-cursor t
+           evil-want-C-u-scroll t
+           evil-want-C-w-delete t
+           evil-want-minibuffer t
+           evil-want-fine-undo t
+           evil-want-Y-yank-to-eol t
+           evil-search-module 'evil-search
+           evil-normal-state-cursor '(box "purple")
+           evil-insert-state-cursor '(bar "purple")
+           evil-visual-state-cursor '(box "green"))
+     ;; treat symbol as a word
+     (defalias #'forward-evil-word #'forward-evil-symbol)
+     ;; kill buffer, but don't close window
+     (evil-ex-define-cmd "q[uit]" 'kill-this-buffer)
+     (evil-ex-define-cmd "ls"     'ibuffer-list-buffers)
+     ;; ESC quits
+     (defun minibuffer-keyboard-quit ()
+       "Abort recursive edit.
+                In Delete Selection mode, if the mark is active, just deactivate it;
+                then it takes a second \\[keyboard-quit] to abort the minibuffer."
+       (interactive)
+       (if (and delete-selection-mode transient-mark-mode mark-active)
+           (setq deactivate-mark  t)
+         (when (get-buffer "*Completions*")
+           (delete-windows-on "*Completions*"))
+         (abort-recursive-edit)))
+     (global-set-key                             [escape]      'evil-exit-emacs-state)
+     (define-key evil-visual-state-map           [escape]      'keyboard-quit)
+     (define-key minibuffer-local-map            [escape]      'minibuffer-keyboard-quit)
+     (define-key minibuffer-local-ns-map         [escape]      'minibuffer-keyboard-quit)
+     (define-key minibuffer-local-completion-map [escape]      'minibuffer-keyboard-quit)
+     (define-key minibuffer-local-must-match-map [escape]      'minibuffer-keyboard-quit)
+     (define-key minibuffer-local-isearch-map    [escape]      'minibuffer-keyboard-quit)
+     (define-key evil-insert-state-map           [escape]      'evil-normal-state)
+     (bind-keys :map evil-normal-state-map
+                ([next]   . evil-scroll-down)
+                ([prior]  . evil-scroll-up)
+                ([escape] . keyboard-quit)
+                ("j"      . evil-next-visual-line)
+                ("k"      . evil-previous-visual-line)
+                ("C-y"    . evil-paste-after)
+                ("SPC"    . hydra-common-commands/body))
+     (bind-keys :map evil-visual-state-map
+                ("SPC" . hydra-common-commands/body))
+     (defun my-evil-off ()
+       "Turn 'evil-mode' off and change cursor type to bar."
+       (interactive)
+       (turn-off-evil-mode)
+       (setq cursor-type 'bar))
+     (with-eval-after-load 'term (evil-set-initial-state 'term-mode 'insert))
+     (with-eval-after-load 'vterm  (evil-set-initial-state 'term-mode 'emacs))
+
+     :bind (("<f12>" . evil-local-mode)
+            :map evil-normal-state-map
+            ("C-e" . move-end-of-line)
+            ("M-v" . simpleclip-paste)
+            :map evil-visual-state-map
+            ("C-e" . move-end-of-line)
+            ("M-c" . simpleclip-copy)
+            :map evil-insert-state-map
+            ("M-v" . simpleclip-paste)
+            ("M-c" . simpleclip-copy))
+     :hook ((help-mode . evil-local-mode)
+            (prog-mode . evil-local-mode)
+            (text-mode . evil-local-mode)
+            (pdf-view-mode . evil-local-mode)
+            (neotree-mode . evil-local-mode)
+            ;; Disable evil-mode in some major modes
+            (magit-mode . my-evil-off)
+            (erc-mode . my-evil-off)
+            (nrepl-connected . my-evil-off)))
 
   (use-package evil-collection
     :after evil
@@ -926,22 +952,28 @@ This only works with orderless and for the first component of the search."
           completion-category-overrides '((file (styles partial-completion)))))
 
   (use-package corfu
+    :straight (corfu :files (:defaults "extensions/*")
+                     :includes (corfu-info corfu-popupinfo corfu-history))
     :defer t
-    :custom
-    (corfu-cycle t)
-    (corfu-auto nil)
-    (corfu-auto-prefix 2)
-    (corfu-auto-delay 0.25)
-    (corfu-scroll-margin 4)
-    (corfu-preview-current nil)
-    ;; Enable Corfu globally.
-    ;; This is recommended since Dabbrev can be used globally (M-/).
-    ;; See also `corfu-excluded-modes'.
     :init
+    (setq corfu-cycle t
+          corfu-auto t
+          corfu-auto-prefix 2
+          corfu-auto-delay 0.25
+          corfu-scroll-margin 4
+          corfu-preview-current nil
+          corfu-quit-at-boundary t
+          corfu-quit-no-match 'separator
+          corfu-popupinfo-delay 0.2)
     (global-corfu-mode)
-    :config (use-package corfu-doc
-              :config (add-hook 'corfu-mode-hook #'corfu-doc-mode))
+    (corfu-popupinfo-mode)
+    :config
+    ;; Make Evil and Corfu play nice
+    (evil-make-overriding-map corfu-map)
+    (advice-add 'corfu--setup :after 'evil-normalize-keymaps)
+    (advice-add 'corfu--teardown :after 'evil-normalize-keymaps)
     (set-face-attribute 'corfu-default nil :height 0.9)
+    (set-face-attribute 'corfu-popupinfo nil :height 0.9)
     :bind (:map corfu-map
                 ("TAB"     . corfu-next)
                 ([tab]     . corfu-next)
@@ -1193,14 +1225,12 @@ Start from the beginning of buffer otherwise."
     (shackle-mode t))
 
   ;; Solidity
-  (use-package solidity-mode
-    :defer t)
+  (use-package solidity-mode :defer t)
   (use-package solidity-flycheck
     :defer t
     :config (setq solidity-flycheck-solc-checker-active t
                   solidity-flycheck-solium-checker-active t))
 
-  ;; FIXME Setup grammars
   (use-package tree-sitter
     :defer t
     :config (require 'tree-sitter)
@@ -1218,6 +1248,7 @@ Start from the beginning of buffer otherwise."
     :config
     (pdf-tools-install :no-query)
     (setq-default pdf-view-display-size 'fit-page)
+    (setq pdf-view-continuous nil)
     ;; :hook ((pdf-view-mode-hook . (lambda () (display-line-numbers-mode -1)))
     ;;        (pdf-view-mode-hook . (lambda () (blink-cursor-mode -1)))
     ;;        (pdf-view-mode-hook . pdf-tools-enable-minor-modes)
@@ -1255,7 +1286,7 @@ Start from the beginning of buffer otherwise."
     :after pdf-tools
     :hook (pdf-view-mode . pdf-view-restore-mode))
 
-  ;; TODO Remove Hydra and just use which-key
+  ;; TODO Remove Hydra and just use which-key or general?
   ;; Hydras
   (use-package hydra
     :defer t
