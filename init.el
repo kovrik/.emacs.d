@@ -391,6 +391,20 @@
       (setq exec-path (append (parse-colon-path (getenv "PATH"))
                               (parse-colon-path (getenv "USERPROFILE")) exec-path))))
 
+  (use-package proced
+    :ensure nil
+    :commands proced
+    :bind (("C-M-p" . proced))
+    :config
+    (setq-default proced-auto-update-flag t)
+    (setq proced-auto-update-interval 1
+          proced-goal-attribute nil
+          proced-enable-color-flag t)
+    (add-to-list
+     'proced-format-alist
+     '(custom user pid ppid sess tree pcpu pmem rss start time state (args comm)))
+    (setq-default proced-format 'custom))
+
   (use-package shell
     :config (when (eq 'windows-nt system-type)
               (setq shell-file-name "bash"))
