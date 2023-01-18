@@ -53,7 +53,7 @@
   (setq package--init-file-ensured t)
 
   ;; Straight
-  (setq straight-check-for-modifications nil)
+  (setq straight-check-for-modifications 'live)
   (progn
     (defvar bootstrap-version)
     (let ((bootstrap-file
@@ -376,12 +376,13 @@
 
   (use-package doom-modeline
     :ensure t
+    :straight (doom-modeline :type git :host github :repo "seagle0128/doom-modeline")
+    :init (doom-modeline-mode 1)
     :config (setq doom-modeline-minor-modes nil
                   doom-modeline-height 20
                   doom-modeline-enable-word-count nil
                   doom-modeline-modal-icon nil)
-    (add-hook 'pdf-view-mode-hook #'doom-modeline-set-pdf-modeline)
-    :hook (after-init . doom-modeline-mode))
+    (add-hook 'pdf-view-mode-hook #'doom-modeline-set-pdf-modeline))
 
   ;; PATH
   (use-package exec-path-from-shell
