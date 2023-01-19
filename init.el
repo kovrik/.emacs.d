@@ -52,22 +52,22 @@
   ;; don't add that `custom-set-variables' block to my init.el!
   (setq package--init-file-ensured t)
 
-  ;; Straight
-  (setq straight-check-for-modifications 'live)
-  (progn
-    (defvar bootstrap-version)
-    (let ((bootstrap-file
-           (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-          (bootstrap-version 5))
-      (unless (file-exists-p bootstrap-file)
-        (with-current-buffer
-            (url-retrieve-synchronously
-             "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-             'silent 'inhibit-cookies)
-          (goto-char (point-max))
-          (eval-print-last-sexp)))
-      (load bootstrap-file nil 'nomessage)))
+  ;; bootstrap straight
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 6))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+  ;; use use-package
   (straight-use-package 'use-package)
+  ;; automatically ensure every package exists (like :ensure or :straight)
   (setq straight-use-package-by-default t)
 
   (require 'bind-key)
@@ -324,35 +324,37 @@
   (use-package s)
   (use-package dash)
   (use-package queue)
-  (use-package bug-hunter :defer t)
-  (use-package command-log-mode :defer t)
-  (use-package restclient :defer t)
-  (use-package iedit :defer t)
+  (use-package bug-hunter)
+  (use-package command-log-mode)
+  (use-package restclient)
+  (use-package iedit)
   (use-package rg :config (rg-enable-default-bindings))
-  (use-package wgrep :defer t)
-  (use-package ranger :defer t)
-  (use-package rainbow-mode :defer t :diminish rainbow-mode)
-  (use-package focus :defer t)
+  (use-package wgrep)
+  (use-package ranger)
+  (use-package rainbow-mode :diminish rainbow-mode)
+  (use-package focus)
   (use-package flx)
-  (use-package request :defer t)
+  (use-package request)
   (use-package vlf :config (require 'vlf-setup))
   (use-package logview)
   (use-package simpleclip :config (simpleclip-mode 1))
+  (use-package savehist :config (savehist-mode))
   (use-package async
     :demand t
-    :init (dired-async-mode 1)
     :config (async-bytecomp-package-mode 1)
+    (dired-async-mode 1)
     (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil))))
 
   (use-package all-the-icons
+    :demand t
     :if (display-graphic-p)
-    :config (use-package all-the-icons-dired
-              :hook (dired-mode . all-the-icons-dired-mode)))
+    :config (use-package all-the-icons-dired :hook (dired-mode . all-the-icons-dired-mode)))
 
   (use-package all-the-icons-completion
+    :demand t
     :after (marginalia all-the-icons)
     :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
-    :init (all-the-icons-completion-mode))
+    :config (all-the-icons-completion-mode))
 
   ;;  (use-package doom-themes
   ;;    :config (load-theme 'doom-opera-light t)
@@ -369,20 +371,22 @@
   ;;   :config (modus-themes-load-operandi))
 
   (use-package ef-themes
+    :demand t
     :config (ef-themes-select 'ef-cyprus))
 
   (use-package solaire-mode
+    :demand t
     :config (solaire-global-mode +1))
 
   (use-package doom-modeline
-    :ensure t
+    :demand t
     :straight (doom-modeline :type git :host github :repo "seagle0128/doom-modeline")
-    :init (doom-modeline-mode 1)
-    :config (setq doom-modeline-minor-modes nil
-                  doom-modeline-height 20
-                  doom-modeline-enable-word-count nil
-                  doom-modeline-modal-icon nil)
-    (add-hook 'pdf-view-mode-hook #'doom-modeline-set-pdf-modeline))
+    :init (setq doom-modeline-minor-modes nil
+                doom-modeline-height 20
+                doom-modeline-enable-word-count nil
+                doom-modeline-modal-icon nil)
+    :config (add-hook 'pdf-view-mode-hook #'doom-modeline-set-pdf-modeline)
+    (doom-modeline-mode 1))
 
   ;; PATH
   (use-package exec-path-from-shell
@@ -393,7 +397,6 @@
                               (parse-colon-path (getenv "USERPROFILE")) exec-path))))
 
   (use-package proced
-    :ensure nil
     :commands proced
     :bind (("C-M-p" . proced))
     :config
@@ -423,7 +426,6 @@
 
     (define-key view-mode-map (kbd "e") 'View-scroll-half-page-forward)
     (define-key view-mode-map (kbd "u") 'View-scroll-half-page-backward)
-
     ;; less like
     (define-key view-mode-map (kbd "N") 'View-search-last-regexp-backward)
     (define-key view-mode-map (kbd "?") 'View-search-regexp-backward?)
@@ -436,18 +438,17 @@
     (define-key view-mode-map (kbd "l") 'forward-char))
 
   (use-package which-key
-    :defer t
-    :init (which-key-mode)
-    :config (which-key-setup-minibuffer))
+    :demand t
+    :config (which-key-setup-minibuffer)
+            (which-key-mode))
 
   (use-package vterm
-    :defer t
     :custom (vterm-install t)
     :commands multi-vterm
     :hook (vterm-mode . evil-normal-state)
     (vterm-copy-mode . evil-normal-in-vterm-copy-mode)
     :config
-    (use-package multi-vterm :ensure t)
+    (use-package multi-vterm)
     (add-hook 'vterm-mode-hook (lambda () (setq-local global-hl-line-mode nil)))
     (setq vterm-max-scrollback 10000)
     (advice-add #'vterm--redraw :after (lambda (&rest args) (evil-refresh-cursor evil-state)))
@@ -465,7 +466,6 @@
     (auto-dim-other-buffers-mode t))
 
   (use-package helpful
-    :defer t
     :config
     (global-set-key (kbd "C-h f") #'helpful-callable)
     (global-set-key (kbd "C-h v") #'helpful-variable)
@@ -474,7 +474,6 @@
     (global-set-key (kbd "C-h .") #'helpful-at-point))
 
   (use-package diff-hl
-    :defer t
     :hook ((magit-pre-refresh-hook . diff-hl-magit-pre-refresh)
            (magit-post-refresh . diff-hl-magit-post-refresh))
     ;; :hook (find-file    . diff-hl-mode)
@@ -514,7 +513,6 @@
                 ("C-x v r" . diff-hl-revert-hunk)))
 
   (use-package hl-todo
-    :defer t
     :hook (prog-mode . hl-todo-mode)
     :config (setq hl-todo-highlight-punctuation ":"
                   hl-todo-keyword-faces `(("TODO"       warning bold)
@@ -525,7 +523,6 @@
                                           ("DEPRECATED" font-lock-doc-face bold))))
 
   (use-package find-func
-    :defer t
     :config (defun my-find-thing-at-point ()
               "Find directly thing (var or func) at point in current window."
               (interactive)
@@ -541,7 +538,6 @@
                 ("C-h l" . find-library)))
 
   (use-package lsp-mode
-    :defer t
     :custom
     (lsp-completion-provider :none)
     ;; what to use when checking on-save. "check" is default, I prefer clippy
@@ -576,27 +572,18 @@
                 ("C-."   . lsp-find-definition)))
 
   (use-package lsp-ui
-    :defer t
-    :ensure t
     :commands lsp-ui-mode
     :custom
     (lsp-ui-peek-always-show t)
     (lsp-ui-sideline-show-hover t)
     (lsp-ui-doc-enable nil))
 
-  (use-package lsp-java
-    :defer t
-    :config (add-hook 'java-mode-hook 'lsp))
-
-  (use-package flycheck-clj-kondo
-    :defer t
-    :ensure t)
+  (use-package lsp-java :config (add-hook 'java-mode-hook 'lsp))
+  (use-package flycheck-clj-kondo)
 
   (use-package clojure-mode
-    :defer  t
     :config (require 'flycheck-clj-kondo)
-    (use-package cider
-      :defer t)
+    (use-package cider)
     (use-package clojure-mode-extra-font-locking)
     ;; (use-package flycheck-clojure
     ;;   :config (flycheck-clojure-setup)
@@ -609,10 +596,7 @@
           cider-prefer-local-resources t
           cider-repl-popup-stacktraces t
           cider-popup-stacktraces      nil)
-    (dolist (mode '(clojure-mode
-                    clojurec-mode
-                    clojurescript-mode
-                    clojurex-mode))
+    (dolist (mode '(clojure-mode clojurec-mode clojurescript-mode clojurex-mode))
       (add-to-list 'lsp-language-id-configuration `(,mode . "clojure")))
     (defun cider-find-var-no-prompt ()
       "cider-find-var at point without prompt"
@@ -624,7 +608,6 @@
                 ("C-M-x" . cider-eval-defun-at-point)))
 
   (use-package rustic
-    :ensure
     :bind (:map rustic-mode-map
                 ("M-j" . lsp-ui-imenu)
                 ("M-?" . lsp-find-references)
@@ -653,7 +636,6 @@
       (setq-local buffer-save-without-query t)))
 
   (use-package js2-mode
-    :defer t
     :straight nil
     :mode (rx ".js" eos)
     :custom
@@ -665,14 +647,12 @@
     (js2-mode-show-strict-warnings nil))
 
   (use-package rjsx-mode
-    :defer t
     :mode (rx (or ".jsx" (and "components/" (* anything) ".js")) eos)
     :hook
     (rjsx-mode . (lambda () (setq me/pretty-print-function #'sgml-pretty-print)))
     (rjsx-mode . sgml-electric-tag-pair-mode))
 
   (use-package typescript-mode
-    :defer t
     :init
     (define-derived-mode typescript-tsx-mode typescript-mode "TSX")
     (add-to-list 'auto-mode-alist `(,(rx ".tsx" eos) . typescript-tsx-mode))
@@ -685,7 +665,6 @@
     (typescript-indent-level 2))
 
   (use-package geiser
-    :defer t
     :config
     (use-package geiser-chibi)
     (use-package geiser-chicken)
@@ -696,8 +675,7 @@
     (setq geiser-debug-show-debug-p nil
           geiser-debug-jump-to-debug-p nil))
 
-  (use-package racket-mode
-    :defer t)
+  (use-package racket-mode)
 
   (use-package rainbow-delimiters
     :config (setq rainbow-delimiters-max-face-count 9
@@ -709,12 +687,8 @@
            (racket-mode . rainbow-delimiters-mode)))
 
   ;; SLY
-  (use-package sly-quicklisp
-    :defer t
-    :after sly)
-
+  (use-package sly-quicklisp :after sly)
   (use-package sly
-    :defer t
     :config (setq sly-lisp-implementations
                   `(
                     ;; (roswell ("ros" "-L" "sbcl" "-Q" "-l" "~/.sbclrc" "--core" "~/roswell.core-for-sly" "run")  :coding-system utf-8-unix)
@@ -726,17 +700,14 @@
   (provide 'init-sly)
 
   (use-package highlight-quoted
-    :defer t
     :hook ((emacs-lisp-mode . highlight-quoted-mode)
            (clojure-mode . highlight-quoted-mode)
            (lisp-mode . highlight-quoted-mode)
            (racket-mode . highlight-quoted-mode)))
 
-  (use-package anzu
-    :config (global-anzu-mode +1))
+  (use-package anzu :config (global-anzu-mode +1))
 
   (use-package vundo
-    :defer t
     :commands (vundo)
     :straight (vundo :type git :host github :repo "casouri/vundo")
     :config
@@ -760,7 +731,6 @@
 
   (use-package lispy
     :init (setq lispy-key-theme '(special lispy))
-    :ensure t
     :config
     (add-hook 'emacs-lisp-mode-hook (lambda () (lispy-mode 1)))
     (add-hook 'lisp-mode-hook (lambda () (lispy-mode 1)))
@@ -772,21 +742,17 @@
            (lisp-mode . lispy-mode)
            (common-lisp-mode . lispy-mode)))
 
-
    (use-package evil
-     :defer nil
+     :demand t
      :init (viper-go-away)
      (setq evil-undo-system 'undo-redo)
      :config (use-package evil-anzu)
-     (use-package evil-org :defer t)
+     (use-package evil-org)
      (use-package evil-numbers)
      (use-package evil-surround   :config (global-evil-surround-mode 1))
      (use-package evil-visualstar :config (global-evil-visualstar-mode))
-     (use-package evil-search-highlight-persist
-       :config (global-evil-search-highlight-persist t))
-     (use-package lispyville
-       :ensure t
-       :hook (lispy-mode . lispyville-mode))
+     (use-package evil-search-highlight-persist :config (global-evil-search-highlight-persist t))
+     (use-package lispyville :hook (lispy-mode . lispyville-mode))
      (use-package evil-commentary
        :config (defun my-comment-line-and-go-to-next ()
                  "Comment current line and go to next."
@@ -828,14 +794,14 @@
          (when (get-buffer "*Completions*")
            (delete-windows-on "*Completions*"))
          (abort-recursive-edit)))
-     (global-set-key                             [escape]      'evil-exit-emacs-state)
-     (define-key evil-visual-state-map           [escape]      'keyboard-quit)
-     (define-key minibuffer-local-map            [escape]      'minibuffer-keyboard-quit)
-     (define-key minibuffer-local-ns-map         [escape]      'minibuffer-keyboard-quit)
-     (define-key minibuffer-local-completion-map [escape]      'minibuffer-keyboard-quit)
-     (define-key minibuffer-local-must-match-map [escape]      'minibuffer-keyboard-quit)
-     (define-key minibuffer-local-isearch-map    [escape]      'minibuffer-keyboard-quit)
-     (define-key evil-insert-state-map           [escape]      'evil-normal-state)
+     (global-set-key                             [escape] 'evil-exit-emacs-state)
+     (define-key evil-visual-state-map           [escape] 'keyboard-quit)
+     (define-key minibuffer-local-map            [escape] 'minibuffer-keyboard-quit)
+     (define-key minibuffer-local-ns-map         [escape] 'minibuffer-keyboard-quit)
+     (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+     (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+     (define-key minibuffer-local-isearch-map    [escape] 'minibuffer-keyboard-quit)
+     (define-key evil-insert-state-map           [escape] 'evil-normal-state)
      (bind-keys :map evil-normal-state-map
                 ([next]   . evil-scroll-down)
                 ([prior]  . evil-scroll-up)
@@ -853,7 +819,6 @@
        (setq cursor-type 'bar))
      (with-eval-after-load 'term (evil-set-initial-state 'term-mode 'insert))
      (with-eval-after-load 'vterm  (evil-set-initial-state 'term-mode 'emacs))
-
      :bind (("<f12>" . evil-local-mode)
             :map evil-normal-state-map
             ("C-e" . move-end-of-line)
@@ -876,7 +841,6 @@
 
   (use-package evil-collection
     :after evil
-    :ensure t
     :config (evil-collection-init '(cider compile debug diff-hl diff-mode dired
                                           doc-view ediff eldoc elisp-mode elisp-refs eshell
                                           geiser ibugger imenu imenu-list log-view magit
@@ -899,8 +863,7 @@
            (ielm-mode . turn-on-eldoc-mode)))
 
   (use-package vertico
-    :defer t
-    :init (vertico-mode)
+    :demand t
     :custom-face (vertico-current ((t (:inherit hl-line :weight bold))))
     ;; Correct file path when changed
     :hook (rfn-eshadow-update-overlay . vertico-directory-tidy)
@@ -915,16 +878,13 @@
        cand))
     (advice-remove #'vertico--format-candidate #'prefix-current-candidate-with-arrow)
     (advice-add #'vertico--format-candidate :around #'prefix-current-candidate-with-arrow)
+    (vertico-mode)
     :bind (:map vertico-map
                 ("C-j" . vertico-next)
                 ("C-k" . vertico-previous)))
 
-  (use-package savehist
-    :defer t
-    :init (savehist-mode))
-
   (use-package consult
-    :defer nil
+    :demand t
     :config (use-package consult-lsp
               :bind (("M-<f3>" . consult-lsp-diagnostics)
                      ("M-<f4>" . consult-lsp-symbols)
@@ -947,29 +907,26 @@ This only works with orderless and for the first component of the search."
            ("C-S-f" . consult-find)))
 
   (use-package marginalia
-    :defer t
-    :custom
-    (marginalia-max-relative-age 0)
+    :demand t
+    :custom (marginalia-max-relative-age 0)
     ;; The :init configuration is always executed (Not lazy!)
     ;; Must be in the :init section of use-package such that the mode gets
     ;; enabled right away. Note that this forces loading the package.
-    :init
-    (marginalia-mode)
+    :config (marginalia-mode)
     :bind (("M-A" . marginalia-cycle)
            :map minibuffer-local-map
            ("M-A" . marginalia-cycle)))
 
   (use-package orderless
-    :defer t
-    :init
-    (setq completion-styles '(orderless flex)
-          completion-category-defaults nil
-          completion-category-overrides '((file (styles partial-completion)))))
+    :demand t
+    :init (setq completion-styles '(orderless flex)
+                completion-category-defaults nil
+                completion-category-overrides '((file (styles partial-completion)))))
 
   (use-package corfu
+    :demand t
     :straight (corfu :files (:defaults "extensions/*")
                      :includes (corfu-info corfu-popupinfo corfu-history))
-    :defer t
     :init
     (setq corfu-cycle t
           corfu-auto t
@@ -980,9 +937,9 @@ This only works with orderless and for the first component of the search."
           corfu-quit-at-boundary t
           corfu-quit-no-match 'separator
           corfu-popupinfo-delay 0.2)
+    :config
     (global-corfu-mode)
     (corfu-popupinfo-mode)
-    :config
     ;; Make Evil and Corfu play nice
     (evil-make-overriding-map corfu-map)
     (advice-add 'corfu--setup :after 'evil-normalize-keymaps)
@@ -1000,7 +957,7 @@ This only works with orderless and for the first component of the search."
                 ("<return>" . corfu-insert)))
 
   (use-package kind-icon
-    :defer t
+    :demand t
     :after corfu
     :custom
     (kind-icon-use-icons t)
@@ -1030,7 +987,6 @@ This only works with orderless and for the first component of the search."
     (add-to-list 'completion-at-point-functions #'cape-symbol))
 
   (use-package projectile
-    :defer t
     :diminish projectile-mode
     :config (defun my-projectile-switch-to-project ()
               "My switch-to-project action for projectile.
@@ -1066,9 +1022,7 @@ Use `find-file' otherwise."
            ("C-S-n" . my-find-file)))
 
   (use-package org
-    :defer t
     :config (use-package org-bullets
-              :defer t
               :config (defun my-org-bullets-on () (org-bullets-mode 1))
               (add-hook 'org-mode-hook #'my-org-bullets-on))
     (setq org-edit-src-content-indentation 0
@@ -1095,7 +1049,6 @@ Use `find-file' otherwise."
            ("\C-cb" . org-iswitchb)))
 
   (use-package magit
-    :defer t
     :config (use-package magit-popup)
     (setenv "GIT_ASKPASS" "git-gui--askpass")
     ;; Don't want to view changes every time before commit
@@ -1127,7 +1080,6 @@ Use `find-file' otherwise."
     :bind (("C-x g" . magit-status)))
 
   (use-package ediff
-    :defer t
     :config (setq ediff-window-setup-function 'ediff-setup-windows-plain
                   ediff-split-window-function 'split-window-horizontally
                   ediff-diff-options          "-w")
@@ -1140,7 +1092,6 @@ Use `find-file' otherwise."
     (add-hook 'ediff-quit-hook    'winner-undo))
 
   (use-package eshell
-    :defer t
     :config (setq eshell-prompt-regexp "^[^αλ\n]*[αλ] "
                   eshell-highlight-prompt nil
                   eshell-save-history-on-exit t
@@ -1154,12 +1105,10 @@ Use `find-file' otherwise."
     (defalias 'clean 'eshell/clear-scrollback))
 
   (use-package web-mode
-    :defer t
     :config (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
     (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode)))
 
   (use-package flycheck
-    :defer t
     :config (use-package flycheck-pos-tip
               :config (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
     (setq-default flycheck-emacs-lisp-load-path 'inherit)
@@ -1175,7 +1124,6 @@ Start from the beginning of buffer otherwise."
     (define-key flycheck-mode-map (kbd "<f3>") #'flycheck-list-errors))
 
   (use-package neotree
-    :defer t
     :config (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
     (define-key neotree-mode-map (kbd "<tab>") #'neotree-enter)
     (defun neotree-current-file ()
@@ -1187,7 +1135,6 @@ Start from the beginning of buffer otherwise."
     :bind (("M-<f1>". neotree-current-file)))
 
   (use-package imenu-list
-    :defer t
     :config (setq imenu-list-position 'left
                   imenu-list-size 36
                   imenu-list-focus-after-activation t)
@@ -1195,7 +1142,6 @@ Start from the beginning of buffer otherwise."
     :hook (imenu-list-major-mode . turn-on-evil-mode))
 
   (use-package eyebrowse
-    :defer t
     :diminish eyebrowse-mode
     :config (eyebrowse-mode t)
     (eyebrowse-setup-evil-keys)
@@ -1240,14 +1186,12 @@ Start from the beginning of buffer otherwise."
     (shackle-mode t))
 
   ;; Solidity
-  (use-package solidity-mode :defer t)
+  (use-package solidity-mode)
   (use-package solidity-flycheck
-    :defer t
     :config (setq solidity-flycheck-solc-checker-active t
                   solidity-flycheck-solium-checker-active t))
 
   (use-package tree-sitter
-    :defer t
     :config (require 'tree-sitter)
     (require 'tree-sitter-hl)
     (global-tree-sitter-mode)
@@ -1256,7 +1200,6 @@ Start from the beginning of buffer otherwise."
     :config (require 'tree-sitter-langs))
 
   (use-package pdf-tools
-    :defer t
     :commands (pdf-view-mode pdf-tools-install)
     :mode ("\\.[pP][dD][fF]\\'" . pdf-view-mode)
     :magic ("%PDF" . pdf-view-mode)
@@ -1304,7 +1247,6 @@ Start from the beginning of buffer otherwise."
   ;; TODO Remove Hydra and just use which-key or general?
   ;; Hydras
   (use-package hydra
-    :defer t
     :config (defhydra hydra-find
               (:color blue :hint nil)
               "
