@@ -557,7 +557,7 @@
     (add-hook 'clojure-mode-hook 'lsp)
     (add-hook 'clojurescript-mode-hook 'lsp)
     (add-hook 'clojurec-mode-hook 'lsp)
-    (setq lsp-lens-enable t
+    (setq lsp-lens-enable nil
           lsp-signature-auto-activate nil)
     ;; Use orderless completion style with lsp-capf instead of the default lsp-passthrough.
     (setf (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
@@ -635,34 +635,70 @@
     (when buffer-file-name
       (setq-local buffer-save-without-query t)))
 
-  (use-package js2-mode
-    :straight nil
-    :mode (rx ".js" eos)
-    :custom
-    (js-indent-level 2)
-    (js-switch-indent-offset 2)
-    (js2-highlight-level 3)
-    (js2-idle-timer-delay 0)
-    (js2-mode-show-parse-errors nil)
-    (js2-mode-show-strict-warnings nil))
+  (use-package dap-mode)
+  (use-package json-mode)
+  (use-package yasnippet)
 
-  (use-package rjsx-mode
-    :mode (rx (or ".jsx" (and "components/" (* anything) ".js")) eos)
-    :hook
-    (rjsx-mode . (lambda () (setq me/pretty-print-function #'sgml-pretty-print)))
-    (rjsx-mode . sgml-electric-tag-pair-mode))
+  (progn
+    ;; JavaScript and ReactJS
+    (use-package js2-mode
+      :straight nil
+      :mode (rx ".js" eos)
+      :custom
+      (js-indent-level 2)
+      (js-switch-indent-offset 2)
+      (js2-highlight-level 3)
+      (js2-idle-timer-delay 0)
+      (js2-mode-show-parse-errors nil)
+      (js2-mode-show-strict-warnings nil))
 
-  (use-package typescript-mode
-    :init
-    (define-derived-mode typescript-tsx-mode typescript-mode "TSX")
-    (add-to-list 'auto-mode-alist `(,(rx ".tsx" eos) . typescript-tsx-mode))
-    :config
-    (add-hook 'typescript-mode-hook #'sgml-electric-tag-pair-mode)
-    (add-hook 'typescript-tsx-mode-hook #'sgml-electric-tag-pair-mode)
-    (add-hook 'typescript-mode-hook 'lsp)
-    (add-hook 'typescript-tsx-mode-hook 'lsp)
-    :custom
-    (typescript-indent-level 2))
+    (use-package rjsx-mode
+      :mode (rx (or ".jsx" (and "components/" (* anything) ".js")) eos)
+      :hook
+      (rjsx-mode . (lambda () (setq me/pretty-print-function #'sgml-pretty-print)))
+      (rjsx-mode . sgml-electric-tag-pair-mode))
+
+    (use-package typescript-mode
+      :init
+      (define-derived-mode typescript-tsx-mode typescript-mode "TSX")
+      (add-to-list 'auto-mode-alist `(,(rx ".tsx" eos) . typescript-tsx-mode))
+      :config
+      (add-hook 'typescript-mode-hook #'sgml-electric-tag-pair-mode)
+      (add-hook 'typescript-tsx-mode-hook #'sgml-electric-tag-pair-mode)
+      (add-hook 'typescript-mode-hook 'lsp)
+      (add-hook 'typescript-tsx-mode-hook 'lsp)
+      (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
+      (require 'dap-chrome)
+      (yas-global-mode)
+      :custom
+      (typescript-indent-level 2))
+
+    ;; if you use typescript-mode
+    ;; (use-package tide
+    ;;   :ensure t
+    ;;   :after (typescript-mode company flycheck)
+    ;;   :hook ((typescript-mode . tide-setup)
+    ;;          (typescript-mode . tide-hl-identifier-mode)
+    ;;          (before-save . tide-format-before-save)))
+    ;; if you use treesitter based typescript-ts-mode (emacs 29+)
+    ;; (use-package tide
+    ;;   :ensure t
+    ;;   :after (company flycheck)
+    ;;   :hook ((typescript-ts-mode . tide-setup)
+    ;;          (tsx-ts-mode . tide-setup)
+    ;;          (typescript-ts-mode . tide-hl-identifier-mode)
+    ;;          (before-save . tide-format-before-save)))
+
+    (use-package tsi
+      :after tree-sitter
+      :straight (tsi :type git :host github :repo "orzechowskid/tsi.el")
+      ;; define autoload definitions which when actually invoked will cause package to be loaded
+      :commands (tsi-typescript-mode tsi-json-mode tsi-css-mode)
+      :init
+      (add-hook 'typescript-mode-hook (lambda () (tsi-typescript-mode 1)))
+      (add-hook 'json-mode-hook (lambda () (tsi-json-mode 1)))
+      (add-hook 'css-mode-hook (lambda () (tsi-css-mode 1)))
+      (add-hook 'scss-mode-hook (lambda () (tsi-scss-mode 1)))))
 
   (use-package geiser
     :config
@@ -981,10 +1017,11 @@ This only works with orderless and for the first component of the search."
            ("C-c p l" . cape-line))
     :init
     ;; Add `completion-at-point-functions', used by `completion-at-point'.
-    (add-to-list 'completion-at-point-functions #'cape-file)
-    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-    (add-to-list 'completion-at-point-functions #'cape-keyword)
-    (add-to-list 'completion-at-point-functions #'cape-symbol))
+    ;; (add-to-list 'completion-at-point-functions #'cape-file)
+    ;; (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+    ;; (add-to-list 'completion-at-point-functions #'cape-keyword)
+    ;; (add-to-list 'completion-at-point-functions #'cape-symbol)
+    )
 
   (use-package projectile
     :diminish projectile-mode
@@ -1196,8 +1233,10 @@ Start from the beginning of buffer otherwise."
     (require 'tree-sitter-hl)
     (global-tree-sitter-mode)
     (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
   (use-package tree-sitter-langs
-    :config (require 'tree-sitter-langs))
+    :ensure t
+    :after tree-sitter)
 
   (use-package pdf-tools
     :commands (pdf-view-mode pdf-tools-install)
