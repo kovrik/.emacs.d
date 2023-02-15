@@ -962,26 +962,31 @@ This only works with orderless and for the first component of the search."
   (use-package corfu
     :demand t
     :straight (corfu :files (:defaults "extensions/*")
-                     :includes (corfu-info corfu-popupinfo corfu-history))
+                     :includes (corfu-info corfu-history))
     :init
     (setq corfu-cycle t
           corfu-auto t
           corfu-auto-prefix 2
           corfu-auto-delay 0.25
+          corfu-min-width 60
+          corfu-max-width corfu-min-width      ; Always have the same width
+          corfu-count 14
           corfu-scroll-margin 4
           corfu-preview-current nil
           corfu-quit-at-boundary t
           corfu-quit-no-match 'separator
-          corfu-popupinfo-delay 0.2)
+          ;; Do not preview current candidate
+          corfu-preview-current 'insert
+          corfu-preselect-first nil
+          ;; Don't auto expand tempel snippets
+          corfu-on-exact-match nil)
     :config
     (global-corfu-mode)
-    (corfu-popupinfo-mode)
     ;; Make Evil and Corfu play nice
     (evil-make-overriding-map corfu-map)
     (advice-add 'corfu--setup :after 'evil-normalize-keymaps)
     (advice-add 'corfu--teardown :after 'evil-normalize-keymaps)
     (set-face-attribute 'corfu-default nil :height 0.9)
-    (set-face-attribute 'corfu-popupinfo nil :height 0.9)
     :bind (:map corfu-map
                 ("TAB"     . corfu-next)
                 ([tab]     . corfu-next)
@@ -991,6 +996,19 @@ This only works with orderless and for the first component of the search."
                 ([backtab] . corfu-previous)
                 ("<escape>" . corfu-quit)
                 ("<return>" . corfu-insert)))
+
+  (use-package corfu-doc
+    :straight (corfu-doc :type git :host github :repo "galeo/corfu-doc")
+    :after corfu
+    :hook (corfu-mode . corfu-doc-mode)
+    :bind (:map corfu-map
+                ("M-n" . #'corfu-doc-scroll-up)
+                ("M-p" . #'corfu-doc-scroll-down))
+    :custom
+    (corfu-doc-delay 0.5)
+    (corfu-doc-max-width 70)
+    (corfu-doc-max-height 20)
+    (corfu-echo-documentation nil))
 
   (use-package kind-icon
     :demand t
