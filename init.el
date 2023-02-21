@@ -456,9 +456,15 @@
       (if (bound-and-true-p vterm-copy-mode)
           (evil-normal-state)
         (evil-emacs-state)))
+    ;; current directory tracking
+    (defun my/vterm--set-title-pre (title)
+      (let ((dir (string-trim-left (concat (nth 1 (split-string title ":")) "/"))))
+        (when (file-directory-p dir)
+          (cd-absolute dir))))
+    (advice-add 'vterm--set-title :before #'my/vterm--set-title-pre)
     :bind (:map vterm-mode-map
                 ("C-y" . vterm-yank)
-                ("C-v" . vterm-yank)))
+                ("M-v" . vterm-yank)))
 
   (use-package auto-dim-other-buffers
     :config
