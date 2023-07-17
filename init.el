@@ -1033,6 +1033,7 @@ This only works with orderless and for the first component of the search."
          corfu-count 14
          corfu-scroll-margin 4
          corfu-preview-current nil
+         corfu-popupinfo-delay '(0.3 . 0.3)
          corfu-quit-at-boundary t
          corfu-quit-no-match 'separator
          ;; Do not preview current candidate
